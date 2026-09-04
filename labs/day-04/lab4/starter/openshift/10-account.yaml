@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-service
+  namespace: md287-lab4
+  labels:
+    app: account-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-service
+  template:
+    metadata:
+      labels:
+        app: account-service
+    spec:
+      containers:
+        - name: account-service
+          image: md287/account-service:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: account-config
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: openshift
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: health,info,metrics
+            - name: INFO_APP_VERSION
+              value: "1.0.0"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: md287-db-secrets
+                  key: ACCOUNT_DB_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: md287-db-secrets
+                  key: ACCOUNT_DB_PASSWORD
+            - name: MD287_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: md287-db-secrets
+                  key: MD287_JWT_SECRET
+          # TODO Lab 4 Step 5 — add resources.requests and resources.limits
+          #   (cpu 100m / memory 256Mi requests; cpu 1 / memory 512Mi limits).
+          # TODO Lab 4 Step 5 — add startupProbe, livenessProbe, readinessProbe
+          #   HTTP GET /actuator/health/liveness and /actuator/health/readiness on 8081.
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service
+  namespace: md287-lab4
+spec:
+  selector:
+    app: account-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: account-service
+  namespace: md287-lab4
+spec:
+  to:
+    kind: Service
+    name: account-service
+  port:
+    targetPort: 8081
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

@@ -1,0 +1,125 @@
+# Prepared OpenShift Pipelines (Tekton) definition for Lab 4.
+# Review this file even if you cannot apply it. Classroom clusters may not
+# include the Pipelines operator. Local equivalent: ../../tools/run-pipeline-locally.ps1
+#
+# You do not need to rewrite Tasks — this lab is review + gate.
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: md287-account-service
+  namespace: md287-lab4
+  labels:
+    purpose: classroom
+spec:
+  description: >
+    checkout → compile → test → scan → image → SBOM → sign → deploy → smoke.
+    Scan is a gate: CRITICAL findings fail the pipeline.
+  params:
+    - name: git-url
+      type: string
+      default: https://github.com/gjkaur/Spring-Boot-Microservices-with-OpenShift-AI-and-DevOps.git
+    - name: git-revision
+      type: string
+      default: master
+    - name: image
+      type: string
+      default: image-registry.openshift-image-registry.svc:5000/md287-lab4/account-service
+    - name: tag
+      type: string
+      default: "1.0.0"
+  tasks:
+    - name: checkout
+      taskSpec:
+        steps:
+          - name: clone
+            image: alpine/git:2.45.2
+            script: |
+              #!/bin/sh
+              echo "STAGE checkout"
+              echo "Would clone $(params.git-url) at $(params.git-revision)"
+    - name: compile
+      runAfter: [checkout]
+      taskSpec:
+        steps:
+          - name: mvn
+            image: maven:3.9.9-eclipse-temurin-21-alpine
+            script: |
+              #!/bin/sh
+              echo "STAGE compile"
+              echo "Would run: mvn -q -DskipTests package"
+    - name: test
+      runAfter: [compile]
+      taskSpec:
+        steps:
+          - name: mvn-test
+            image: maven:3.9.9-eclipse-temurin-21-alpine
+            script: |
+              #!/bin/sh
+              echo "STAGE test"
+              echo "Would run: mvn -q test"
+    - name: scan
+      runAfter: [test]
+      taskSpec:
+        results:
+          - name: gate
+            description: pass or fail
+        steps:
+          - name: vuln-scan
+            image: alpine:3.20
+            script: |
+              #!/bin/sh
+              echo "STAGE scan (vulnerability gate)"
+              echo "Policy: fail if any CRITICAL CVE is present."
+              echo "Classroom sample report has 0 CRITICAL — GATE PASS"
+              printf pass > "$(results.gate.path)"
+    - name: image
+      runAfter: [scan]
+      taskSpec:
+        steps:
+          - name: build
+            image: alpine:3.20
+            script: |
+              #!/bin/sh
+              echo "STAGE image"
+              echo "Would build and push $(params.image):$(params.tag)"
+    - name: sbom
+      runAfter: [image]
+      taskSpec:
+        steps:
+          - name: syft
+            image: alpine:3.20
+            script: |
+              #!/bin/sh
+              echo "STAGE SBOM"
+              echo "Would run Syft and attach CycloneDX JSON to the image."
+    - name: sign
+      runAfter: [sbom]
+      taskSpec:
+        steps:
+          - name: cosign
+            image: alpine:3.20
+            script: |
+              #!/bin/sh
+              echo "STAGE sign"
+              echo "Would run: cosign sign $(params.image):$(params.tag)"
+              echo "Would run: cosign verify $(params.image):$(params.tag)"
+    - name: deploy
+      runAfter: [sign]
+      taskSpec:
+        steps:
+          - name: oc
+            image: alpine:3.20
+            script: |
+              #!/bin/sh
+              echo "STAGE deploy"
+              echo "Would set image on deployment/account-service and wait for rollout."
+    - name: smoke
+      runAfter: [deploy]
+      taskSpec:
+        steps:
+          - name: curl
+            image: alpine:3.20
+            script: |
+              #!/bin/sh
+              echo "STAGE smoke"
+              echo "Would GET /actuator/health/readiness until 200, then GET /actuator/info."

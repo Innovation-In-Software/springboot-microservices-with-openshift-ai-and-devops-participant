@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5435/risk_db
+    username: risk
+    password: risk
+    hikari:
+      maximum-pool-size: 5

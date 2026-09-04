@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5434/transaction_db
+    username: transaction
+    password: transaction
+    hikari:
+      maximum-pool-size: 5

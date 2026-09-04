@@ -1,0 +1,25 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2026-08-23T00:00:00Z",
+  "ArtifactName": "md287/account-service:1.0.0",
+  "Results": [
+    {
+      "Target": "md287/account-service:1.0.0 (alpine 3.21)",
+      "Class": "os-pkgs",
+      "Vulnerabilities": []
+    },
+    {
+      "Target": "Java",
+      "Class": "lang-pkgs",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2024-CLASSROOM-LOW",
+          "PkgName": "example-transitive",
+          "InstalledVersion": "1.0.0",
+          "Severity": "LOW",
+          "Title": "Classroom sample — not a real CVE"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+spring:
+  application:
+    name: risk-assessment-service
+  profiles:
+    default: local
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: risk-assessment-service
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: com.md287.risk.messaging
+        spring.json.value.default.type: com.md287.risk.messaging.TransactionSubmittedEvent
+        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+server:
+  port: 8083
+
+md287:
+  jwt:
+    issuer: md287-lab
+    secret: "md287-lab-only-hmac-secret-32bytes!"
+  kafka:
+    submitted-topic: transactions.submitted
+  model:
+    base-url: http://localhost:8090
+    score-path: /v1/score
+    api-key: md287-classroom-model-token
+  policy:
+    version: policy-v1
+    approve-score-below: 40
+    approve-amount-below: 1000
+    decline-score-at-or-above: 70
+    hold-amount-at-or-above: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    description: MD287 Risk Assessment Service — capstone service 3 of 3
+    version: 1.0.0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    root: INFO
+    com.md287.risk: INFO
+    org.hibernate.SQL: WARN
+    org.springframework.kafka: INFO

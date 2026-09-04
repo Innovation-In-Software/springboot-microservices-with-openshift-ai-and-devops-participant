@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+md287:
+  jwt:
+    issuer: md287-lab
+    secret: "md287-lab-only-hmac-secret-32bytes!"

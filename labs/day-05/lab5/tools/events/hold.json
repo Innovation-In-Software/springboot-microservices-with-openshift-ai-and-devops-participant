@@ -1,0 +1,1 @@
+{"eventType":"TransactionSubmitted","eventVersion":"1","eventId":"evt-lab5-hold-001","correlationId":"lab5-demo-hold","occurredAt":"2026-08-24T00:00:01Z","payload":{"transactionId":"TXN-B2C3D4E5","accountId":"ACC-AABBCCDD","amount":250.00,"currency":"USD","type":"DEBIT"}}

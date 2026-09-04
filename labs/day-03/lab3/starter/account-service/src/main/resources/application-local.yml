@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/account_db
+    username: account
+    password: account
+    hikari:
+      maximum-pool-size: 5

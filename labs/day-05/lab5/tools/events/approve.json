@@ -1,0 +1,1 @@
+{"eventType":"TransactionSubmitted","eventVersion":"1","eventId":"evt-lab5-approve-001","correlationId":"lab5-demo-approve","occurredAt":"2026-08-24T00:00:00Z","payload":{"transactionId":"TXN-A1B2C3D4","accountId":"ACC-AABBCCDD","amount":25.00,"currency":"USD","type":"DEBIT"}}

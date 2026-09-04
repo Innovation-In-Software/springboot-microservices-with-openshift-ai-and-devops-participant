@@ -1,0 +1,110 @@
+# Inspect in class. Apply only if you are logged into a pre-provisioned project.
+# Backing services (risk-db, kafka, model route) are assumed to exist.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: risk-assessment-config
+  namespace: md287-lab5
+data:
+  SERVER_PORT: "8083"
+  SPRING_DATASOURCE_URL: jdbc:postgresql://risk-db:5432/risk_db
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+  MD287_KAFKA_SUBMITTED_TOPIC: transactions.submitted
+  MD287_MODEL_BASE_URL: http://md287-risk-model:8090
+  MD287_MODEL_SCORE_PATH: /v1/score
+  MD287_POLICY_VERSION: policy-v1
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: risk-assessment-secrets
+  namespace: md287-lab5
+type: Opaque
+stringData:
+  SPRING_DATASOURCE_USERNAME: risk
+  SPRING_DATASOURCE_PASSWORD: risk
+  MD287_JWT_SECRET: md287-lab-only-hmac-secret-32bytes!
+  MD287_MODEL_API_KEY: md287-classroom-model-token
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: risk-assessment-service
+  namespace: md287-lab5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: risk-assessment-service
+  template:
+    metadata:
+      labels:
+        app: risk-assessment-service
+    spec:
+      containers:
+        - name: risk-assessment-service
+          image: md287/risk-assessment-service:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: risk-assessment-config
+            - secretRef:
+                name: risk-assessment-secrets
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: openshift
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8083
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8083
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8083
+            periodSeconds: 10
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: risk-assessment-service
+  namespace: md287-lab5
+spec:
+  selector:
+    app: risk-assessment-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: risk-assessment-service
+  namespace: md287-lab5
+spec:
+  to:
+    kind: Service
+    name: risk-assessment-service
+  port:
+    targetPort: 8083
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

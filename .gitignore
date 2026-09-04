@@ -1,0 +1,31 @@
+# Build output
+**/target/
+*.class
+*.jar
+*.war
+*.log
+
+# Lab walkthrough leftovers
+**/_verify/
+
+# IDE
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+~$*
+
+# Python
+**/__pycache__/
+*.pyc
+
+# Local secrets
+.env
+.env.*
+!.env.example

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-service
+  namespace: md287-lab4
+  labels:
+    app: transaction-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transaction-service
+  template:
+    metadata:
+      labels:
+        app: transaction-service
+    spec:
+      containers:
+        - name: transaction-service
+          image: md287/transaction-service:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: transaction-config
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: openshift
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: health,info,metrics
+            - name: INFO_APP_VERSION
+              value: "1.0.0"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: md287-db-secrets
+                  key: TRANSACTION_DB_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: md287-db-secrets
+                  key: TRANSACTION_DB_PASSWORD
+            - name: MD287_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: md287-db-secrets
+                  key: MD287_JWT_SECRET
+          # TODO Lab 4 Step 5 — add resources.requests and resources.limits
+          #   (cpu 100m / memory 256Mi requests; cpu 1 / memory 512Mi limits).
+          # TODO Lab 4 Step 5 — add startupProbe, livenessProbe, readinessProbe
+          #   HTTP GET /actuator/health/liveness and /actuator/health/readiness on 8082.
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transaction-service
+  namespace: md287-lab4
+spec:
+  selector:
+    app: transaction-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: transaction-service
+  namespace: md287-lab4
+spec:
+  to:
+    kind: Service
+    name: transaction-service
+  port:
+    targetPort: 8082
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

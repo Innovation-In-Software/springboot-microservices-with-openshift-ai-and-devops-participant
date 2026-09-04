@@ -1,0 +1,10 @@
+# If your instructor already created a project, skip this file and use:
+#   oc project <your-assigned-project>
+# Then replace namespace: md287-lab4 in the other YAML files with that project name.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: md287-lab4
+  labels:
+    purpose: classroom
+    data-class: synthetic-only

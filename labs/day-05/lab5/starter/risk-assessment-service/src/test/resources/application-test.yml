@@ -1,0 +1,12 @@
+spring:
+  kafka:
+    listener:
+      auto-startup: false
+
+md287:
+  jwt:
+    issuer: md287-lab
+    secret: "md287-lab-only-hmac-secret-32bytes!"
+  model:
+    base-url: http://localhost:8090
+    api-key: md287-classroom-model-token

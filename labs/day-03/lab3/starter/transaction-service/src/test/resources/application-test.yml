@@ -1,0 +1,11 @@
+spring:
+  kafka:
+    listener:
+      auto-startup: false
+
+md287:
+  jwt:
+    issuer: md287-lab
+    secret: "md287-lab-only-hmac-secret-32bytes!"
+  account-service:
+    base-url: http://localhost:8081

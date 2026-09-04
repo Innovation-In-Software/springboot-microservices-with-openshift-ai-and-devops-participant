@@ -1,0 +1,1 @@
+{"eventType":"TransactionSubmitted","eventVersion":"1","eventId":"evt-lab5-timeout-001","correlationId":"lab5-demo-timeout","occurredAt":"2026-08-24T00:00:03Z","payload":{"transactionId":"TXN-D4E5F6A7","accountId":"ACC-AABBCCDD","amount":13.13,"currency":"USD","type":"DEBIT"}}
