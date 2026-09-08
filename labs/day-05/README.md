@@ -1,7 +1,7 @@
 # Day 5 Labs — OpenShift AI, MCP, and Capstone Completion
 
 **Lab 5:** Risk Assessment Service  
-**Day outcome:** Risk Assessment Service + OpenShift AI integration; capstone demonstration.
+**Day outcome:** Risk Assessment Service + **pre-deployed OpenShift AI** endpoint; deploy to OpenShift; capstone demonstration.
 
 Run **Lab 5** as the Day 5 hands-on. Stop Lab 1–4 Compose stacks if they still bind port 9092.
 

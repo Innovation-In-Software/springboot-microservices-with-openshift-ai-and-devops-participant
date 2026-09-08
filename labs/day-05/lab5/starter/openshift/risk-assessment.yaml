@@ -1,10 +1,10 @@
-# Inspect in class. Apply only if you are logged into a pre-provisioned project.
-# Backing services (risk-db, kafka, model route) are assumed to exist.
+# Apply into the assigned participant project. Backing services (risk-db, kafka,
+# md287-risk-model) are pre-provisioned. Do not create a namespace.
+#   oc apply -n <project> -f risk-assessment.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: risk-assessment-config
-  namespace: md287-lab5
 data:
   SERVER_PORT: "8083"
   SPRING_DATASOURCE_URL: jdbc:postgresql://risk-db:5432/risk_db
@@ -18,7 +18,6 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: risk-assessment-secrets
-  namespace: md287-lab5
 type: Opaque
 stringData:
   SPRING_DATASOURCE_USERNAME: risk
@@ -30,7 +29,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: risk-assessment-service
-  namespace: md287-lab5
 spec:
   replicas: 1
   selector:
@@ -86,7 +84,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: risk-assessment-service
-  namespace: md287-lab5
 spec:
   selector:
     app: risk-assessment-service
@@ -98,7 +95,6 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: risk-assessment-service
-  namespace: md287-lab5
 spec:
   to:
     kind: Service

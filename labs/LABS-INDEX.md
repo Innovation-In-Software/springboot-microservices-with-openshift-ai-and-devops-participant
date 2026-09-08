@@ -2,6 +2,8 @@
 
 Clone the participant repo, then start from this index. Each day has one progressive lab that continues the banking platform.
 
+**Workstations:** TEKsystems Ablaze VMs (required). **OpenShift (ARO):** required for Labs 4–5. See [system requirements and flowchart](../docs/SYSTEM-REQUIREMENTS.md).
+
 ```powershell
 git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
 cd MD287
@@ -27,7 +29,7 @@ cd MD287
 
 - [Lab 5 — Risk Assessment Service](day-05/lab5/LAB-5-GUIDE.md)
 
-Work in each lab's `starter/` folder.
+Work in each lab's `starter/` folder. Day slide decks are in [`../slides/`](../slides/).
 
 ## Per-day layout
 

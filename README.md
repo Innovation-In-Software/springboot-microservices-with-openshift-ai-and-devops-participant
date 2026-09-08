@@ -14,6 +14,8 @@ git clone https://github.com/Innovation-In-Software/springboot-microservices-wit
 cd MD287
 ```
 
+No GitHub login. Work in each lab's `starter/` folder.
+
 ## Technology stack
 
 ```text
@@ -24,6 +26,12 @@ Podman              Red Hat OpenShift     OpenShift Pipelines (Tekton)
 OpenTelemetry       Prometheus / Grafana  Keycloak (or client IdP)
 GitHub Copilot      Red Hat OpenShift AI  MCP (conceptual + demo)
 ```
+
+**Workstations:** TEKsystems Ablaze VMs (required all five days). **OpenShift (ARO):** required for Labs 4–5.
+
+- [System requirements](docs/SYSTEM-REQUIREMENTS.md) · [Word](docs/MD287_System_Requirements.docx)
+- [Delivery flowchart](docs/lab-environment-flow.svg)
+- [Complete course outline](docs/MD287_Complete_Course_Outline.md)
 
 ## Slides (PDF)
 
@@ -36,8 +44,6 @@ GitHub Copilot      Red Hat OpenShift AI  MCP (conceptual + demo)
 | 5 | OpenShift AI, MCP, and Capstone Completion | [MD287_Day5_Slides.pdf](slides/MD287_Day5_Slides.pdf) |
 
 ## Labs
-
-Work in each lab's `starter/` folder and follow the lab guide.
 
 | Day | Lab |
 | --- | --- |

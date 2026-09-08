@@ -8,4 +8,6 @@ Open the service you are editing in VS Code and follow:
 
 **[LAB-3-GUIDE.md](../LAB-3-GUIDE.md)**
 
+Work in this starter folder.
+
 **Required:** Docker Desktop. You will run Account Service (8081) and Transaction Service (8082) together.

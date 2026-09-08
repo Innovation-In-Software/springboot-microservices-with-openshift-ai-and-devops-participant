@@ -1,5 +1,5 @@
 # Lab 4 starter — Transaction Service image
-# Build context is labs/day-03/lab3/starter/transaction-service (see docker-compose.yml).
+# Build context is labs/day-03/lab3/solution/transaction-service (see docker-compose.yml).
 
 FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 WORKDIR /src

@@ -1,6 +1,6 @@
 # Pipeline stage ownership map (Exercise 4.3)
 
-Fill the **Who typically owns it** column.
+Fill the **Who typically owns it** column before the instructor reviews it.
 
 | Stage | What happens | Who typically owns it | Fail means |
 | --- | --- | --- | --- |
@@ -15,3 +15,5 @@ Fill the **Who typically owns it** column.
 | deploy | Roll out to the namespace | | Cluster reject / probe fail |
 | smoke | Readiness + a synthetic API check | | Version is live but not healthy |
 | approval | Human promote to a higher env | | No production push without review |
+
+Your instructor may review the worksheet.

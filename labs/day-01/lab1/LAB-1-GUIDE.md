@@ -119,7 +119,7 @@ Never use Social Security numbers, PAN/card numbers, or real emails.
 If you do not already have the `labs` folder:
 
 ```powershell
-git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops.git MD287
+git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
 cd MD287
 ```
 

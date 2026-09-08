@@ -5,9 +5,9 @@
 **Time:** 90–120 minutes  
 **Difficulty:** Beginner
 
-**Objective:** Build **Risk Assessment Service**. Consume `TransactionSubmitted`, call a model endpoint (auth, timeout, safe fallback), apply a **deterministic policy**, store an audit row in this service’s own database, and complete a **human review**. MCP stays a design discussion — you do not run an MCP server today.
+**Objective:** Build **Risk Assessment Service**. Consume `TransactionSubmitted`, **call the pre-deployed OpenShift AI model endpoint** (auth, timeout, safe fallback), apply a **deterministic policy**, store an audit row in this service’s own database, complete a **human review**, **deploy to the assigned OpenShift project**, and capture capstone OpenShift evidence. MCP stays a design discussion — you do not run an MCP server today.
 
-This lab can run **standalone** (publish sample Kafka messages). An optional extra uses Lab 3 Account + Transaction so the event comes from a real POST.
+Code and tests run on the VM. Sample `TransactionSubmitted` JSON is the required event vocabulary. A live POST from Transaction Service is extra if Kafka can be shared.
 
 ---
 
@@ -16,7 +16,8 @@ This lab can run **standalone** (publish sample Kafka messages). An optional ext
 - Risk Assessment Service on port **8083**
 - Its **own** database (`risk_db` on host port **5435**)
 - A consumer on Kafka topic `transactions.submitted` (group `risk-assessment-service`)
-- Model call to a classroom stand-in for OpenShift AI (`http://localhost:8090/v1/score`)
+- Model call to the **pre-deployed OpenShift AI** endpoint (same contract as the local stand-in on `:8090`)
+- Risk Assessment **deployed** to the assigned OpenShift project (Route evidence)
 - Policy outcomes **APPROVE**, **HOLD**, **DECLINE**
 - Model timeout or HTTP 500 → **HOLD** `MODEL_UNAVAILABLE` (never auto-approve)
 - Human review on HOLD only (`risk.write`)
@@ -29,7 +30,7 @@ This lab can run **standalone** (publish sample Kafka messages). An optional ext
 
 | Day 5 idea | How it appears in this lab |
 | --- | --- |
-| **Model endpoint** | `ModelClient` POST with Bearer API key, 2s connect / 3s read timeout |
+| **Model endpoint** | `ModelClient` POST with Bearer API key. Local stand-in `:8090` for coding; **required** call to the pre-deployed OpenShift AI Route (instructor URL). |
 | **Safe fallback** | Timeout or 5xx → HOLD, not APPROVE |
 | **Deterministic policy** | Java `PolicyEngine` owns APPROVE / HOLD / DECLINE |
 | **Human review** | HOLD rows stay `PENDING` until a reviewer posts APPROVE or DECLINE |
@@ -70,7 +71,7 @@ Health stays public.
 | Tokens | `python labs\day-05\lab5\tools\issue-jwt.py ops` (and `reviewer`) |
 | Stop older labs first | Labs 1–4 may still bind **9092** |
 
-**You need:** Java 21, Maven 3.9+, Docker Desktop, Python 3.
+**You need:** Java 21, Maven 3.9+, Docker Desktop, Python 3, **`oc` login** to the assigned project, and the instructor **OpenShift AI model Route**.
 
 | Process | Host port |
 | --- | --- |
@@ -83,20 +84,33 @@ Health stays public.
 
 ## Steps from the training slides
 
-### Step 1 — Start backing services and the mock model
+### Step 1 — Start local backing services and prove the pre-deployed model
 
-From `labs/day-05/lab5/starter`:
+The outline calls a **pre-deployed OpenShift AI** model (application integration: auth, timeout, fallback). IIS places that endpoint in your project as Service `md287-risk-model` (port **8090**) plus a Route. Workbenches / KServe internals stay lecture-only.
+
+**Do this:**
+
+1. Confirm the classroom model Route (instructor gives `$env:MD287_MODEL_ROUTE`, no trailing slash):
 
 ```powershell
+oc whoami
+oc project <your-assigned-project>
+curl.exe -s "$env:MD287_MODEL_ROUTE/v1/health"
+```
+
+**Expected result:** JSON includes `"status":"UP"` and a model name/version. If this fails, **stop** — the model must be pre-deployed. Do not invent scores.
+
+2. For coding on the VM, start Compose (local Kafka, `risk_db`, and a **same-contract** mock on **8090**):
+
+```powershell
+cd labs\day-05\lab5\starter
 docker compose up -d
 curl.exe -s http://localhost:8090/v1/health
 ```
 
-**Expected result:** Compose starts `risk-db`, `kafka`, `kafka-init`, `mock-model`. Health JSON includes `"status":"UP"`.
+If port 9092 is busy, `docker compose down` in Lab 2–4 folders first. Ports **5435** and **8090** are Lab 5 on the VM.
 
-**Why this matters:** The mock model is the classroom stand-in for a **pre-deployed OpenShift AI** route. You still treat it as an untrusted remote: timeout, auth header, no score in logs beyond the integer.
-
-If port 9092 is busy, `docker compose down` in Lab 2–4 folders first. Ports **5435** and **8090** are Lab 5 only.
+**Why this matters:** You treat the model as an untrusted remote: timeout, `Authorization: Bearer` API key, no raw key in logs. The local mock matches the OpenShift AI Route so PolicyEngine tests can run before you deploy.
 
 ---
 
@@ -204,33 +218,52 @@ Logs: `transactionId=`, `correlationId=lab5-demo-...`. No `Authorization`, no AP
 
 ---
 
-### Step 7 — Optional: live event from Transaction Service
+### Step 7 — Integrate with Account + Transaction events
 
-Lab 5 Compose starts its **own** Kafka on **9092**. That collides with Lab 3. For this optional path:
+Sample JSON files use the **`TransactionSubmitted`** vocabulary (event id, correlation id, amount). That is required.
+
+To take a live event from Transaction Service (same topic):
 
 1. Stop Lab 5 Kafka: from `starter`, `docker compose down`
-2. Keep Lab 3 running (Account **8081**, Transaction **8082**, Kafka **9092**)
+2. Keep Lab 3 or Lab 4 Account **8081**, Transaction **8082**, Kafka **9092**
 3. Start only Lab 5 extras: `docker compose up -d risk-db mock-model`
 4. POST a transaction with a Lab 3 **ops** token (`accounts.read transactions.read transactions.write`)
 5. GET the assessment with a **Lab 5** ops token (`tools\issue-jwt.py ops`). Lab 3 ops does **not** include `risk.read`
 
 Risk Assessment uses consumer group `risk-assessment-service`, so it receives a **copy** of `TransactionSubmitted`. GET `/api/v1/assessments/{transactionId}`.
 
-If you cannot share Kafka, stay on the sample JSON files. Do not invent a successful assessment.
+If you cannot share Kafka, the sample JSON files still satisfy the event vocabulary. Do not invent a successful assessment.
 
 ---
 
-### Step 8 — OpenShift YAML and MCP (Exercise 5.3)
+### Step 8 — Deploy Risk Assessment to OpenShift and MCP (Exercise 5.3)
 
-Read `openshift/risk-assessment.yaml` in this starter folder. Tick:
+**Do this:**
+
+1. Read `openshift/risk-assessment.yaml`. Tick:
 
 - [ ] ConfigMap holds model URL and topic — not the API key
 - [ ] Secret holds DB password, JWT secret, model API key
 - [ ] Probes hit Actuator; `runAsNonRoot: true`
+- [ ] `MD287_MODEL_BASE_URL` is `http://md287-risk-model:8090` (in-cluster OpenShift AI stand-in)
 
-If `oc whoami` works, apply into the assigned project. If not, YAML review counts.
+2. Build, push, apply (required — capstone needs OpenShift evidence):
 
-Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls.
+```powershell
+cd labs\day-05\lab5
+docker build -f starter\risk-assessment-service\Containerfile -t md287/risk-assessment-service:1.0.0 starter\risk-assessment-service
+$PROJECT = oc project -q
+oc apply -n $PROJECT -f starter\openshift\risk-assessment.yaml
+powershell -File tools\push-risk-image.ps1
+oc -n $PROJECT set image deploy/risk-assessment-service risk-assessment-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/risk-assessment-service:1.0.0
+oc -n $PROJECT rollout status deploy/risk-assessment-service
+$RISK = oc -n $PROJECT get route risk-assessment-service -o jsonpath="{.spec.host}"
+curl.exe -s https://$RISK/actuator/health/readiness
+```
+
+**Expected result:** Pod Ready. Route readiness **200**. This is the OpenShift evidence for the capstone demo.
+
+3. Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls. Your instructor may review the worksheet. You do **not** run an MCP server.
 
 ---
 
@@ -241,7 +274,8 @@ Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool cal
 - [ ] Duplicate event does not create a second row
 - [ ] Reviewer can complete HOLD; ops cannot
 - [ ] Logs stay synthetic and secret-free
-- [ ] OpenShift YAML reviewed (or applied)
+- [ ] Pre-deployed OpenShift AI Route `/v1/health` is **UP** (`MD287_MODEL_ROUTE`)
+- [ ] Risk Assessment deployed; Route readiness **200**
 - [ ] MCP worksheet filled
 
 ---
@@ -253,8 +287,8 @@ Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool cal
 3. Duplicate event  
 4. Timeout → HOLD (never APPROVE)  
 5. Human review  
-6. Point at OpenShift YAML (probes, secret vs config)  
-7. Say how you would roll back the image (Lab 4 `rollout undo`)
+6. OpenShift evidence: Risk Route readiness **200** (and Lab 4 Account Route / `rollout undo`)  
+7. Rollback/recovery: Lab 4 `oc rollout undo`
 
 ---
 
@@ -263,6 +297,9 @@ Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool cal
 | Symptom | What to check |
 | --- | --- |
 | Mock model connection refused | `docker compose ps`; `curl.exe http://localhost:8090/v1/health` |
+| Pre-deployed model down | `curl.exe $env:MD287_MODEL_ROUTE/v1/health`; instructor must pre-deploy `md287-risk-model` |
+| ImagePullBackOff on Risk | `tools\push-risk-image.ps1` then `oc set image` |
+| `oc whoami` failed | Required. Get login from the instructor. |
 | Publish-event hangs | Kafka not healthy; wait for `kafka-init` to exit 0 |
 | 401 with a token | Lab 5 `issue-jwt.py` secret must match `application.yml` |
 | 403 on GET | Use `ops` or `reviewer`, not `teller` |

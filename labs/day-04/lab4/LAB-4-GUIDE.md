@@ -5,7 +5,7 @@
 **Time:** 90–120 minutes  
 **Difficulty:** Beginner
 
-**Objective:** Containerize Account and Transaction services (non-root images), run them with Docker Compose, review OpenShift Deployment/Service/Route plus ConfigMaps/Secrets/probes/resources, walk a prepared pipeline (SBOM, signature, vulnerability gate), then roll forward a version and **roll it back**.
+**Objective:** Containerize Account and Transaction services (non-root images), run them with Docker Compose, **deploy them to the pre-provisioned OpenShift project**, walk a prepared pipeline (SBOM, signature, vulnerability gate), then roll forward a version and **roll it back on OpenShift**.
 
 This is an **ops lab**. You do **not** copy the Lab 3 Java trees. Images are built from `labs/day-03/lab3/starter/`.
 
@@ -14,13 +14,14 @@ This is an **ops lab**. You do **not** copy the Lab 3 Java trees. Images are bui
 ## What you will finish with
 
 - Multi-stage Containerfiles that run as user `md287`, not root
-- Account on **8081** and Transaction on **8082** from Docker images
+- Account on **8081** and Transaction on **8082** from Docker images (Compose, then OpenShift)
 - Liveness and readiness probes hitting Actuator
-- ConfigMaps for URLs, Secrets for passwords and the classroom JWT
+- ConfigMaps for URLs, Secrets for passwords and the classroom JWT **applied on OpenShift**
 - Resource requests and limits on the OpenShift Deployments
+- Working **Routes** on the classroom cluster
 - Logs that still print `correlationId=` and never print `Authorization`
-- A reviewed pipeline: scan gate, SBOM, signature verify
-- A version bump (`1.0.0` → `1.0.1`) and a rollback to `1.0.0`
+- A completed prepared pipeline: scan gate, SBOM, signature verify
+- A version bump (`1.0.0` → `1.0.1`) and **`oc rollout undo`** back to `1.0.0`
 
 Lab 5 will add Risk Assessment and OpenShift AI. Do not add a third Java service today.
 
@@ -37,11 +38,15 @@ Lab 5 will add Risk Assessment and OpenShift AI. Do not add a third Java service
 | **Config vs secret** | JDBC URL in a ConfigMap. DB password and JWT secret in a Secret. |
 | **Immutable tags** | Promote `1.0.0` / `1.0.1`, not `:latest`. |
 | **Pipeline gates** | CRITICAL CVE → fail. SBOM is the ingredients list. Unsigned images must not run. |
-| **Rollback** | Compose tag swap **and** `oc rollout undo` when you are logged into a cluster. |
+| **Rollback** | Compose tag swap to practice, then **`oc rollout undo` on the assigned project** (required). |
 
 ### What you are not installing today
 
-Postgres, Kafka, and the OpenShift Pipelines operator are **platform** concerns. Compose starts Postgres and Kafka on your laptop. On a classroom cluster those backing services are **pre-provisioned** in your namespace (service names `account-db`, `transaction-db`, `kafka`). If `oc whoami` fails, you still complete the lab by inspecting YAML and running Compose.
+Postgres, Kafka, and the image registry are **platform** concerns. Compose starts Postgres and Kafka on the VM so you can prove probes before you push. On the classroom ARO cluster those backing services are **pre-provisioned** in **your assigned project** (service names `account-db`, `transaction-db`, `kafka` on **19092**).
+
+**`oc login` is required.** The course outline deploys to pre-provisioned OpenShift namespaces. If `oc whoami` fails, stop and get the instructor — do not skip the cluster steps.
+
+Jenkins is **awareness only** (Module 11). Do not install Jenkins. GitOps is conceptual.
 
 ---
 
@@ -56,7 +61,7 @@ Postgres, Kafka, and the OpenShift Pipelines operator are **platform** concerns.
 | Tokens | `python labs\day-03\lab3\tools\issue-jwt.py teller` (and `ops`) |
 | Stop older labs first | Lab 1–3 Compose stacks use the same host ports |
 
-**You need:** Docker Desktop, Java 21 only if you open the Lab 3 source, Python 3 for JWTs. OpenShift `oc` is optional.
+**You need:** Docker Desktop, Python 3 for JWTs, **OpenShift `oc`**, and classroom `oc login` to your assigned project. Java 21 only if you open the Lab 3 source.
 
 **Port map (same as Labs 1–3):**
 
@@ -107,7 +112,7 @@ Open:
 - `starter/account-service/Containerfile`
 - `starter/transaction-service/Containerfile`
 
-Replace the TODOs with a non-root pattern (Alpine JRE, group/user `md287`, `chown`, `USER`, `EXPOSE`).
+Replace the TODOs with the pattern from the solution (Alpine JRE, group/user `md287`, `chown`, `USER`, `EXPOSE`).
 
 Account exposes **8081**. Transaction exposes **8082**.
 
@@ -143,7 +148,7 @@ docker run --rm --entrypoint id md287/account-service:1.0.0
 
 **Why this matters:** A container that runs as root is one break-out away from host power. OpenShift will often **refuse** a root image when `runAsNonRoot: true` is set.
 
-If you get stuck, ask the instructor for the Containerfile pattern and rebuild.
+If you get stuck, ask the instructor for a hint — this repo has starter files only.
 
 ---
 
@@ -226,33 +231,73 @@ docker logs md287-lab4-transaction --tail 40
 
 ---
 
-### Step 5 — OpenShift manifests (ConfigMap, Secret, probes, resources)
+### Step 5 — Log in, apply manifests, and push images (OpenShift — required)
 
-Backing services (`account-db`, `kafka`, …) are assumed **pre-provisioned** on the cluster. You deploy the two applications.
+The outline deploys to **pre-provisioned** projects. You do **not** create a namespace.
 
 **Do this:**
 
-1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Use Actuator liveness/readiness HTTP probes and CPU/memory requests plus limits.
+1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Complete the TODOs in the starter YAML.
 
-2. If you are logged in:
+2. Log in and select **your** project (instructor issues API URL, username, password):
 
 ```powershell
+oc login <cluster-api-url> --username <participant> --password <password>
 oc whoami
-oc apply -f openshift\00-namespace.yaml
-oc apply -f openshift\01-configmap.yaml
-oc apply -f openshift\02-secret.yaml
-oc apply -f openshift\10-account.yaml
-oc apply -f openshift\20-transaction.yaml
-oc -n md287-lab4 get deploy,svc,route,cm,secret
+oc project <your-assigned-project>
 ```
 
-If the namespace already exists, skip `00-namespace.yaml` and `oc project` into the project your instructor assigned. Change `namespace: md287-lab4` in the YAML to match.
+**Expected result:** `oc whoami` prints your participant account. `oc project` shows only your project. If login fails, **stop** — get the instructor. YAML review alone does not complete this lab.
 
-3. If `oc whoami` fails (typical on a laptop without a cluster): **read** the YAML anyway. Tick the success-criteria boxes for probes, requests/limits, ConfigMap vs Secret. That counts for this classroom.
+3. Confirm backing services exist:
 
-**Expected result:** Deployment lists `startupProbe`, `livenessProbe`, `readinessProbe`, `resources.requests`, `resources.limits`, `runAsNonRoot: true`. Secret holds `MD287_JWT_SECRET`. ConfigMap holds JDBC and Kafka URLs — not the password.
+```powershell
+oc get svc account-db transaction-db kafka
+```
 
-**Why this matters:** ConfigMaps are not for passwords. Probes stop sending traffic to a pod that is not ready. Limits stop one service from starving the node.
+**Expected result:** all three Services are listed. Kafka is used at **`kafka:19092`** (see ConfigMap).
+
+4. Apply ConfigMap, Secret, Deployments, Services, Routes. **Skip** `00-namespace.yaml`.
+
+```powershell
+cd labs\day-04\lab4\starter
+$PROJECT = oc project -q
+oc apply -n $PROJECT -f openshift\01-configmap.yaml
+oc apply -n $PROJECT -f openshift\02-secret.yaml
+oc apply -n $PROJECT -f openshift\10-account.yaml
+oc apply -n $PROJECT -f openshift\20-transaction.yaml
+oc -n $PROJECT get deploy,svc,route,cm,secret
+```
+
+5. Push the images you built in Step 2 into this project, then point the Deployments at the internal registry:
+
+```powershell
+cd labs\day-04\lab4
+powershell -File tools\push-images.ps1
+```
+
+If the script cannot find the registry Route, the instructor sets `$env:MD287_REGISTRY` (the registry hostname). Then re-run the script.
+
+```powershell
+oc -n $PROJECT set image deploy/account-service account-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/account-service:1.0.0
+oc -n $PROJECT set image deploy/transaction-service transaction-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/transaction-service:1.0.0
+oc -n $PROJECT rollout status deploy/account-service
+oc -n $PROJECT rollout status deploy/transaction-service
+oc -n $PROJECT get pods,route
+```
+
+6. Call the **Account Route** (not localhost):
+
+```powershell
+$HOST = oc -n $PROJECT get route account-service -o jsonpath="{.spec.host}"
+curl.exe -s https://$HOST/actuator/health/readiness
+```
+
+Trust the classroom cluster certificate if `curl` warns; or use `curl.exe -k` only in this lab.
+
+**Expected result:** Deployments list probes, requests/limits, `runAsNonRoot: true`. Secret holds `MD287_JWT_SECRET`. ConfigMap holds JDBC and Kafka URLs — not the password. Pods become Ready. Readiness on the Route returns **200**.
+
+**Why this matters:** ConfigMaps are not for passwords. Probes stop sending traffic to a pod that is not ready. The outline requires a real deploy, not a YAML-only review.
 
 ---
 
@@ -260,22 +305,23 @@ If the namespace already exists, skip `00-namespace.yaml` and `oc project` into 
 
 Fill **Exercise 4.3** first: `starter/pipeline/OWNERSHIP.md` (who owns scan / SBOM / sign / promote).
 
-Then walk the stages without needing Tekton:
+Walk the prepared pipeline (this is the required CI/CD evidence — SBOM, signature verify, vulnerability gate). Jenkins is awareness only; do not install it.
 
 ```powershell
 cd labs\day-04\lab4
 powershell -File tools\run-pipeline-locally.ps1
 ```
 
-Optional on a cluster that has OpenShift Pipelines:
+If the cluster has OpenShift Pipelines, also apply the classroom Pipeline (stub stages that match the same ownership map):
 
 ```powershell
-oc apply -f starter\pipeline\pipeline.yaml
-oc create -f starter\pipeline\pipelinerun.yaml
-oc get pipelinerun -n md287-lab4
+$PROJECT = oc project -q
+oc apply -n $PROJECT -f starter\pipeline\pipeline.yaml
+oc create -n $PROJECT -f starter\pipeline\pipelinerun.yaml
+oc get pipelinerun -n $PROJECT
 ```
 
-If the Pipelines operator is missing, `oc apply` will error. Continue with the local script.
+If the Pipelines operator is missing, `oc apply` will error. The **local script still satisfies** the outline’s prepared pipeline (scan / SBOM / sign). Record that in Exercise 4.3.
 
 Open `tools/sample-sbom-account-service.json`. Confirm it lists `spring-boot-starter-web` **3.4.5** and Temurin 21.
 
@@ -285,44 +331,27 @@ Open `tools/sample-sbom-account-service.json`. Confirm it lists `spring-boot-sta
 
 ---
 
-### Step 7 — Deploy a new version and roll it back
+### Step 7 — Deploy a new version and roll it back (OpenShift — required)
 
 You will change **only the visible version** (`INFO_APP_VERSION` / image tag). You are practicing the **mechanic**, not rewriting Java.
 
-**Compose (everyone):**
+Practice the tag swap on Compose first (optional warm-up), then **rollback on OpenShift**.
+
+**OpenShift (required):**
 
 ```powershell
-cd labs\day-04\lab4\starter
-docker tag md287/account-service:1.0.0 md287/account-service:1.0.1
-$env:ACCOUNT_TAG = "1.0.1"
-docker compose up -d account-service
-Start-Sleep -Seconds 20
-curl.exe -s http://localhost:8081/actuator/info
+$PROJECT = oc project -q
+oc -n $PROJECT set env deploy/account-service INFO_APP_VERSION=1.0.1
+oc -n $PROJECT rollout status deploy/account-service
+$HOST = oc -n $PROJECT get route account-service -o jsonpath="{.spec.host}"
+curl.exe -s https://$HOST/actuator/info
+oc -n $PROJECT rollout undo deploy/account-service
+oc -n $PROJECT rollout status deploy/account-service
+oc -n $PROJECT rollout history deploy/account-service
+curl.exe -s https://$HOST/actuator/info
 ```
 
-**Expected:** `"version":"1.0.1"`.
-
-Rollback:
-
-```powershell
-$env:ACCOUNT_TAG = "1.0.0"
-docker compose up -d account-service
-Start-Sleep -Seconds 20
-curl.exe -s http://localhost:8081/actuator/info
-```
-
-**Expected:** `"version":"1.0.0"` again.
-
-**OpenShift (if logged in):**
-
-```powershell
-oc -n md287-lab4 set env deploy/account-service INFO_APP_VERSION=1.0.1
-oc -n md287-lab4 rollout status deploy/account-service
-oc -n md287-lab4 rollout undo deploy/account-service
-oc -n md287-lab4 rollout status deploy/account-service
-```
-
-**Expected:** undo restores the previous ReplicaSet. `oc rollout history deploy/account-service` shows more than one revision.
+**Expected:** undo restores the previous ReplicaSet. `oc rollout history` shows more than one revision. `/actuator/info` returns to `"version":"1.0.0"`.
 
 **Why this matters:** Banks need a rehearsed rollback. “Redeploy yesterday’s tag” is faster than debugging a bad Friday release in production.
 
@@ -335,9 +364,10 @@ oc -n md287-lab4 rollout status deploy/account-service
 - [ ] Compose stack: liveness, readiness, `/actuator/metrics`, `/actuator/info`
 - [ ] JWT still required on business APIs; health stays public
 - [ ] Correlation id appears in logs; no `Authorization` text
-- [ ] OpenShift YAML has ConfigMap, Secret, probes, requests/limits (applied **or** reviewed)
+- [ ] `oc whoami` works; manifests applied in the **assigned** project (not `00-namespace.yaml`)
+- [ ] Images pushed; pods Ready; Account **Route** readiness **200**
 - [ ] Pipeline: CRITICAL scan fails the gate; SBOM reviewed; signature command reviewed
-- [ ] Version `1.0.1` then rollback to `1.0.0` (Compose, and `oc rollout undo` if clustered)
+- [ ] `oc rollout undo` restored `1.0.0` (history shows more than one revision)
 - [ ] Ownership map for Exercise 4.3 filled
 
 ---
@@ -353,8 +383,11 @@ oc -n md287-lab4 rollout status deploy/account-service
 | Transaction stays RECEIVED | Kafka topics: `kafka-init` must complete; wait and GET again |
 | 401 with a token | Same classroom secret as Lab 3 (`md287-lab-only-hmac-secret-32bytes!`, at least 32 bytes for HS256); re-run `issue-jwt.py` |
 | 503 on POST transaction | Account container not ready — Lab 3 safe fallback, **do not** fake ACTIVE |
-| `oc apply` Unauthorized | Use Compose + YAML review; do not invent a successful cluster deploy |
-| Pipelines CRDs missing | Expected; use `tools/run-pipeline-locally.ps1` |
+| `oc whoami` failed | Required. Get login from the instructor. Do not skip OpenShift. |
+| `oc apply` Unauthorized | Wrong project or missing `edit`. Stay in the assigned project. |
+| ImagePullBackOff | Run `tools\push-images.ps1`, then `oc set image` to the internal pullspec |
+| Registry Route missing | Instructor sets `$env:MD287_REGISTRY` or exposes `default-route` in `openshift-image-registry` |
+| Pipelines CRDs missing | Use `tools/run-pipeline-locally.ps1` (that is the prepared pipeline) |
 
 ```powershell
 cd labs\day-04\lab4\starter

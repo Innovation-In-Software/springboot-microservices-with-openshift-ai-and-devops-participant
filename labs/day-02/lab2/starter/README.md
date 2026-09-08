@@ -6,4 +6,6 @@ Open `transaction-service/` in VS Code and follow:
 
 **[LAB-2-GUIDE.md](../LAB-2-GUIDE.md)**
 
+Work in this starter folder.
+
 **Required:** Lab 1 Account Service running on port 8081.

@@ -1,8 +1,9 @@
+# Apply into the assigned participant project (do not create a namespace):
+#   oc apply -n <project> -f 01-configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: account-config
-  namespace: md287-lab4
 data:
   SERVER_PORT: "8081"
   SPRING_DATASOURCE_URL: jdbc:postgresql://account-db:5432/account_db
@@ -11,7 +12,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: transaction-config
-  namespace: md287-lab4
 data:
   SERVER_PORT: "8082"
   SPRING_DATASOURCE_URL: jdbc:postgresql://transaction-db:5432/transaction_db

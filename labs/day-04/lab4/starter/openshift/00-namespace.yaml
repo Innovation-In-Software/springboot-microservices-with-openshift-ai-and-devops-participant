@@ -1,6 +1,6 @@
-# If your instructor already created a project, skip this file and use:
+# Do not apply this file. The classroom cluster pre-provisions one project per participant.
 #   oc project <your-assigned-project>
-# Then replace namespace: md287-lab4 in the other YAML files with that project name.
+# Apply the other YAML with: oc apply -n <project> -f ...
 apiVersion: v1
 kind: Namespace
 metadata:

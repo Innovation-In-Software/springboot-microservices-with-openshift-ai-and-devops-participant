@@ -224,7 +224,7 @@ Start Account Service again. Wait ~10s (open-state wait). A later POST should su
 
 ### Step 6 — Tests and log review
 
-Add these test classes if they are not already in your tree:
+These test classes are already in the starter:
 
 - `account-service/.../AccountSecurityTest.java`
 - `transaction-service/.../TransactionSecurityTest.java`
@@ -257,7 +257,7 @@ Optional Copilot: ask it to **explain** the fallback methods. Reject any suggest
 - [ ] Token is forwarded; Account GET is authorized
 - [ ] Account down → 503, no auto-approve
 - [ ] Circuit opens after repeated failures
-- [ ] `mvn test` passes on both services
+- [ ] `mvn test` passes on both services (includes the guided **integration** test `AccountPersistenceTest`)
 - [ ] Logs stay synthetic and secret-free
 
 ---

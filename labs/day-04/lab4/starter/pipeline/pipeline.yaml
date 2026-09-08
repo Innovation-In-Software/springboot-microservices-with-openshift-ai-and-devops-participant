@@ -1,13 +1,11 @@
-# Prepared OpenShift Pipelines (Tekton) definition for Lab 4.
-# Review this file even if you cannot apply it. Classroom clusters may not
-# include the Pipelines operator. Local equivalent: ../../tools/run-pipeline-locally.ps1
-#
-# You do not need to rewrite Tasks — this lab is review + gate.
+# Prepared OpenShift Pipelines (Tekton) for Lab 4.
+# Required CI/CD evidence is tools/run-pipeline-locally.ps1 (scan / SBOM / sign).
+# Apply this file only if the cluster has the Pipelines operator:
+#   oc apply -n <project> -f pipeline.yaml
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: md287-account-service
-  namespace: md287-lab4
   labels:
     purpose: classroom
 spec:
@@ -17,7 +15,7 @@ spec:
   params:
     - name: git-url
       type: string
-      default: https://github.com/gjkaur/Spring-Boot-Microservices-with-OpenShift-AI-and-DevOps.git
+      default: https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git
     - name: git-revision
       type: string
       default: master
