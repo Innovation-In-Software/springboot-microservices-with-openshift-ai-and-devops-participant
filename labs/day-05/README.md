@@ -12,9 +12,11 @@ lab5/
   LAB-5-GUIDE.md
   tools/                 ← JWT, mock model, sample Kafka events
   starter/               ← Risk Assessment Service (TODOs)
+  solution/              ← instructor reference
 ```
 
 | Resource | Path |
 | -------- | ---- |
 | Lab guide | [lab5/LAB-5-GUIDE.md](lab5/LAB-5-GUIDE.md) |
 | Starter | [lab5/starter/](lab5/starter/) |
+| Solution | [lab5/solution/](lab5/solution/) |

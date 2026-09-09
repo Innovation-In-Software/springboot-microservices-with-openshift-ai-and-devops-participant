@@ -15,7 +15,7 @@ spec:
   params:
     - name: git-url
       type: string
-      default: https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git
+      default: https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops.git
     - name: git-revision
       type: string
       default: master

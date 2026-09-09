@@ -13,6 +13,7 @@ lab3/
   tools/issue-jwt.py
   starter/account-service
   starter/transaction-service
+  solution/                  ← instructor reference
 ```
 
 | Resource | Path |

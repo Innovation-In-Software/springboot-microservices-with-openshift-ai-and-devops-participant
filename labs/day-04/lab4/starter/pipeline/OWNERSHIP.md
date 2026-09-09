@@ -1,6 +1,6 @@
 # Pipeline stage ownership map (Exercise 4.3)
 
-Fill the **Who typically owns it** column before the instructor reviews it.
+Fill the **Who typically owns it** column before you look at the solution copy.
 
 | Stage | What happens | Who typically owns it | Fail means |
 | --- | --- | --- | --- |
@@ -16,4 +16,4 @@ Fill the **Who typically owns it** column before the instructor reviews it.
 | smoke | Readiness + a synthetic API check | | Version is live but not healthy |
 | approval | Human promote to a higher env | | No production push without review |
 
-Your instructor may review the worksheet.
+Compare with `../../solution/pipeline/OWNERSHIP.md` when the instructor says the exercise is over.

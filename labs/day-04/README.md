@@ -12,9 +12,11 @@ lab4/
   LAB-4-GUIDE.md
   tools/                 ← SBOM, scan gate, JWT request bodies
   starter/               ← Containerfiles, Compose, OpenShift YAML, Tekton
+  solution/              ← instructor reference
 ```
 
 | Resource | Path |
 | -------- | ---- |
 | Lab guide | [lab4/LAB-4-GUIDE.md](lab4/LAB-4-GUIDE.md) |
 | Starter | [lab4/starter/](lab4/starter/) |
+| Solution | [lab4/solution/](lab4/solution/) |

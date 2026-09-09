@@ -263,7 +263,7 @@ curl.exe -s https://$RISK/actuator/health/readiness
 
 **Expected result:** Pod Ready. Route readiness **200**. This is the OpenShift evidence for the capstone demo.
 
-3. Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls. Your instructor may review the worksheet. You do **not** run an MCP server.
+3. Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls. Compare with `../solution/mcp-controls.md` when the instructor says to. You do **not** run an MCP server.
 
 ---
 

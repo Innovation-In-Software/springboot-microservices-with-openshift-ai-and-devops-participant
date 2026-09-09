@@ -11,6 +11,7 @@ Run **Lab 2** as the Day 2 hands-on. Keep Lab 1 Account Service running.
 lab2/
   LAB-2-GUIDE.md
   starter/transaction-service/   ← you work here
+  solution/transaction-service/  ← instructor reference
 ```
 
 | Resource | Path |

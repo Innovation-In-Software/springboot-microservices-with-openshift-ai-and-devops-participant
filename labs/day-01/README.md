@@ -11,6 +11,7 @@ Run **Lab 1** as the Day 1 hands-on.
 lab1/
   LAB-1-GUIDE.md
   starter/account-service/   ← you work here
+  solution/account-service/  ← instructor reference
 ```
 
 | Resource | Path |

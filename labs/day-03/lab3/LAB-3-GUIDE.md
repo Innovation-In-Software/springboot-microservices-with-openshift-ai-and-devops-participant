@@ -224,7 +224,7 @@ Start Account Service again. Wait ~10s (open-state wait). A later POST should su
 
 ### Step 6 — Tests and log review
 
-These test classes are already in the starter:
+Copy these test classes from `solution/` if they are not in your tree:
 
 - `account-service/.../AccountSecurityTest.java`
 - `transaction-service/.../TransactionSecurityTest.java`

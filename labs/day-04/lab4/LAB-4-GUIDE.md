@@ -7,7 +7,7 @@
 
 **Objective:** Containerize Account and Transaction services (non-root images), run them with Docker Compose, **deploy them to the pre-provisioned OpenShift project**, walk a prepared pipeline (SBOM, signature, vulnerability gate), then roll forward a version and **roll it back on OpenShift**.
 
-This is an **ops lab**. You do **not** copy the Lab 3 Java trees. Images are built from `labs/day-03/lab3/starter/`.
+This is an **ops lab**. You do **not** copy the Lab 3 Java trees. Images are built from `labs/day-03/lab3/solution/`.
 
 ---
 
@@ -91,15 +91,15 @@ You package **working** Lab 3 services. You do not rebuild JWT or Kafka logic he
 
 **Do this:**
 
-1. Open `labs/day-03/lab3/starter/account-service` and `.../transaction-service` in the editor if you want to skim `application.yml`. Confirm Actuator probes are already on:
+1. Open `labs/day-03/lab3/solution/account-service` and `.../transaction-service` in the editor if you want to skim `application.yml`. Confirm Actuator probes are already on:
 
 ```yaml
 management.endpoint.health.probes.enabled: true
 ```
 
-2. Confirm `.dockerignore` exists in each Lab 3 starter module (`target/`, tests, IDE files). That keeps image layers small.
+2. Confirm `.dockerignore` exists in each Lab 3 solution module (`target/`, tests, IDE files). That keeps image layers small.
 
-**Expected result:** you know the build **context** is Lab 3 starter, and the Containerfile lives in Lab 4.
+**Expected result:** you know the build **context** is Lab 3 solution, and the Containerfile lives in Lab 4.
 
 **Why this matters:** Twelve-factor **build** is separate from **run**. The JAR you ship should be the one you already tested.
 
@@ -124,7 +124,7 @@ cd labs\day-04\lab4\starter
 docker build `
   -f account-service\Containerfile `
   -t md287/account-service:1.0.0 `
-  ..\..\..\day-03\lab3\starter\account-service
+  ..\..\..\day-03\lab3\solution\account-service
 ```
 
 The first build downloads Maven plugins inside Docker. Give it several minutes.
@@ -135,7 +135,7 @@ Then Transaction:
 docker build `
   -f transaction-service\Containerfile `
   -t md287/transaction-service:1.0.0 `
-  ..\..\..\day-03\lab3\starter\transaction-service
+  ..\..\..\day-03\lab3\solution\transaction-service
 ```
 
 Confirm the image is not root:
@@ -148,7 +148,7 @@ docker run --rm --entrypoint id md287/account-service:1.0.0
 
 **Why this matters:** A container that runs as root is one break-out away from host power. OpenShift will often **refuse** a root image when `runAsNonRoot: true` is set.
 
-If you get stuck, ask the instructor for a hint — this repo has starter files only.
+If you get stuck, copy the two Containerfiles from `../solution/` and rebuild.
 
 ---
 
@@ -195,7 +195,7 @@ curl.exe -s -H "Authorization: Bearer $TELLER" http://localhost:8081/actuator/me
 curl.exe -s -w "`nHTTP:%{http_code}`n" `
   -H "Authorization: Bearer $TELLER" `
   -H "Content-Type: application/json" `
-  --data-binary "@starter\account-service\requests\create-valid.json" `
+  --data-binary "@solution\account-service\requests\create-valid.json" `
   http://localhost:8081/api/v1/accounts
 ```
 
@@ -237,7 +237,7 @@ The outline deploys to **pre-provisioned** projects. You do **not** create a nam
 
 **Do this:**
 
-1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Complete the TODOs in the starter YAML.
+1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Match `../solution/openshift/`.
 
 2. Log in and select **your** project (instructor issues API URL, username, password):
 
@@ -359,7 +359,7 @@ curl.exe -s https://$HOST/actuator/info
 
 ## Success criteria
 
-- [ ] Account and Transaction images build from Lab 3 starter context
+- [ ] Account and Transaction images build from Lab 3 solution context
 - [ ] Container process is **not** root (`docker run --rm --entrypoint id ...`)
 - [ ] Compose stack: liveness, readiness, `/actuator/metrics`, `/actuator/info`
 - [ ] JWT still required on business APIs; health stays public
@@ -377,7 +377,7 @@ curl.exe -s https://$HOST/actuator/info
 | Symptom | What to check |
 | --- | --- |
 | Port already allocated | `docker compose down` in Lab 1–3 folders; `docker ps` |
-| Image build COPY fails | Build **context** must be the Lab 3 starter module, `-f` is the Lab 4 Containerfile |
+| Image build COPY fails | Build **context** must be the Lab 3 solution module, `-f` is the Lab 4 Containerfile |
 | `id` still shows root | `USER md287` missing; rebuild without cache `docker build --no-cache ...` |
 | Readiness never 200 | Postgres/Kafka not healthy; `docker compose ps` and `docker logs md287-lab4-account` |
 | Transaction stays RECEIVED | Kafka topics: `kafka-init` must complete; wait and GET again |
