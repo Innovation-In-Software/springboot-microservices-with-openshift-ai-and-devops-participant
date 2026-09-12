@@ -63,6 +63,13 @@ Jenkins is **awareness only** (Module 11). Do not install Jenkins. GitOps is con
 
 **You need:** Docker Desktop, Python 3 for JWTs, **OpenShift `oc`**, and classroom `oc login` to your assigned project. Java 21 only if you open the Lab 3 source.
 
+| Cluster item | Value |
+| --- | --- |
+| API | `https://api.aro-md287.centralus.aroapp.io:6443/` |
+| Your project | `md287-<your-username>` |
+| Password | Issued by the instructor |
+| Image registry | `default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io` |
+
 **Port map (same as Labs 1–3):**
 
 | Process | Host port |
@@ -239,15 +246,15 @@ The outline deploys to **pre-provisioned** projects. You do **not** create a nam
 
 1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Match `../solution/openshift/`.
 
-2. Log in and select **your** project (instructor issues API URL, username, password):
+2. Log in and select **your** project (API URL is the classroom cluster; username and password come from the instructor):
 
 ```powershell
-oc login <cluster-api-url> --username <participant> --password <password>
+oc login https://api.aro-md287.centralus.aroapp.io:6443/ --username <your-username> --password <password>
 oc whoami
-oc project <your-assigned-project>
+oc project md287-<your-username>
 ```
 
-**Expected result:** `oc whoami` prints your participant account. `oc project` shows only your project. If login fails, **stop** — get the instructor. YAML review alone does not complete this lab.
+**Expected result:** `oc whoami` prints your participant account. `oc project` shows only `md287-<your-username>`. If login fails, **stop** — get the instructor. YAML review alone does not complete this lab.
 
 3. Confirm backing services exist:
 
@@ -273,10 +280,11 @@ oc -n $PROJECT get deploy,svc,route,cm,secret
 
 ```powershell
 cd labs\day-04\lab4
+$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 powershell -File tools\push-images.ps1
 ```
 
-If the script cannot find the registry Route, the instructor sets `$env:MD287_REGISTRY` (the registry hostname). Then re-run the script.
+Participants have **edit** on their project only, so they cannot always read the Route in `openshift-image-registry`. Setting `$env:MD287_REGISTRY` is the reliable path. The script also falls back to that hostname.
 
 ```powershell
 oc -n $PROJECT set image deploy/account-service account-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/account-service:1.0.0
@@ -386,7 +394,8 @@ curl.exe -s https://$HOST/actuator/info
 | `oc whoami` failed | Required. Get login from the instructor. Do not skip OpenShift. |
 | `oc apply` Unauthorized | Wrong project or missing `edit`. Stay in the assigned project. |
 | ImagePullBackOff | Run `tools\push-images.ps1`, then `oc set image` to the internal pullspec |
-| Registry Route missing | Instructor sets `$env:MD287_REGISTRY` or exposes `default-route` in `openshift-image-registry` |
+| Pod `CreateContainerConfigError` / `runAsNonRoot` + `non-numeric user (md287)` | OpenShift cannot prove a named `USER md287` is non-root. Keep `runAsNonRoot: true` and set `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
+| Registry Route missing | `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"` then re-run `push-images.ps1` |
 | Pipelines CRDs missing | Use `tools/run-pipeline-locally.ps1` (that is the prepared pipeline) |
 
 ```powershell

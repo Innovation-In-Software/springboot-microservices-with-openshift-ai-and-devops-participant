@@ -1,11 +1,11 @@
 # Labs
 
-Clone the course repo, then start from this index. Each day has one progressive lab that continues the banking platform.
+Clone this participant repo, then start from this index. Each day has one progressive lab that continues the banking platform.
 
-**Workstations:** TEKsystems Ablaze VMs (required). **OpenShift (ARO):** required for Labs 4–5. See [system requirements and flowchart](../docs/SYSTEM-REQUIREMENTS.md).
+**Workstations:** TEKsystems Ablaze VMs (required). **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`.
 
 ```powershell
-git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops.git MD287
+git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
 cd MD287
 ```
 

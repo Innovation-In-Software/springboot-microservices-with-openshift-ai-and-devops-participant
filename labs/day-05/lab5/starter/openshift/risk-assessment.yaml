@@ -78,6 +78,7 @@ spec:
             periodSeconds: 10
           securityContext:
             runAsNonRoot: true
+            runAsUser: 100
             allowPrivilegeEscalation: false
 ---
 apiVersion: v1

@@ -18,18 +18,18 @@ Require-Cmd docker
 
 $who = oc whoami 2>$null
 if (-not $who) {
-    throw "oc whoami failed. Log in first: oc login <api-url> --username <participant> --password <password>"
+    throw "oc whoami failed. Log in first: oc login https://api.aro-md287.centralus.aroapp.io:6443/ --username <your-username> --password <password>"
 }
 
 $Project = (oc project -q).Trim()
-if (-not $Project) { throw "oc project -q returned empty. oc project <your-assigned-project>" }
+if (-not $Project) { throw "oc project -q returned empty. Run: oc project md287-<your-username>" }
 
 $RegHost = $env:MD287_REGISTRY
 if (-not $RegHost) {
     $RegHost = oc get route default-route -n openshift-image-registry -o jsonpath="{.spec.host}" 2>$null
 }
 if (-not $RegHost) {
-    throw "Image registry Route not found. Instructor must set MD287_REGISTRY or expose default-route in openshift-image-registry."
+    $RegHost = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 }
 
 Write-Host "Participant: $who"

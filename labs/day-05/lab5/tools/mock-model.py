@@ -6,6 +6,10 @@ Special amounts (USD):
   13.13  sleep 10s  -> caller times out
   66.66  HTTP 500
 Otherwise score = min(99, int(amount)).
+
+Accepts both Content-Length and Transfer-Encoding: chunked. Java RestClient
+defaults to chunked; a Content-Length-only reader would see an empty body
+and score every call as 0.
 """
 from __future__ import annotations
 
@@ -20,7 +24,7 @@ PORT = 8090
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt: str, *args) -> None:
-        print("[%s] %s" % (self.log_date_time_string(), fmt % args))
+        print("[%s] %s" % (self.log_date_time_string(), fmt % args), flush=True)
 
     def do_GET(self) -> None:
         if self.path in ("/health", "/v1/health"):
@@ -36,8 +40,7 @@ class Handler(BaseHTTPRequestHandler):
         if auth != f"Bearer {API_KEY}":
             self._json(401, {"error": "unauthorized"})
             return
-        length = int(self.headers.get("Content-Length", "0"))
-        raw = self.rfile.read(length) if length else b"{}"
+        raw = self._read_body()
         try:
             body = json.loads(raw.decode("utf-8"))
         except json.JSONDecodeError:
@@ -69,6 +72,27 @@ class Handler(BaseHTTPRequestHandler):
             },
         )
 
+    def _read_body(self) -> bytes:
+        encoding = (self.headers.get("Transfer-Encoding") or "").lower()
+        if "chunked" in encoding:
+            chunks: list[bytes] = []
+            while True:
+                size_line = self.rfile.readline()
+                if not size_line:
+                    break
+                size = int(size_line.split(b";", 1)[0].strip() or b"0", 16)
+                if size == 0:
+                    while True:
+                        trailer = self.rfile.readline()
+                        if trailer in (b"\r\n", b"\n", b""):
+                            break
+                    break
+                chunks.append(self.rfile.read(size))
+                self.rfile.read(2)
+            return b"".join(chunks) or b"{}"
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        return self.rfile.read(length) if length else b"{}"
+
     def _json(self, status: int, payload: dict) -> None:
         data = json.dumps(payload).encode("utf-8")
         self.send_response(status)
@@ -80,5 +104,5 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     server = ThreadingHTTPServer((HOST, PORT), Handler)
-    print(f"MD287 mock model listening on {HOST}:{PORT}")
+    print(f"MD287 mock model listening on {HOST}:{PORT}", flush=True)
     server.serve_forever()

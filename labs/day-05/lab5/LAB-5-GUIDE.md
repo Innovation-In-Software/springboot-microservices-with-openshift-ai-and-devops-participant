@@ -30,7 +30,7 @@ Code and tests run on the VM. Sample `TransactionSubmitted` JSON is the required
 
 | Day 5 idea | How it appears in this lab |
 | --- | --- |
-| **Model endpoint** | `ModelClient` POST with Bearer API key. Local stand-in `:8090` for coding; **required** call to the pre-deployed OpenShift AI Route (instructor URL). |
+| **Model endpoint** | `ModelClient` POST with Bearer API key. Local stand-in `:8090` for coding; **required** call to the pre-deployed OpenShift AI Route (`MD287_MODEL_ROUTE`). |
 | **Safe fallback** | Timeout or 5xx → HOLD, not APPROVE |
 | **Deterministic policy** | Java `PolicyEngine` owns APPROVE / HOLD / DECLINE |
 | **Human review** | HOLD rows stay `PENDING` until a reviewer posts APPROVE or DECLINE |
@@ -71,7 +71,7 @@ Health stays public.
 | Tokens | `python labs\day-05\lab5\tools\issue-jwt.py ops` (and `reviewer`) |
 | Stop older labs first | Labs 1–4 may still bind **9092** |
 
-**You need:** Java 21, Maven 3.9+, Docker Desktop, Python 3, **`oc` login** to the assigned project, and the instructor **OpenShift AI model Route**.
+**You need:** Java 21, Maven 3.9+, Docker Desktop, Python 3, **`oc` login** to the assigned project (`md287-<your-username>`), and the classroom **OpenShift AI model Route**.
 
 | Process | Host port |
 | --- | --- |
@@ -90,11 +90,12 @@ The outline calls a **pre-deployed OpenShift AI** model (application integration
 
 **Do this:**
 
-1. Confirm the classroom model Route (instructor gives `$env:MD287_MODEL_ROUTE`, no trailing slash):
+1. Confirm the classroom model Route (HTTP, **no trailing slash**). After `oc project md287-<your-username>`:
 
 ```powershell
 oc whoami
-oc project <your-assigned-project>
+oc project md287-<your-username>
+$env:MD287_MODEL_ROUTE = "http://md287-risk-model-$(oc project -q).apps.aro-md287.centralus.aroapp.io"
 curl.exe -s "$env:MD287_MODEL_ROUTE/v1/health"
 ```
 
@@ -254,6 +255,7 @@ cd labs\day-05\lab5
 docker build -f starter\risk-assessment-service\Containerfile -t md287/risk-assessment-service:1.0.0 starter\risk-assessment-service
 $PROJECT = oc project -q
 oc apply -n $PROJECT -f starter\openshift\risk-assessment.yaml
+$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 powershell -File tools\push-risk-image.ps1
 oc -n $PROJECT set image deploy/risk-assessment-service risk-assessment-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/risk-assessment-service:1.0.0
 oc -n $PROJECT rollout status deploy/risk-assessment-service
@@ -299,11 +301,14 @@ curl.exe -s https://$RISK/actuator/health/readiness
 | Mock model connection refused | `docker compose ps`; `curl.exe http://localhost:8090/v1/health` |
 | Pre-deployed model down | `curl.exe $env:MD287_MODEL_ROUTE/v1/health`; instructor must pre-deploy `md287-risk-model` |
 | ImagePullBackOff on Risk | `tools\push-risk-image.ps1` then `oc set image` |
+| Pod `CreateContainerConfigError` / `runAsNonRoot` + `non-numeric user (md287)` | OpenShift cannot prove a named `USER md287` is non-root. Keep `runAsNonRoot: true` and set `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
 | `oc whoami` failed | Required. Get login from the instructor. |
 | Publish-event hangs | Kafka not healthy; wait for `kafka-init` to exit 0 |
+| Transaction stays RECEIVED; `oc exec` shows no consumer groups | Single-broker Kafka needs `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1` (and transaction log RF=1). Without `__consumer_offsets`, producers succeed but consumers never join. |
 | 401 with a token | Lab 5 `issue-jwt.py` secret must match `application.yml` |
 | 403 on GET | Use `ops` or `reviewer`, not `teller` |
 | Always HOLD | Policy TODO not implemented; or model not `OK` |
+| All sample events APPROVE with `modelScore` 0 | Java `SimpleClientHttpRequestFactory` POSTs `Transfer-Encoding: chunked`. The classroom Python mock only read `Content-Length`, so the body was `{}` and the score was 0. Use `JdkClientHttpRequestFactory` (Content-Length) and a mock that also reads chunked bodies. |
 | Second approve.json creates another row | Idempotency on `eventId` missing |
 
 ```powershell

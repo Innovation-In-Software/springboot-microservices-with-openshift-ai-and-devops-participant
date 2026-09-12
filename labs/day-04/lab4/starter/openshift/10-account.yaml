@@ -51,6 +51,7 @@ spec:
           #   HTTP GET /actuator/health/liveness and /actuator/health/readiness on 8081.
           securityContext:
             runAsNonRoot: true
+            runAsUser: 100
             allowPrivilegeEscalation: false
 ---
 apiVersion: v1

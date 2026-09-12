@@ -1,6 +1,6 @@
 # Spring Boot Microservices with OpenShift AI and DevOps
 
-Participant materials for the instructor-led **5-day** course: Day 1–5 slide PDFs and labs (starter projects only).
+Participant materials for the instructor-led **5-day** course: Day 1–5 slide PDFs and labs.
 
 You build a single evolving **AI-Assisted Banking Transaction Risk Platform** across the week (Account → Transaction → Risk Assessment).
 
@@ -28,10 +28,6 @@ GitHub Copilot      Red Hat OpenShift AI  MCP (conceptual + demo)
 ```
 
 **Workstations:** TEKsystems Ablaze VMs (required all five days). **OpenShift (ARO):** required for Labs 4–5.
-
-- [System requirements](docs/SYSTEM-REQUIREMENTS.md) · [Word](docs/MD287_System_Requirements.docx)
-- [Delivery flowchart](docs/lab-environment-flow.svg)
-- [Complete course outline](docs/MD287_Complete_Course_Outline.md)
 
 ## Slides (PDF)
 

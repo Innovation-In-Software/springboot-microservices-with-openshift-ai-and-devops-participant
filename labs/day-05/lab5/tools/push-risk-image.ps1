@@ -9,7 +9,9 @@ $RegHost = $env:MD287_REGISTRY
 if (-not $RegHost) {
     $RegHost = oc get route default-route -n openshift-image-registry -o jsonpath="{.spec.host}" 2>$null
 }
-if (-not $RegHost) { throw "Set MD287_REGISTRY or expose the image-registry default Route." }
+if (-not $RegHost) {
+    $RegHost = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
+}
 
 $who = oc whoami
 $token = oc whoami -t
