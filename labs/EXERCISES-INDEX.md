@@ -6,8 +6,8 @@ Worksheets live next to the day’s lab. **4.3** and **5.3** live inside the lab
 
 | # | New PPT module | Day | Worksheet |
 | - | -------------- | --- | --------- |
-| [1.1](day-01/exercises/exercise-1.1-analyze-monolith.md) | 1 Fundamentals | 1 | Analyze a monolithic banking application |
-| [1.2](day-01/exercises/exercise-1.2-account-apis.md) | 2 Design | 1 | Design Account Service APIs and boundaries |
+| [1.1](day-01/exercises/exercise-1.1-analyze-monolith.md) ([solution](day-01/exercises/exercise-1.1-analyze-monolith-solution.md)) | 1 Fundamentals | 1 | Analyze a monolithic banking application |
+| [1.2](day-01/exercises/exercise-1.2-account-apis.md) ([solution](day-01/exercises/exercise-1.2-account-apis-solution.md)) | 2 Design | 1 | Design Account Service APIs and boundaries |
 | [1.3](day-01/exercises/exercise-1.3-scaffold-account.md) | 3 Spring Boot | 1 | Scaffold Account endpoints and validation |
 | [2.1](day-02/exercises/exercise-2.1-data-ownership.md) | 5 Data | 2 | Map Account vs Transaction data ownership |
 | [2.2](day-02/exercises/exercise-2.2-event-flow.md) | 4 Integration | 2 | Sketch the TransactionSubmitted flow |

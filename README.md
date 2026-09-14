@@ -43,7 +43,7 @@ Index: [labs/LABS-INDEX.md](labs/LABS-INDEX.md) · Checkpoints: [labs/EXERCISES-
 | Day | Lab | Exercises |
 | --- | --- | --- |
 | 1 morning | [Lab 0 — Environment Setup](labs/day-00/lab0/LAB-0-GUIDE.md) | — |
-| 1 | [Lab 1 — Account Service](labs/day-01/lab1/LAB-1-GUIDE.md) | [1.1](labs/day-01/exercises/exercise-1.1-analyze-monolith.md) · [1.2](labs/day-01/exercises/exercise-1.2-account-apis.md) · [1.3](labs/day-01/exercises/exercise-1.3-scaffold-account.md) |
+| 1 | [Lab 1 — Account Service](labs/day-01/lab1/LAB-1-GUIDE.md) | [1.1](labs/day-01/exercises/exercise-1.1-analyze-monolith.md) ([solution](labs/day-01/exercises/exercise-1.1-analyze-monolith-solution.md)) · [1.2](labs/day-01/exercises/exercise-1.2-account-apis.md) ([solution](labs/day-01/exercises/exercise-1.2-account-apis-solution.md)) · [1.3](labs/day-01/exercises/exercise-1.3-scaffold-account.md) |
 | 2 | [Lab 2 — Transaction Service](labs/day-02/lab2/LAB-2-GUIDE.md) | [2.1](labs/day-02/exercises/exercise-2.1-data-ownership.md) · [2.2](labs/day-02/exercises/exercise-2.2-event-flow.md) · [2.3](labs/day-02/exercises/exercise-2.3-idempotency-dlq.md) |
 | 3 | [Lab 3 — Secure and Resilient Services](labs/day-03/lab3/LAB-3-GUIDE.md) | [3.1](labs/day-03/exercises/exercise-3.1-timeout-circuit-breaker.md) · [3.2](labs/day-03/exercises/exercise-3.2-jwt-roles-scopes.md) · [3.3](labs/day-03/exercises/exercise-3.3-security-resilience-tests.md) |
 | 4 | [Lab 4 — Deploy the Capstone Services](labs/day-04/lab4/LAB-4-GUIDE.md) | [4.1](labs/day-04/exercises/exercise-4.1-probes-correlation.md) · [4.2](labs/day-04/exercises/exercise-4.2-containerize-account.md) · [4.3](labs/day-04/lab4/starter/pipeline/OWNERSHIP.md) |

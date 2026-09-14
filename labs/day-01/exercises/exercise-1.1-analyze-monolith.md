@@ -20,6 +20,10 @@ This is the official OUTLINE.md checkpoint. Complete it before or as directed in
 
 A short list of coupling problems and one justified first extract: Account Service.
 
+## Reference solution
+
+After you finish your sketch, compare with [Exercise 1.1 solution](exercise-1.1-analyze-monolith-solution.md).
+
 ## Lab connection
 
 Lab 1 builds Account Service after Modules 1–3. This checkpoint is design-only.

@@ -20,6 +20,10 @@ This is the official OUTLINE.md checkpoint. Complete it before or as directed in
 
 A one-page Account API sketch that Lab 1 can implement without changing URLs tomorrow.
 
+## Reference solution
+
+After you finish your sketch, compare with [Exercise 1.2 solution](exercise-1.2-account-apis-solution.md).
+
 ## Lab connection
 
 Use this contract in Lab 1. Do not add Customer or Notification services.
