@@ -1,6 +1,6 @@
 # Slides (PDF)
 
-Day-wise teaching decks exported from PowerPoint.
+Day-wise teaching decks exported from PowerPoint. Per-module reading packs: [supplementary material](supplementary%20material/README.md).
 
 | Day | File |
 | --- | ---- |
