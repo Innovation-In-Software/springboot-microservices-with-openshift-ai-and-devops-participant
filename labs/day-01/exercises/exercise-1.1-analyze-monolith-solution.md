@@ -7,6 +7,10 @@ Use this after you finish your own sketch. Lab 1 still builds Account Service â€
 
 ## Answer
 
+![Monolithic banking application, first extract of Account Service, and why Account is first](exercise-1.1-extract-account-service.png)
+
+The diagram is the filled worksheet: one process / one database / one release train on the left; Account Service with `account_db` after the extract; remaining modules still in the monolith.
+
 ### 1. Capabilities in the monolith
 
 Typical banking monolith modules: customer **profiles**, **accounts**, **transactions** / payments, **loans**, **fraud**, **reporting**, **notifications**. They share one process, one database, and one release train.

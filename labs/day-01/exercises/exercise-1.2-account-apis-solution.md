@@ -7,6 +7,10 @@ Use this after you finish your own API sketch. Lab 1 implements this contract on
 
 ## Answer
 
+![Account Service APIs, status machine, errors, and bounded context](exercise-1.2-account-apis-boundaries.png)
+
+The diagram is the filled worksheet: resources with no DELETE, status transitions, 400/404/409, OpenAPI + Actuator, and Account owning accounts only.
+
 ### 1. Resources (no DELETE)
 
 Base: `http://localhost:8081`
