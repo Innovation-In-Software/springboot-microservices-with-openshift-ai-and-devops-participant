@@ -1,5 +1,7 @@
 # Pipeline stage ownership map (Exercise 4.3)
 
+**Module 7** (DevOps and CI/CD) · Day 4 · **Checkpoint C**
+
 Fill the **Who typically owns it** column before you look at the solution copy.
 
 | Stage | What happens | Who typically owns it | Fail means |

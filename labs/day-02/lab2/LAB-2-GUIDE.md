@@ -89,6 +89,8 @@ Synthetic IDs only: `ACC-` + 8 hex, `TXN-` + 8 hex, amounts in USD.
 - Java 21
 - Maven 3.9+
 - Docker Desktop running (PostgreSQL **and** Kafka)
+- Working directory: `transaction-service` (the folder with `pom.xml`)
+- HTTP calls: **`curl.exe`** (not `curl` — PowerShell aliases `curl`)
 
 Two terminals for Account Service (compose + app) stay up. Lab 2 uses two more (compose + app).
 
@@ -526,7 +528,7 @@ Log checklist:
 - [ ] Flyway V1 applied on `transaction_db` only
 - [ ] POST create on an ACTIVE account returns 201 RECEIVED
 - [ ] GET later shows SUBMITTED
-- [ ] Non-ACTIVE account returns 409
+- [ ] Non-ACTIVE account returns **409** `ACCOUNT_NOT_ELIGIBLE`
 - [ ] Correlation ID from the request appears in logs and on the event
 - [ ] Duplicate `eventId` is ignored
 - [ ] Poison Kafka message reaches `transactions.submitted.DLT`

@@ -8,6 +8,7 @@ Run **Lab 5** as the Day 5 hands-on. Stop Lab 1–4 Compose stacks if they still
 ## Layout
 
 ```text
+exercises/               ← checkpoints 5.1–5.2
 lab5/
   LAB-5-GUIDE.md
   tools/                 ← JWT, mock model, sample Kafka events
@@ -20,3 +21,6 @@ lab5/
 | Lab guide | [lab5/LAB-5-GUIDE.md](lab5/LAB-5-GUIDE.md) |
 | Starter | [lab5/starter/](lab5/starter/) |
 | Solution | [lab5/solution/](lab5/solution/) |
+| Exercise 5.1 | [exercises/exercise-5.1-model-policy-disposition.md](exercises/exercise-5.1-model-policy-disposition.md) |
+| Exercise 5.2 | [exercises/exercise-5.2-policy-rules.md](exercises/exercise-5.2-policy-rules.md) |
+| Exercise 5.3 | [lab5/starter/mcp-controls.md](lab5/starter/mcp-controls.md) |

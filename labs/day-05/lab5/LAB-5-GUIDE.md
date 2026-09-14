@@ -35,7 +35,8 @@ Code and tests run on the VM. Sample `TransactionSubmitted` JSON is the required
 | **Deterministic policy** | Java `PolicyEngine` owns APPROVE / HOLD / DECLINE |
 | **Human review** | HOLD rows stay `PENDING` until a reviewer posts APPROVE or DECLINE |
 | **Audit** | Persist `modelName`, `modelVersion`, `modelScore`, `policyVersion`, `correlationId` |
-| **MCP** | Exercise 5.3 worksheet only — auth, HITL, audit if a tool wrapped this API |
+| **MCP** | Walk Exercise 5.3 worksheet (already filled) — auth, HITL, audit. No MCP server. |
+| **runAsUser 100** | Named `USER md287` is not enough on ARO. Keep `runAsNonRoot` and set uid **100**. |
 
 ### Policy table (`policy-v1`)
 
@@ -71,7 +72,13 @@ Health stays public.
 | Tokens | `python labs\day-05\lab5\tools\issue-jwt.py ops` (and `reviewer`) |
 | Stop older labs first | Labs 1–4 may still bind **9092** |
 
-**You need:** Java 21, Maven 3.9+, Docker Desktop, Python 3, **`oc` login** to the assigned project (`md287-<your-username>`), and the classroom **OpenShift AI model Route**.
+**You need:**
+
+- Java 21, Maven 3.9+, Docker Desktop, Python 3, **`oc` login** to `md287-<your-username>`
+- Open the **Day 5** starter (`labs/day-05/lab5/starter/risk-assessment-service`), not yesterday's trees
+- HTTP calls: **`curl.exe`** (not `curl` — PowerShell aliases `curl`)
+- Tokens from `labs/day-05/lab5/tools/issue-jwt.py` (`ops` / `reviewer`). Lab 3 ops has **no** `risk.read`
+- Classroom **OpenShift AI model Route** must be UP (`MD287_MODEL_ROUTE`); local mock is `:8090`
 
 | Process | Host port |
 | --- | --- |
@@ -237,7 +244,7 @@ If you cannot share Kafka, the sample JSON files still satisfy the event vocabul
 
 ---
 
-### Step 8 — Deploy Risk Assessment to OpenShift and MCP (Exercise 5.3)
+### Step 8 — Deploy Risk Assessment to OpenShift; MCP is the worksheet (Exercise 5.3)
 
 **Do this:**
 

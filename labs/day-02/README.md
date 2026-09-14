@@ -8,6 +8,7 @@ Run **Lab 2** as the Day 2 hands-on. Keep Lab 1 Account Service running.
 ## Layout
 
 ```text
+exercises/                       ← checkpoints 2.1–2.3
 lab2/
   LAB-2-GUIDE.md
   starter/transaction-service/   ← you work here
@@ -18,3 +19,6 @@ lab2/
 | -------- | ---- |
 | Lab guide | [lab2/LAB-2-GUIDE.md](lab2/LAB-2-GUIDE.md) |
 | Starter project | [lab2/starter/transaction-service](lab2/starter/transaction-service) |
+| Exercise 2.1 | [exercises/exercise-2.1-data-ownership.md](exercises/exercise-2.1-data-ownership.md) |
+| Exercise 2.2 | [exercises/exercise-2.2-event-flow.md](exercises/exercise-2.2-event-flow.md) |
+| Exercise 2.3 | [exercises/exercise-2.3-idempotency-dlq.md](exercises/exercise-2.3-idempotency-dlq.md) |

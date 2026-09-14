@@ -1,5 +1,9 @@
 # Exercise 5.3 — MCP security controls (starter)
 
+**Module 11** (MCP and Microservices) · Day 5 · **Checkpoint C**
+
+This starter table is **already filled**. Walk each row in class. Compare with `../../solution/mcp-controls.md` when the instructor says to. Do **not** start an MCP server, Keycloak, or a Microsoft agent runtime.
+
 If an assistant called Risk Assessment through MCP tools `get_assessment` and `submit_review`, write one control for each:
 
 | Concern | Control you would require |

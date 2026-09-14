@@ -31,8 +31,9 @@ Lab 4 will containerize these services. Keep the JWT secret in `application.yml`
 | **Scopes** | `accounts.read` / `accounts.write` and `transactions.read` / `transactions.write`. |
 | **Workload vs user** | The human caller holds the JWT. Transaction Service **relays** that token to Account Service. |
 | **Timeout** | RestClient already uses a 2s connect / 3s read timeout. That is the timeout. |
-| **Circuit breaker** | Resilience4j wraps `AccountClient.requireActiveAccount`. Repeated failures open the circuit. |
+| **Circuit breaker** | Resilience4j wraps `AccountClient.requireActiveAccount`. Opens after **4** failed calls (50%); wait **10s**. |
 | **Safe fallback** | Fallback throws 503. It must **not** return a synthetic ACTIVE account. |
+| **409 does not trip it** | FROZEN or missing account is `ACCOUNT_NOT_ELIGIBLE`; listed in `ignoreExceptions`. |
 | **Log redaction** | Log `accountId` and `status`. Never log Bearer tokens or JWT claims. |
 
 ### Who can call what
@@ -71,7 +72,12 @@ When Account Service is slow, down, or the circuit is open:
 | Open Transaction Service | … `starter/transaction-service` (second VS Code window is fine) |
 | HTTP | **`curl.exe`**, not `curl` |
 
-**You need:** Java 21, Maven 3.9+, Docker Desktop, Lab 1/2 knowledge (the starter already contains that code).
+**You need:**
+
+- Java 21, Maven 3.9+, Docker Desktop
+- Open the **Day 3** starters (`labs/day-03/lab3/starter/account-service` and `transaction-service`), not yesterday's trees
+- HTTP calls: **`curl.exe`** (not `curl` — PowerShell aliases `curl`)
+- Tokens from `tools/issue-jwt.py` (HMAC classroom JWT)
 
 HTTP health stays public so operators can probe without a token.
 
@@ -255,8 +261,8 @@ Optional Copilot: ask it to **explain** the fallback methods. Reject any suggest
 - [ ] Teller cannot POST transactions (403)
 - [ ] Ops can POST a transaction for an ACTIVE account
 - [ ] Token is forwarded; Account GET is authorized
-- [ ] Account down → 503, no auto-approve
-- [ ] Circuit opens after repeated failures
+- [ ] Account down → **503** `ACCOUNT_SERVICE_UNAVAILABLE`, no auto-approve
+- [ ] Circuit opens after **4** failed calls; 409 FROZEN does not trip it
 - [ ] `mvn test` passes on both services (includes the guided **integration** test `AccountPersistenceTest`)
 - [ ] Logs stay synthetic and secret-free
 

@@ -109,17 +109,18 @@ Never use Social Security numbers, PAN/card numbers, or real emails.
 | HTTP calls | Use **`curl.exe`** (not `curl` — PowerShell aliases `curl` to something else) |
 | Second terminal | In VS Code: Terminal → New Terminal. Keep the app running in the first window. |
 
+**Already completed [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md)?** Skip the clone and version checks. Confirm Docker Desktop is still running, `cd` to `account-service`, and start at Step 1. If `md287-account-db` is already **(healthy)** from Lab 0, `docker compose up -d` is a no-op.
+
 **You need:**
 
-- A clone of the public course repo (labs live under `labs\`)
-- Java 21 (`java -version` should show 21)
-- Maven 3.9+
-- Docker Desktop **started** (the engine must be running, not only installed)
+- Lab 0 **PASS** (or the same checks: clone under `labs\`, Java 21, Maven on 21, Docker engine up)
+- Working directory: `account-service` (the folder with `pom.xml`)
+- HTTP calls: **`curl.exe`** (not `curl` — PowerShell aliases `curl`)
 
-If you do not already have the `labs` folder:
+If you skipped Lab 0 and do not already have the `labs` folder:
 
 ```powershell
-git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops.git MD287
+git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
 cd MD287
 ```
 
@@ -134,7 +135,7 @@ docker info
 
 `docker info` must print a **Server Version**. If you see `error during connect` / `docker_engine`, Docker Desktop is not ready yet — wait and retry.
 
-The first `mvn spring-boot:run` on a machine may take several minutes while Maven downloads libraries. Later runs are faster.
+The first `mvn spring-boot:run` on a machine may take several minutes while Maven downloads libraries. Lab 0 warms that cache; later runs are faster.
 
 ---
 
