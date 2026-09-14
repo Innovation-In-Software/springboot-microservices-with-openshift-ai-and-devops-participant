@@ -4,7 +4,7 @@ These 15 worksheets are the **official numbered checkpoints** in `decks/pptx_new
 
 Worksheets live next to the day’s lab. **4.3** and **5.3** live inside the lab starter.
 
-| # | New PPT module | Day | Worksheet |
+| # | PPT module | Day | Worksheet |
 | - | -------------- | --- | --------- |
 | [1.1](day-01/exercises/exercise-1.1-analyze-monolith.md) | 1 Fundamentals | 1 | Analyze a monolithic banking application |
 | [1.2](day-01/exercises/exercise-1.2-account-apis.md) | 2 Design | 1 | Design Account Service APIs and boundaries |
