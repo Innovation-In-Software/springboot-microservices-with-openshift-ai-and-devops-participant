@@ -35,7 +35,7 @@ GitHub Copilot      Red Hat OpenShift AI  MCP (conceptual + demo)
 
 Module decks: [slides/README.md](slides/README.md) (Course Introduction, Modules 1–12, Capstone).
 
-Per-module reading packs (PowerPoint): [slides/supplementary material](slides/supplementary%20material/README.md).
+Per-module reading packs (PDF): [slides/supplementary material](slides/supplementary%20material/README.md).
 
 ## Labs
 
