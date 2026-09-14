@@ -12,7 +12,6 @@ exercises/                       ← checkpoints 2.1–2.3
 lab2/
   LAB-2-GUIDE.md
   starter/transaction-service/   ← you work here
-  solution/transaction-service/  ← instructor reference
 ```
 
 | Resource | Path |

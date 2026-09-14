@@ -7,7 +7,7 @@
 
 **Objective:** Containerize Account and Transaction services (non-root images), run them with Docker Compose, **deploy them to the pre-provisioned OpenShift project**, walk a prepared pipeline (SBOM, signature, vulnerability gate), then roll forward a version and **roll it back on OpenShift**.
 
-This is an **ops lab**. You do **not** copy the Lab 3 Java trees. Images are built from `labs/day-03/lab3/solution/`.
+This is an **ops lab**. You do **not** copy the Lab 3 Java trees. Images are built from `labs/day-03/lab3/starter/`.
 
 ---
 
@@ -67,7 +67,7 @@ Jenkins is **awareness only** (Module 11). Do not install Jenkins. GitOps is con
 | --- | --- |
 | API | `https://api.aro-md287.centralus.aroapp.io:6443/` |
 | Your project | `md287-<your-username>` |
-| Password | Issued by the instructor |
+| Password | See [LAB-ACCESS.md](../../../LAB-ACCESS.md) |
 | Image registry | `default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io` |
 
 **Port map (same as Labs 1–3):**
@@ -98,15 +98,15 @@ You package **working** Lab 3 services. You do not rebuild JWT or Kafka logic he
 
 **Do this:**
 
-1. Open `labs/day-03/lab3/solution/account-service` and `.../transaction-service` in the editor if you want to skim `application.yml`. Confirm Actuator probes are already on:
+1. Open `labs/day-03/lab3/starter/account-service` and `.../transaction-service` in the editor if you want to skim `application.yml`. Confirm Actuator probes are already on:
 
 ```yaml
 management.endpoint.health.probes.enabled: true
 ```
 
-2. Confirm `.dockerignore` exists in each Lab 3 solution module (`target/`, tests, IDE files). That keeps image layers small.
+2. Confirm `.dockerignore` exists in each Lab 3 starter module (`target/`, tests, IDE files). That keeps image layers small.
 
-**Expected result:** you know the build **context** is Lab 3 solution, and the Containerfile lives in Lab 4.
+**Expected result:** you know the build **context** is your Lab 3 starter, and the Containerfile lives in Lab 4.
 
 **Why this matters:** Twelve-factor **build** is separate from **run**. The JAR you ship should be the one you already tested.
 
@@ -119,7 +119,7 @@ Open:
 - `starter/account-service/Containerfile`
 - `starter/transaction-service/Containerfile`
 
-Replace the TODOs with the pattern from the solution (Alpine JRE, group/user `md287`, `chown`, `USER`, `EXPOSE`).
+Replace the TODOs with a multi-stage Alpine JRE image: group/user `md287`, `chown`, `USER`, `EXPOSE`.
 
 Account exposes **8081**. Transaction exposes **8082**.
 
@@ -131,7 +131,7 @@ cd labs\day-04\lab4\starter
 docker build `
   -f account-service\Containerfile `
   -t md287/account-service:1.0.0 `
-  ..\..\..\day-03\lab3\solution\account-service
+  ..\..\..\day-03\lab3\starter\account-service
 ```
 
 The first build downloads Maven plugins inside Docker. Give it several minutes.
@@ -142,7 +142,7 @@ Then Transaction:
 docker build `
   -f transaction-service\Containerfile `
   -t md287/transaction-service:1.0.0 `
-  ..\..\..\day-03\lab3\solution\transaction-service
+  ..\..\..\day-03\lab3\starter\transaction-service
 ```
 
 Confirm the image is not root:
@@ -155,7 +155,7 @@ docker run --rm --entrypoint id md287/account-service:1.0.0
 
 **Why this matters:** A container that runs as root is one break-out away from host power. OpenShift will often **refuse** a root image when `runAsNonRoot: true` is set.
 
-If you get stuck, copy the two Containerfiles from `../solution/` and rebuild.
+If you get stuck, compare with a classmate’s Containerfile or raise a hand. Do not wait for a `solution/` folder — this pack does not include one.
 
 ---
 
@@ -202,7 +202,7 @@ curl.exe -s -H "Authorization: Bearer $TELLER" http://localhost:8081/actuator/me
 curl.exe -s -w "`nHTTP:%{http_code}`n" `
   -H "Authorization: Bearer $TELLER" `
   -H "Content-Type: application/json" `
-  --data-binary "@solution\account-service\requests\create-valid.json" `
+  --data-binary "@starter\account-service\requests\create-valid.json" `
   http://localhost:8081/api/v1/accounts
 ```
 
@@ -244,9 +244,9 @@ The outline deploys to **pre-provisioned** projects. You do **not** create a nam
 
 **Do this:**
 
-1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Match `../solution/openshift/`.
+1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Use liveness `/actuator/health/liveness`, readiness `/actuator/health/readiness`, and small CPU/memory requests and limits.
 
-2. Log in and select **your** project (API URL is the classroom cluster; username and password come from the instructor):
+2. Log in and select **your** project (API URL is the classroom cluster; username and password are in [LAB-ACCESS.md](../../../LAB-ACCESS.md)):
 
 ```powershell
 oc login https://api.aro-md287.centralus.aroapp.io:6443/ --username <your-username> --password <password>
@@ -367,7 +367,7 @@ curl.exe -s https://$HOST/actuator/info
 
 ## Success criteria
 
-- [ ] Account and Transaction images build from Lab 3 solution context
+- [ ] Account and Transaction images build from Lab 3 starter context
 - [ ] Container process is **not** root (`docker run --rm --entrypoint id ...`)
 - [ ] Compose stack: liveness, readiness, `/actuator/metrics`, `/actuator/info`
 - [ ] JWT still required on business APIs; health stays public
@@ -385,13 +385,13 @@ curl.exe -s https://$HOST/actuator/info
 | Symptom | What to check |
 | --- | --- |
 | Port already allocated | `docker compose down` in Lab 1–3 folders; `docker ps` |
-| Image build COPY fails | Build **context** must be the Lab 3 solution module, `-f` is the Lab 4 Containerfile |
+| Image build COPY fails | Build **context** must be the Lab 3 starter module, `-f` is the Lab 4 Containerfile |
 | `id` still shows root | `USER md287` missing; rebuild without cache `docker build --no-cache ...` |
 | Readiness never 200 | Postgres/Kafka not healthy; `docker compose ps` and `docker logs md287-lab4-account` |
 | Transaction stays RECEIVED | Kafka topics: `kafka-init` must complete; wait and GET again |
 | 401 with a token | Same classroom secret as Lab 3 (`md287-lab-only-hmac-secret-32bytes!`, at least 32 bytes for HS256); re-run `issue-jwt.py` |
 | 503 on POST transaction | Account container not ready — Lab 3 safe fallback, **do not** fake ACTIVE |
-| `oc whoami` failed | Required. Get login from the instructor. Do not skip OpenShift. |
+| `oc whoami` failed | Required. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). Do not skip OpenShift. |
 | `oc apply` Unauthorized | Wrong project or missing `edit`. Stay in the assigned project. |
 | ImagePullBackOff | Run `tools\push-images.ps1`, then `oc set image` to the internal pullspec |
 | Pod `CreateContainerConfigError` / `runAsNonRoot` + `non-numeric user (md287)` | OpenShift cannot prove a named `USER md287` is non-root. Keep `runAsNonRoot: true` and set `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |

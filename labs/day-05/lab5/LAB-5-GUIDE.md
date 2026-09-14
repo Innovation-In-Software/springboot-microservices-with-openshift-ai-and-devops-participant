@@ -272,7 +272,7 @@ curl.exe -s https://$RISK/actuator/health/readiness
 
 **Expected result:** Pod Ready. Route readiness **200**. This is the OpenShift evidence for the capstone demo.
 
-3. Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls. Compare with `../solution/mcp-controls.md` when the instructor says to. You do **not** run an MCP server.
+3. Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls. You do **not** run an MCP server.
 
 ---
 
@@ -309,7 +309,7 @@ curl.exe -s https://$RISK/actuator/health/readiness
 | Pre-deployed model down | `curl.exe $env:MD287_MODEL_ROUTE/v1/health`; instructor must pre-deploy `md287-risk-model` |
 | ImagePullBackOff on Risk | `tools\push-risk-image.ps1` then `oc set image` |
 | Pod `CreateContainerConfigError` / `runAsNonRoot` + `non-numeric user (md287)` | OpenShift cannot prove a named `USER md287` is non-root. Keep `runAsNonRoot: true` and set `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
-| `oc whoami` failed | Required. Get login from the instructor. |
+| `oc whoami` failed | Required. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
 | Publish-event hangs | Kafka not healthy; wait for `kafka-init` to exit 0 |
 | Transaction stays RECEIVED; `oc exec` shows no consumer groups | Single-broker Kafka needs `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1` (and transaction log RF=1). Without `__consumer_offsets`, producers succeed but consumers never join. |
 | 401 with a token | Lab 5 `issue-jwt.py` secret must match `application.yml` |

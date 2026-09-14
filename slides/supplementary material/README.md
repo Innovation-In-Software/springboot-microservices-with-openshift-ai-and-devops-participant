@@ -1,6 +1,6 @@
 # Supplementary material
 
-Reading packs, **one PowerPoint file per module**. These are for review after class: diagrams and the full explanation behind each visual. Classroom teaching uses the day slide PDFs.
+Reading packs, **one PowerPoint file per module**. These are for review after class: diagrams and the full explanation behind each visual. Classroom teaching uses the [module slide PDFs](../README.md).
 
 | File | Module | Title | Day |
 | ---- | -----: | ----- | --- |

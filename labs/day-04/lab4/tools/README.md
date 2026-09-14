@@ -1,4 +1,4 @@
-# Shared tools for Lab 4 (starter and solution)
+# Shared tools for Lab 4
 
 | Script / file | Purpose |
 | --- | --- |

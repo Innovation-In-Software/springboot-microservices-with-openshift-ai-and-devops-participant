@@ -2,7 +2,7 @@
 
 Log in to your **Ablaze virtual machine** first, then clone this participant repo **on that VM**. Each day has one progressive lab that continues the banking platform.
 
-**Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. See [system requirements](../docs/SYSTEM-REQUIREMENTS.md).
+**Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. Workstation checklist: [Lab 0](day-00/lab0/LAB-0-GUIDE.md).
 
 Portal: **https://my.ablazedesktop.com** — find your name, username, and passwords in [LAB-ACCESS.md](../LAB-ACCESS.md). After the Windows desktop appears, clone **inside the VM**:
 
@@ -13,7 +13,7 @@ cd MD287
 
 If you are not on the VM desktop yet, start with **[Lab 0](day-00/lab0/LAB-0-GUIDE.md) Step 1**. Use **`curl.exe`** in PowerShell.
 
-Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the new module PowerPoints).
+Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the module PDFs in `slides/`).
 
 ## Day 1 morning: Log in and set up the VM
 
@@ -55,6 +55,5 @@ labs/day-NN/
   exercises/             ← checkpoint worksheets
   labN/
     LAB-N-GUIDE.md
-    starter/
-    solution/
+    starter/             ← you work here
 ```

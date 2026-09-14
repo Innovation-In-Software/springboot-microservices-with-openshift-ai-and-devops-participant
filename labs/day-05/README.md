@@ -13,14 +13,12 @@ lab5/
   LAB-5-GUIDE.md
   tools/                 ← JWT, mock model, sample Kafka events
   starter/               ← Risk Assessment Service (TODOs)
-  solution/              ← instructor reference
 ```
 
 | Resource | Path |
 | -------- | ---- |
 | Lab guide | [lab5/LAB-5-GUIDE.md](lab5/LAB-5-GUIDE.md) |
 | Starter | [lab5/starter/](lab5/starter/) |
-| Solution | [lab5/solution/](lab5/solution/) |
 | Exercise 5.1 | [exercises/exercise-5.1-model-policy-disposition.md](exercises/exercise-5.1-model-policy-disposition.md) |
 | Exercise 5.2 | [exercises/exercise-5.2-policy-rules.md](exercises/exercise-5.2-policy-rules.md) |
 | Exercise 5.3 | [lab5/starter/mcp-controls.md](lab5/starter/mcp-controls.md) |

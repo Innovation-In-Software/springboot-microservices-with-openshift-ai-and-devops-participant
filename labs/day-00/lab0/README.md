@@ -2,7 +2,7 @@
 
 All work this week happens on your **TEKsystems Ablaze virtual machine**, not on your laptop.
 
-1. Get **your** username (`MSMICR26-` plus two digits) and the **class password** from the instructor. Do not use `MSMICR26-TD`.
+1. Find **your name**, Ablaze username, and password in [LAB-ACCESS.md](../../../LAB-ACCESS.md). Do not use `MSMICR26-TD`.
 2. In a browser, open **https://my.ablazedesktop.com** and sign in.
 3. Wait until the **Windows desktop** appears (taskbar, Start, icons).
 4. **Inside that desktop**, open Visual Studio Code → PowerShell (Ctrl+`).

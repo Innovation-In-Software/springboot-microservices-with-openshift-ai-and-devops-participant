@@ -1,4 +1,4 @@
-# Full-stack classroom run. Build context is the Lab 3 solution source.
+# Full-stack classroom run. Build context is your completed Lab 3 starter source.
 # From this folder: docker compose up -d --build
 #
 # Stop Lab 1–3 Compose stacks first — they also bind 5433, 5434, 8081, 8082, and 9092.
@@ -82,7 +82,7 @@ services:
   account-service:
     image: md287/account-service:${ACCOUNT_TAG:-1.0.0}
     build:
-      context: ../../../day-03/lab3/solution/account-service
+      context: ../../../day-03/lab3/starter/account-service
       dockerfile: ../../../../day-04/lab4/starter/account-service/Containerfile
     container_name: md287-lab4-account
     depends_on:
@@ -102,7 +102,7 @@ services:
   transaction-service:
     image: md287/transaction-service:${TRANSACTION_TAG:-1.0.0}
     build:
-      context: ../../../day-03/lab3/solution/transaction-service
+      context: ../../../day-03/lab3/starter/transaction-service
       dockerfile: ../../../../day-04/lab4/starter/transaction-service/Containerfile
     container_name: md287-lab4-transaction
     depends_on:

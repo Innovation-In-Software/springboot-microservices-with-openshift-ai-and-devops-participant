@@ -9,7 +9,7 @@
 
 Do **not** run Labs 1–5 on your personal laptop. The gold image (JDK, Maven, Docker, `oc`) is on the VM.
 
-> **Start here (even before you have this file):** get your username and class password from the instructor → open **https://my.ablazedesktop.com** → wait for the Windows desktop → open VS Code **inside that desktop**. Then continue from Step 1 below. Your laptop is only the browser.
+> **Start here (even before you have this file):** find your name in [LAB-ACCESS.md](../../../LAB-ACCESS.md) → open **https://my.ablazedesktop.com** → wait for the Windows desktop → open VS Code **inside that desktop**. Then continue from Step 1 below. Your laptop is only the browser.
 
 ---
 
@@ -42,7 +42,7 @@ Read this once. Each idea shows up in a later step.
 | **Java 21 first on PATH** | `java -version` must print **21**. A second JDK 17 first on PATH breaks every lab. |
 | **Docker engine vs Docker Desktop** | The whale icon idle means the engine is up. `docker info` must print a **Server Version**. |
 | **Public clone, no GitHub login** | You clone the course repo yourself. Do not copy labs from a USB stick as a substitute. |
-| **`starter/` vs `solution/`** | You work in each lab `starter/`. `solution/` is instructor reference. |
+| **Work in `starter/`** | Each later lab has a `starter/` folder. This participant pack has no `solution/`. |
 | **One Compose stack at a time** | Account Postgres uses host **5433**. If that port is busy, stop the other container first. |
 | **OpenShift is later** | `oc version --client` today. `oc login` is **Day 4**. Do not invent a cluster URL. |
 | **Python Store stub** | Days 3–5 need real Python 3.12+ for `issue-jwt.py`, not the Microsoft Store placeholder. |
@@ -71,8 +71,8 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 | Task | How |
 | --- | --- |
 | Open the VM | Browser → **https://my.ablazedesktop.com** |
-| Username | Issued by the instructor (pattern `MSMICR26-` plus two digits, for example `MSMICR26-01`) |
-| Password | The **class password** the instructor reads out (same for every seat). Do not guess it. |
+| Username | Your Ablaze login from [LAB-ACCESS.md](../../../LAB-ACCESS.md) (pattern `MSMICR26-` plus two digits) |
+| Password | The class password in [LAB-ACCESS.md](../../../LAB-ACCESS.md) (same for every seat) |
 | After desktop loads | Use **Start → Visual Studio Code** on the VM (not an editor on your laptop) |
 | Terminal | On the VM: Ctrl+` → PowerShell |
 | Clone folder | On the VM: `%USERPROFILE%\MD287` (for example `C:\Users\student.VLAB\MD287`) |
@@ -85,7 +85,7 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 - Install another JDK, Maven, or Docker beside the gold image
 - Create a GitHub account or fork the repo
 - Run `oc login`
-- Copy files from `solution/`
+- Copy files from a `solution/` folder (this pack does not include one)
 - Start coding Account Service (that is Lab 1)
 
 ---
@@ -100,7 +100,7 @@ You can do this step from the classroom laptop, a loaner, or any browser. You do
 
 **Do this:**
 
-1. Get **your** username and the **class password** from the instructor (roster row **N** is usually `MSMICR26-NN`). Do not use `MSMICR26-TD` (trainer account) and do not borrow a neighbour’s login.
+1. Find **your name**, Ablaze username, and password in [LAB-ACCESS.md](../../../LAB-ACCESS.md) (roster row **N** is usually `MSMICR26-NN`). Do not use `MSMICR26-TD` (trainer account) and do not borrow a neighbour’s login.
 2. Open a browser and go to **https://my.ablazedesktop.com**
 3. Sign in with that username and password.
 4. Wait until the **Windows desktop** appears (icons, taskbar, Start). First connect after class start can take a minute. If the page says access is not yet scheduled, wait for the TEKsystems window and retry.
@@ -188,7 +188,7 @@ git status
 git pull
 ```
 
-Confirm you see `README.md`, `labs\`, and `curriculum\`:
+Confirm you see `README.md`, `labs\`, and `slides\`:
 
 ```powershell
 Get-ChildItem
@@ -337,7 +337,7 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 
 | Symptom | What to check |
 | --- | --- |
-| Cannot sign in / “access not scheduled” | Wait for the TEKsystems lab window. Confirm username (`MSMICR26-` plus two digits) and class password with the instructor. |
+| Cannot sign in / “access not scheduled” | Wait for the TEKsystems lab window. Confirm your username and password in [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
 | Login works then you are kicked off | Someone else is using the same username. One person per seat. |
 | Desktop never appears / black screen | Lab assistant → **TEKsystems**. Do not share someone else’s VM. |
 | You ran `java` on your laptop | Close that window. Type only **inside** the Ablaze desktop. |

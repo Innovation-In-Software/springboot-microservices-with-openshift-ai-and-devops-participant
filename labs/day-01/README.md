@@ -12,7 +12,6 @@ exercises/                   ← checkpoints 1.1–1.3
 lab1/
   LAB-1-GUIDE.md
   starter/account-service/   ← you work here
-  solution/account-service/  ← instructor reference
 ```
 
 | Resource | Path |

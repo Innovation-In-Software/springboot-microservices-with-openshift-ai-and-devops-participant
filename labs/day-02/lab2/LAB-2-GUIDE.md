@@ -85,7 +85,7 @@ Synthetic IDs only: `ACC-` + 8 hex, `TXN-` + 8 hex, amounts in USD.
 
 **You need:**
 
-- Completed **Lab 1 Account Service** running on **8081** (your finished lab or `labs/day-01/lab1/solution/account-service`)
+- Completed **Lab 1 Account Service** running on **8081** (your finished Lab 1 starter)
 - Java 21
 - Maven 3.9+
 - Docker Desktop running (PostgreSQL **and** Kafka)

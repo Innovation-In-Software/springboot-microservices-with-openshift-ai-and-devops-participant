@@ -6,6 +6,6 @@ Open `transaction-service/` in VS Code and follow:
 
 **[LAB-2-GUIDE.md](../LAB-2-GUIDE.md)**
 
-Do not copy files from `../solution/` until the instructor says the lab is over.
+Work in `transaction-service/` and follow the lab guide. This pack has no `solution/` folder.
 
 **Required:** Lab 1 Account Service running on port 8081.

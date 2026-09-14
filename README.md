@@ -1,6 +1,6 @@
 # Spring Boot Microservices with OpenShift AI and DevOps
 
-Participant materials for the instructor-led **5-day** course: Day 1–5 slide PDFs and labs.
+Participant materials for the instructor-led **5-day** course: module slide PDFs and labs.
 
 You build a single evolving **AI-Assisted Banking Transaction Risk Platform** across the week (Account → Transaction → Risk Assessment).
 
@@ -33,13 +33,7 @@ GitHub Copilot      Red Hat OpenShift AI  MCP (conceptual + demo)
 
 ## Slides (PDF)
 
-| Day | Theme | Deck |
-| --- | ----- | ---- |
-| 1 | Architecture, API Design, and Spring Boot | [MD287_Day1_Slides.pdf](slides/MD287_Day1_Slides.pdf) |
-| 2 | Data and Event-Driven Communication | [MD287_Day2_Slides.pdf](slides/MD287_Day2_Slides.pdf) |
-| 3 | Resilience, Security, and Testing | [MD287_Day3_Slides.pdf](slides/MD287_Day3_Slides.pdf) |
-| 4 | Observability, Containers, OpenShift, and CI/CD | [MD287_Day4_Slides.pdf](slides/MD287_Day4_Slides.pdf) |
-| 5 | OpenShift AI, MCP, and Capstone Completion | [MD287_Day5_Slides.pdf](slides/MD287_Day5_Slides.pdf) |
+Module decks: [slides/README.md](slides/README.md) (Course Introduction, Modules 1–12, Capstone).
 
 Per-module reading packs (PowerPoint): [slides/supplementary material](slides/supplementary%20material/README.md).
 

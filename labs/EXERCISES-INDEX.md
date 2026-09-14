@@ -1,10 +1,10 @@
 # Exercises — official checkpoints (new module PowerPoints)
 
-These 15 worksheets are the **official numbered checkpoints** in `decks/pptx_new/` (Modules 1–12 + capstone). In-slide practice exercises (for example “Retry or Not?”) stay on the projector; they do not have a separate lab file.
+These 15 worksheets are the **official numbered checkpoints** matching the module PDFs in [`slides/`](../slides/README.md) (Modules 1–12 + capstone). In-slide practice exercises (for example “Retry or Not?”) stay on the projector; they do not have a separate lab file.
 
 Worksheets live next to the day’s lab. **4.3** and **5.3** live inside the lab starter.
 
-| # | PPT module | Day | Worksheet |
+| # | New PPT module | Day | Worksheet |
 | - | -------------- | --- | --------- |
 | [1.1](day-01/exercises/exercise-1.1-analyze-monolith.md) | 1 Fundamentals | 1 | Analyze a monolithic banking application |
 | [1.2](day-01/exercises/exercise-1.2-account-apis.md) | 2 Design | 1 | Design Account Service APIs and boundaries |
