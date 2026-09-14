@@ -109,7 +109,7 @@ Never use Social Security numbers, PAN/card numbers, or real emails.
 | HTTP calls | Use **`curl.exe`** (not `curl` — PowerShell aliases `curl` to something else) |
 | Second terminal | In VS Code: Terminal → New Terminal. Keep the app running in the first window. |
 
-**Already completed [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md)?** Skip the clone and version checks. Confirm Docker Desktop is still running, `cd` to `account-service`, and start at Step 1. If `md287-account-db` is already **(healthy)** from Lab 0, `docker compose up -d` is a no-op.
+**Already completed [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md) on the Ablaze VM?** Skip the clone and version checks. Confirm Docker Desktop is still running **on that VM**, `cd` to `account-service`, and start at Step 1. If `md287-account-db` is already **(healthy)** from Lab 0, `docker compose up -d` is a no-op. Do not continue Lab 1 on a laptop.
 
 **You need:**
 

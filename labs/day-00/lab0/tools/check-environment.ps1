@@ -100,7 +100,7 @@ function Add-Check {
 }
 
 Write-Host ""
-Write-Host "MD287 Lab 0 — environment check" -ForegroundColor Cyan
+Write-Host "MD287 Lab 0 — environment check (run on the Ablaze VM, not your laptop)" -ForegroundColor Cyan
 Write-Host ("Host: {0}  User: {1}  {2}" -f $env:COMPUTERNAME, $env:USERNAME, (Get-Date -Format "yyyy-MM-dd HH:mm"))
 Write-Host ""
 
@@ -241,7 +241,7 @@ if ($repoRoot) {
         Add-Check "Course repo" "FAIL" "MD287 clone incomplete at $repoRoot"
     }
 } else {
-    Add-Check "Course repo" "WARN" "Run this script from the cloned MD287 repo (or after Step 3 of LAB-0-GUIDE.md)"
+    Add-Check "Course repo" "WARN" "Run this script from the cloned MD287 repo (or after Step 4 of LAB-0-GUIDE.md)"
 }
 
 # --- Lab 1 ports ---
@@ -262,7 +262,7 @@ foreach ($port in @(8081, 5433)) {
             }
         } catch { }
         if ($port -eq 5433) {
-            Add-Check $label "WARN" "In use$who — OK if md287-account-db is already healthy from Step 6"
+            Add-Check $label "WARN" "In use$who — OK if md287-account-db is already healthy from Step 7"
         } else {
             Add-Check $label "WARN" "In use$who — stop the other process before Lab 1"
         }
@@ -295,5 +295,5 @@ if ($script:warned -gt 0) {
 }
 
 Write-Host "LAB 0 ENVIRONMENT: PASS" -ForegroundColor Green
-Write-Host "Do not start Account Service yet. Do not oc login. Continue to Lab 0 Step 6 if Compose is not up." -ForegroundColor Green
+Write-Host "Do not start Account Service yet. Do not oc login. Continue to Lab 0 Step 7 if Compose is not up." -ForegroundColor Green
 exit 0

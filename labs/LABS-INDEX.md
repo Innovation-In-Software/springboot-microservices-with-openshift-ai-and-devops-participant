@@ -1,21 +1,23 @@
 # Labs
 
-Clone this participant repo, then start from this index. Each day has one progressive lab that continues the banking platform.
+Log in to your **Ablaze virtual machine** first, then clone this participant repo **on that VM**. Each day has one progressive lab that continues the banking platform.
 
-**Workstations:** TEKsystems Ablaze VMs (required). **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. Seat map: [LAB-ACCESS.md](../LAB-ACCESS.md).
+**Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. See [system requirements](../docs/SYSTEM-REQUIREMENTS.md).
+
+Portal: **https://my.ablazedesktop.com** (username and class password from the instructor). After the Windows desktop appears, clone **inside the VM**:
 
 ```powershell
 git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
 cd MD287
 ```
 
-If you have not cloned yet, start with **Lab 0** (it includes the clone). Use **`curl.exe`** in PowerShell.
+If you are not on the VM desktop yet, start with **[Lab 0](day-00/lab0/LAB-0-GUIDE.md) Step 1**. Use **`curl.exe`** in PowerShell.
 
 Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the new module PowerPoints).
 
-## Day 1 morning: Environment Setup
+## Day 1 morning: Log in and set up the VM
 
-- [Lab 0 — Environment Setup](day-00/lab0/LAB-0-GUIDE.md) — before Module 1
+- [Lab 0 — Log in to the Ablaze VM and set up the workstation](day-00/lab0/LAB-0-GUIDE.md) — before Module 1
 
 ## Day 1: Architecture, API Design, and Spring Boot
 
@@ -42,7 +44,7 @@ Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matche
 - [Lab 5 — Risk Assessment Service](day-05/lab5/LAB-5-GUIDE.md)
 - Exercises: [5.1](day-05/exercises/exercise-5.1-model-policy-disposition.md) · [5.2](day-05/exercises/exercise-5.2-policy-rules.md) · [5.3](day-05/lab5/starter/mcp-controls.md)
 
-Work in each lab's `starter/` folder. This pack does **not** include `solution/` (instructor repo only).
+Work in each lab's `starter/` folder. This pack has no `solution/`.
 
 ## Per-day layout
 
@@ -54,4 +56,5 @@ labs/day-NN/
   labN/
     LAB-N-GUIDE.md
     starter/
+    solution/
 ```

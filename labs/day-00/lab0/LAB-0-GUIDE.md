@@ -1,11 +1,15 @@
-# Lab 0 — Environment Setup
+# Lab 0 — Log in to the VM and set up the workstation
 
 **Day:** 1 morning — before Module 1  
-**Capstone:** None yet. This lab proves the workstation can run Labs 1–5.  
+**Capstone:** None yet. This lab gets you onto the classroom VM and proves it can run Labs 1–5.  
 **Time:** 20–30 minutes  
 **Difficulty:** Beginner
 
-**Objective:** Log on to the TEKsystems Ablaze VM, clone the public course repo, and prove Java 21, Maven, Docker, Git, Python, `oc`, and `curl.exe` work **before** you write any Account Service code.
+**Objective:** Sign in to **your assigned TEKsystems Ablaze virtual machine**, then do **all** setup **on that VM**: clone the course repo and prove Java 21, Maven, Docker, Git, Python, `oc`, and `curl.exe` work **before** you write any Account Service code.
+
+Do **not** run Labs 1–5 on your personal laptop. The gold image (JDK, Maven, Docker, `oc`) is on the VM.
+
+> **Start here (even before you have this file):** get your username and class password from the instructor → open **https://my.ablazedesktop.com** → wait for the Windows desktop → open VS Code **inside that desktop**. Then continue from Step 1 below. Your laptop is only the browser.
 
 ---
 
@@ -13,7 +17,7 @@
 
 By the end of this lab you will have:
 
-- A working logon to the Ablaze Desktop VM
+- A browser session at **https://my.ablazedesktop.com** showing **your** Windows VM desktop (not a classmate’s)
 - The course repo cloned to `%USERPROFILE%\MD287`
 - Java **21** first on PATH, and Maven using that JDK
 - Docker Desktop **engine** running (not only installed)
@@ -32,7 +36,8 @@ Read this once. Each idea shows up in a later step.
 
 | Idea | How it appears in this lab |
 | --- | --- |
-| **Workstation, not your laptop** | Labs run on the TEKsystems Ablaze VM. Do not re-image it or install a parallel JDK. |
+| **Workstation, not your laptop** | You connect from a browser. All `java` / `mvn` / `docker` commands run **inside** the Ablaze Windows VM. |
+| **One login per person** | Username looks like `MSMICR26-01`. Sharing a seat kicks the other person off. |
 | **`curl.exe` vs `curl`** | PowerShell aliases `curl` to `Invoke-WebRequest`. Always type **`curl.exe`**. |
 | **Java 21 first on PATH** | `java -version` must print **21**. A second JDK 17 first on PATH breaks every lab. |
 | **Docker engine vs Docker Desktop** | The whale icon idle means the engine is up. `docker info` must print a **Server Version**. |
@@ -61,14 +66,16 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 
 ## Environment basics (read this first)
 
-**Demonstration environment:** Windows 10/11 · PowerShell in VS Code (press Ctrl+` to open the terminal)
+**Where you type:** after Step 1, everything is **on the Ablaze VM** (Windows 10/11 · PowerShell in VS Code). Your laptop is only the browser that shows that desktop.
 
 | Task | How |
 | --- | --- |
-| Log on | Ablaze Desktop with the classroom username the lab assistant issued |
-| Editor | VS Code (already on the VM). Cursor is **not** required. |
-| Terminal | Ctrl+` → PowerShell |
-| Clone folder | `%USERPROFILE%\MD287` (for example `C:\Users\student\MD287`) |
+| Open the VM | Browser → **https://my.ablazedesktop.com** |
+| Username | Issued by the instructor (pattern `MSMICR26-` plus two digits, for example `MSMICR26-01`) |
+| Password | The **class password** the instructor reads out (same for every seat). Do not guess it. |
+| After desktop loads | Use **Start → Visual Studio Code** on the VM (not an editor on your laptop) |
+| Terminal | On the VM: Ctrl+` → PowerShell |
+| Clone folder | On the VM: `%USERPROFILE%\MD287` (for example `C:\Users\student.VLAB\MD287`) |
 | HTTP calls | Use **`curl.exe`**, not `curl` |
 | Escalate VM / Docker / Java | Lab assistant → **TEKsystems** |
 | Escalate OpenShift | Not today |
@@ -87,32 +94,51 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 
 Follow these steps in order. Finish one step before starting the next.
 
-### Step 1 — Log on and open PowerShell
+### Step 1 — Log in to your Ablaze virtual machine
+
+You can do this step from the classroom laptop, a loaner, or any browser. You do **not** need the Git repo yet.
 
 **Do this:**
 
-1. Sign in to **Ablaze Desktop** with the credentials the lab assistant gave you.
-2. Wait until the Windows desktop is usable (icons load; you can open the Start menu).
-3. Open **Visual Studio Code**.
-4. Open a terminal: press **Ctrl+`**. If the shell is not PowerShell, click the `+` dropdown and choose **Windows PowerShell**.
-
-Confirm the prompt looks like a normal user profile, for example `PS C:\Users\student>`.
+1. Get **your** username and the **class password** from the instructor (roster row **N** is usually `MSMICR26-NN`). Do not use `MSMICR26-TD` (trainer account) and do not borrow a neighbour’s login.
+2. Open a browser and go to **https://my.ablazedesktop.com**
+3. Sign in with that username and password.
+4. Wait until the **Windows desktop** appears (icons, taskbar, Start). First connect after class start can take a minute. If the page says access is not yet scheduled, wait for the TEKsystems window and retry.
+5. Confirm you can click **Start** on that desktop. You are now **on the VM**. Leave this browser tab open all week.
 
 **Expected result:**
 
-- You are on the Windows desktop of the classroom VM
-- VS Code is open with a PowerShell terminal
-- You can type commands (the prompt is not frozen)
+- The browser shows a full Windows desktop (Ablaze / Spark View), not only a login form
+- You are the only person on that username (nobody else is being kicked off)
+- You have **not** installed software on your personal laptop for this course
 
-**Why this matters:** Every lab this week runs on this VM. If logon fails, stop and raise a hand — that is a TEKsystems ticket, not a Java problem.
+**Why this matters:** Java, Maven, Docker Desktop, and `oc` are already on this image. Setup on a laptop will not match Lab 1–5.
 
 ---
 
-### Step 2 — Verify the toolchain
+### Step 2 — On the VM, open VS Code and PowerShell
 
 **Do this:**
 
-In the same PowerShell window, run each command. Read the output before going on.
+1. **Inside the Ablaze desktop** (not on your local PC), open **Visual Studio Code** from the Start menu. Cursor is not required.
+2. Press **Ctrl+`** for a terminal. If the shell is not PowerShell, click the `+` dropdown and choose **Windows PowerShell**.
+
+Confirm the prompt is a VM profile, for example `PS C:\Users\student>` or `PS C:\Users\student.VLAB>`.
+
+**Expected result:**
+
+- VS Code is running **on the virtual machine**
+- You can type in PowerShell (the prompt is not frozen)
+
+**Why this matters:** If you open VS Code on your laptop instead of the VM, `java` and `docker` will not be the classroom toolchain.
+
+---
+
+### Step 3 — Verify the toolchain on the VM
+
+**Do this:**
+
+In that **VM** PowerShell window, run each command. Read the output before going on.
 
 ```powershell
 java -version
@@ -142,9 +168,11 @@ If `java` prints **17** (or anything other than 21), raise a hand. Do **not** in
 
 ---
 
-### Step 3 — Clone the public course repo
+### Step 4 — Clone the course repo on the VM
 
 **Do this:**
+
+Still in **VM** PowerShell (not a terminal on your laptop):
 
 ```powershell
 cd $env:USERPROFILE
@@ -181,7 +209,7 @@ If `git clone` hangs or fails with a proxy / SSL error, raise a hand (network / 
 
 ---
 
-### Step 4 — Start Docker Desktop
+### Step 5 — Start Docker Desktop on the VM
 
 **Do this:**
 
@@ -206,7 +234,7 @@ If the engine is down, wait and retry. Do not start Step 6 until this passes.
 
 ---
 
-### Step 5 — Run the environment check script
+### Step 6 — Run the environment check script
 
 **Do this:**
 
@@ -225,13 +253,13 @@ Read the table it prints. Fix any **FAIL** with the troubleshooting section belo
 - Java 21, Maven-on-21, Git, Python 3.12+, `oc` client, `curl.exe`, and Docker engine are all green
 - Host ports **8081** and **5433** are free (or already used by `md287-account-db` from a retry — that is OK)
 
-If the script is missing, you are not in the cloned repo. Go back to Step 3.
+If the script is missing, you are not in the cloned repo. Go back to Step 4.
 
 **Why this matters:** The same checks are what lab assistants look at on the floor. A screenshot of PASS is enough evidence that your VM is ready.
 
 ---
 
-### Step 6 — Smoke-test Docker Compose
+### Step 7 — Smoke-test Docker Compose
 
 **Do this:**
 
@@ -263,7 +291,7 @@ If port **5433** is already allocated, run `docker ps` and stop the other contai
 
 ---
 
-### Step 7 — Warm the Maven cache
+### Step 8 — Warm the Maven cache
 
 **Do this:**
 
@@ -288,7 +316,8 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 
 ## Success criteria
 
-- [ ] Ablaze VM logon works; VS Code PowerShell is open
+- [ ] Browser is on **https://my.ablazedesktop.com** and shows **your** Windows VM desktop
+- [ ] VS Code + PowerShell are open **on that VM** (not on your laptop)
 - [ ] `java -version` prints **21**
 - [ ] `mvn -version` uses Java **21**
 - [ ] `git --version` works
@@ -308,8 +337,11 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 
 | Symptom | What to check |
 | --- | --- |
-| Cannot sign in to Ablaze | Lab assistant → **TEKsystems**. Do not share someone else’s VM. |
-| VS Code missing / frozen desktop | TEKsystems image issue. Do not install Cursor as a workaround unless the instructor says so. |
+| Cannot sign in / “access not scheduled” | Wait for the TEKsystems lab window. Confirm username (`MSMICR26-` plus two digits) and class password with the instructor. |
+| Login works then you are kicked off | Someone else is using the same username. One person per seat. |
+| Desktop never appears / black screen | Lab assistant → **TEKsystems**. Do not share someone else’s VM. |
+| You ran `java` on your laptop | Close that window. Type only **inside** the Ablaze desktop. |
+| VS Code missing / frozen desktop | TEKsystems image issue. Do not install Cursor on the VM unless the instructor says so. |
 | `java -version` shows 17 | JDK 21 is not first on PATH. TEKsystems — do not install a second JDK yourself. |
 | `mvn` not recognized | Maven is not on PATH. TEKsystems gold image. |
 | `python` opens the Microsoft Store | Store stub. Need Python 3.12+ on PATH (`C:\Python312` or similar), not `WindowsApps`. |
@@ -322,7 +354,7 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 | Maven `Could not transfer artifact` | Maven Central blocked — TEKsystems network / proxy. |
 | `oc` not recognized | Client missing; needed on Days 4–5. Report it now even though you will not log in today. |
 | `curl` prints PowerShell XML / errors | You typed `curl`. Use **`curl.exe`**. |
-| Script execution disabled | Use `powershell -ExecutionPolicy Bypass -File ...` as in Step 5. |
+| Script execution disabled | Use `powershell -ExecutionPolicy Bypass -File ...` as in Step 6. |
 
 ---
 
