@@ -19,12 +19,11 @@ No GitHub login. Work in each lab's `starter/` folder.
 ## Technology stack
 
 ```text
-Java 17/21          Spring Boot 3.x       Spring Data JPA       Spring Security
+Java 21             Spring Boot 3.x       Spring Data JPA       Spring Security
 Maven               Flyway                PostgreSQL            Resilience4j
-Red Hat AMQ Streams (Kafka)               OpenAPI / Swagger UI  Micrometer / Actuator
-Podman              Red Hat OpenShift     OpenShift Pipelines (Tekton)
-OpenTelemetry       Prometheus / Grafana  Keycloak (or client IdP)
-GitHub Copilot      Red Hat OpenShift AI  MCP (conceptual + demo)
+Kafka               OpenAPI / Swagger UI  Micrometer / Actuator
+Docker Desktop      Red Hat OpenShift     OpenShift Pipelines
+GitHub Copilot      OpenShift AI          MCP
 ```
 
 **Workstations:** TEKsystems Ablaze VMs (required all five days). **OpenShift (ARO):** required for Labs 4–5.

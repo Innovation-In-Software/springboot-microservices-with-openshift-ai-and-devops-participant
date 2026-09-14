@@ -7,23 +7,17 @@ Find **your name** in the table. Use that Ablaze login all five days. OpenShift 
 
 | Item | Value |
 | ---- | ----- |
-| Event | BAC_Virtual_MD287 Spring Boot Microservices with OpenShift AI & DevOps for BAC_Sept 14-18, 2026 |
 | Ablaze portal | https://my.ablazedesktop.com |
-| Ablaze logins | **26** (`MSMICR26-01` … `MSMICR26-26`) |
-| Ablaze password (all 26) | `TEKmsmicr26!@` |
-| TEKsystems OPP | `OPP#-26-0023444` |
-| TEKsystems FPN | `77795691` |
-
-Roster numbers **1–25** map 1:1 to Ablaze `MSMICR26-01` … `MSMICR26-25` and OpenShift `student01` … `student25`.  
-**`MSMICR26-26` is the instructor spare** (use if a student VM will not start).
+| Ablaze logins | `MSMICR26-01` … `MSMICR26-25` (one per person) |
+| Ablaze password (every seat) | `TEKmsmicr26!` |
 
 ---
 
 ## 1. How to log on (Day 1)
 
 1. Open **https://my.ablazedesktop.com**
-2. Username = the **Ablaze login** in the table below (example: `MSMICR26-01`)
-3. Password = `TEKmsmicr26!@` (same for every seat)
+2. Username = the **Ablaze login** next to your name (example: `MSMICR26-01`)
+3. Password = `TEKmsmicr26!` (same for every seat)
 4. Wait for the Windows desktop (`student.VLAB`)
 5. Clone this participant repo **on the VM** and work in each lab `starter/` folder:
 
@@ -67,7 +61,6 @@ Shared OpenShift password for every user below: `Tr@ininG2026`
 | 23 | Thanga Velayutham | `MSMICR26-23` | `student23` | `md287-student23` |
 | 24 | Waqas Shahid | `MSMICR26-24` | `student24` | `md287-student24` |
 | 25 | Yiqun Chen | `MSMICR26-25` | `student25` | `md287-student25` |
-| — | **Instructor (Dr. G) spare** | `MSMICR26-26` | `instructor1` | `md287-instructor1` |
 
 ---
 
@@ -92,12 +85,5 @@ oc project md287-student01
 Model Route for that project:
 
 `http://md287-risk-model-md287-student01.apps.aro-md287.centralus.aroapp.io`
-
-Instructor login:
-
-```powershell
-oc login https://api.aro-md287.centralus.aroapp.io:6443/ --username instructor1 --password "Tr@ininG2026"
-oc project md287-instructor1
-```
 
 Cluster teardown is **19 September 2026**. Do not stop or deallocate ARO VMs during class.

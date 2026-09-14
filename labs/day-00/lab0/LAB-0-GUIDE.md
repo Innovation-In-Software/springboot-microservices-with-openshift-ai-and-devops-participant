@@ -100,7 +100,7 @@ You can do this step from the classroom laptop, a loaner, or any browser. You do
 
 **Do this:**
 
-1. Find **your name**, Ablaze username, and password in [LAB-ACCESS.md](../../../LAB-ACCESS.md) (roster row **N** is usually `MSMICR26-NN`). Do not use `MSMICR26-TD` (trainer account) and do not borrow a neighbour’s login.
+1. Find **your name**, Ablaze username, and password in [LAB-ACCESS.md](../../../LAB-ACCESS.md). Do not use `MSMICR26-TD` (trainer account) and do not borrow a neighbour’s login.
 2. Open a browser and go to **https://my.ablazedesktop.com**
 3. Sign in with that username and password.
 4. Wait until the **Windows desktop** appears (icons, taskbar, Start). First connect after class start can take a minute. If the page says access is not yet scheduled, wait for the TEKsystems window and retry.
@@ -188,7 +188,7 @@ git status
 git pull
 ```
 
-Confirm you see `README.md`, `labs\`, and `slides\`:
+Confirm you see `README.md` and `labs\`:
 
 ```powershell
 Get-ChildItem
@@ -259,7 +259,7 @@ If the script is missing, you are not in the cloned repo. Go back to Step 4.
 
 ---
 
-### Step 7 — Smoke-test Docker Compose
+### Step 7 — Start Lab 1 Postgres
 
 **Do this:**
 
@@ -270,12 +270,6 @@ docker compose ps
 ```
 
 Wait until `STATUS` includes **`(healthy)`**. Right after `up -d` it often says `(health: starting)` — wait about 10 seconds and run `docker compose ps` again.
-
-Optional — confirm the image is the classroom Postgres:
-
-```powershell
-docker compose images
-```
 
 **Expected result:**
 
@@ -370,22 +364,6 @@ docker compose down
 ```
 
 Do **not** add `-v` unless the instructor says to wipe the volume.
-
----
-
-## Optional stretch (only if you finished early)
-
-Pull the other classroom images so Days 2–5 are faster. This can take a while on classroom Wi-Fi — skip it if the instructor is starting Module 1.
-
-```powershell
-docker pull postgres:16-alpine
-docker pull apache/kafka:3.8.1
-docker pull python:3.12-alpine
-docker pull maven:3.9.9-eclipse-temurin-21-alpine
-docker pull eclipse-temurin:21-jre-alpine
-```
-
-Do **not** build `md287/account-service` images. Do **not** `oc login`. Do **not** open Lab 1 Java files to start coding.
 
 ---
 
