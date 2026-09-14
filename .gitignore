@@ -29,4 +29,3 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-LAB-ACCESS.md

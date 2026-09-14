@@ -29,7 +29,7 @@ GitHub Copilot      Red Hat OpenShift AI  MCP (conceptual + demo)
 
 **Workstations:** TEKsystems Ablaze VMs (required all five days). **OpenShift (ARO):** required for Labs 4–5.
 
-**Your login:** the instructor issues your Ablaze username and class password. Start at [Lab 0](labs/day-00/lab0/README.md) (portal **https://my.ablazedesktop.com**). Do all setup **on that VM**, not on a laptop.
+**Your login:** find your name in [LAB-ACCESS.md](LAB-ACCESS.md) (Ablaze portal, username, passwords, OpenShift project). Then start [Lab 0](labs/day-00/lab0/README.md) **on that VM**, not on a laptop.
 
 ## Slides (PDF)
 

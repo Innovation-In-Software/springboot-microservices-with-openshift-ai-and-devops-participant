@@ -4,7 +4,7 @@ Log in to your **Ablaze virtual machine** first, then clone this participant rep
 
 **Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. See [system requirements](../docs/SYSTEM-REQUIREMENTS.md).
 
-Portal: **https://my.ablazedesktop.com** (username and class password from the instructor). After the Windows desktop appears, clone **inside the VM**:
+Portal: **https://my.ablazedesktop.com** — find your name, username, and passwords in [LAB-ACCESS.md](../LAB-ACCESS.md). After the Windows desktop appears, clone **inside the VM**:
 
 ```powershell
 git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
