@@ -100,49 +100,22 @@ Never use Social Security numbers, PAN/card numbers, or real emails.
 
 ## Environment basics (read this first)
 
-**Demonstration environment:** Windows 10/11 · PowerShell in VS Code (press Ctrl+` to open the terminal)
+Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **not** run `oc login`.
 
-**Repo root (from Lab 0):** `%USERPROFILE%\MD287` (short folder name). Every `labs/day-01/...` path below is relative to that folder. If VS Code still shows the long `...-participant` folder, rename it as in Lab 0 Step 4, then **File → Open Folder** → `%USERPROFILE%\MD287`.
+**Repo root (from Lab 0):** `%USERPROFILE%\MD287`. Example: `C:\Users\student.VLAB\MD287`. Do **not** clone. Do **not** run `mklink`. If the prompt shows the long `.vscode\...-participant` path, that is the same repo — `cd` to `MD287` before commands.
 
 | Task | How |
 | --- | --- |
-| Open the starter | File → Open Folder → `labs/day-01/lab1/starter/account-service` (under `%USERPROFILE%\MD287`) |
-| Terminal | Ctrl+` → PowerShell |
-| Working directory | Every `docker compose`, `mvn`, and `curl.exe` command in this lab is run from **`account-service`** (the folder that contains `pom.xml`, `docker-compose.yml`, and `requests/`) |
-| HTTP calls | Use **`curl.exe`** (not `curl` — PowerShell aliases `curl` to something else) |
-| Second terminal | In VS Code: Terminal → New Terminal. Keep the app running in the first window. |
-| GitHub Copilot | **Copilot Free** is already on this VM. Sign in was Lab 0. Use it to explain and draft; **review before accept**. |
+| Folder | **File → Open Folder** → `%USERPROFILE%\MD287` |
+| Terminal | Ctrl+` → Windows PowerShell |
+| Working directory | Every `docker compose`, `mvn`, and `curl.exe` command is from **`account-service`** (`pom.xml`, `docker-compose.yml`, `requests/`) |
+| HTTP calls | **`curl.exe`** (not `curl`) |
+| Two terminals | Terminal → New Terminal. App runs in the first. `curl.exe` in the second. |
+| GitHub Copilot | Signed in during Lab 0. Review before accept. |
 
-**Already completed [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md) on the Ablaze VM?** Skip the clone and version checks. Stay in `%USERPROFILE%\MD287`. Confirm Docker Desktop is still running **on that VM**, `cd` to `labs\day-01\lab1\starter\account-service`, and start at Step 1. If `md287-account-db` is already **(healthy)** from Lab 0, `docker compose up -d` is a no-op. Do not continue Lab 1 on a laptop.
+**Already finished [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md)?** Docker Desktop is running, Maven cache is warm, and `md287-account-db` may already be **(healthy)** on port **5433**. Start at Step 1. `docker compose up -d` is safe to repeat.
 
-**You need:**
-
-- Lab 0 **PASS** (or the same checks: clone under `labs\`, Java 21, Maven on 21, Docker engine up)
-- Working directory: `account-service` (the folder with `pom.xml`)
-- HTTP calls: **`curl.exe`** (not `curl` — PowerShell aliases `curl`)
-
-If you skipped Lab 0 and do not already have the `labs` folder, clone **once** into the short folder `MD287`:
-
-```powershell
-cd $env:USERPROFILE
-git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
-cd MD287
-```
-
-If VS Code already cloned the long repo name under `.vscode\`, rename it to `%USERPROFILE%\MD287` (Lab 0 Step 4). Do not keep two copies.
-
-Start Docker Desktop from the Start menu and wait until it finishes starting (the whale icon in the system tray is idle, not animating). Then check once:
-
-```powershell
-cd "labs\day-01\lab1\starter\account-service"
-java -version
-mvn -version
-docker info
-```
-
-`docker info` must print a **Server Version**. If you see `error during connect` / `docker_engine`, Docker Desktop is not ready yet — wait and retry.
-
-The first `mvn spring-boot:run` on a machine may take several minutes while Maven downloads libraries. Lab 0 warms that cache; later runs are faster.
+If Lab 0 is not done, stop and finish it first.
 
 ---
 
@@ -157,7 +130,7 @@ Follow these steps in order. Finish one step before starting the next.
 1. Open the starter folder and make it your working directory:
 
 ```powershell
-cd "labs\day-01\lab1\starter\account-service"
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
 ```
 
 Confirm you see `pom.xml`, `docker-compose.yml`, and a `requests` folder.
@@ -166,10 +139,11 @@ Confirm you see `pom.xml`, `docker-compose.yml`, and a `requests` folder.
 
 ```powershell
 docker compose up -d
+Start-Sleep -Seconds 20
 docker compose ps
 ```
 
-Wait until `STATUS` includes **`(healthy)`**. Right after `up -d` it often says `(health: starting)` — wait about 10 seconds and run `docker compose ps` again.
+Wait until `STATUS` includes **`(healthy)`** on port **5433**. If it still says `(health: starting)`, wait and run `docker compose ps` again. Lab 0 may already have started this container — repeating `up -d` is OK.
 
 3. Start the application (leave this terminal running):
 
@@ -180,7 +154,7 @@ mvn spring-boot:run
 4. In a **second** PowerShell window, check health:
 
 ```powershell
-cd "labs\day-01\lab1\starter\account-service"
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
 curl.exe -s http://localhost:8081/actuator/health
 ```
 
