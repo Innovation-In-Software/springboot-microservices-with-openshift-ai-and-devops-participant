@@ -100,7 +100,7 @@ Never use Social Security numbers, PAN/card numbers, or real emails.
 
 ## Environment basics (read this first)
 
-Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **not** run `oc login`. Copy **one block at a time**. Do not paste two commands on the same line (`curl.exe --version` and `cd` must be separate).
+Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **not** run `oc login`. Copy **one block at a time**. Do not paste two commands on the same line (`curl.exe --version` and `cd` must be separate). Do **not** paste this whole guide (or a chat) into the terminal.
 
 **Repo root (from Lab 0):** `%USERPROFILE%\MD287`. Example: `C:\Users\student.VLAB\MD287`. Do **not** clone. Do **not** run `mklink`. If the prompt shows the long `.vscode\...-participant` path, that is the same repo — `cd` to `MD287` before git commands.
 
@@ -109,6 +109,7 @@ Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **n
 | Folder | **File → Open Folder** → `%USERPROFILE%\MD287` |
 | Terminal 1 | Runs `mvn spring-boot:run`. Leave it until the step says stop. |
 | Stop the app | **Ctrl+C**. If Maven prints `Terminate batch job (Y/N)?`, type **`Y`** and Enter. Wait for `account-service>`. |
+| Port 8081 already in use | A leftover `mvn spring-boot:run` is still listening. Click that terminal, **Ctrl+C**, then **`Y`**. See Troubleshooting if you cannot find it. |
 | Terminal 2 | **Terminal → New Terminal**. All `curl.exe` commands. |
 | HTTP calls | **`curl.exe`** (not `curl`) |
 | GitHub Copilot | Signed in during Lab 0. Review before accept. |
@@ -473,7 +474,7 @@ curl.exe -s -i -w "`nHTTP:%{http_code}`n" `
 
 Confirm the headers include `X-Correlation-Id: lab1-demo` and `Location: http://localhost:8081/api/v1/accounts/ACC-...`.
 
-Need **HTTP:201** and `"status":"PENDING"`. Copy **your** `accountId` from the JSON (classroom example: `ACC-27221E0B`). Do **not** call `/accounts/ACC-YOUR-ID` — that literal string is not an account and returns **404**.
+Need **HTTP:201** and `"status":"PENDING"`. Copy **your** `accountId` from the JSON (classroom examples: `ACC-27221E0B`, `ACC-ECC03B61`). Do **not** call `/accounts/ACC-YOUR-ID` — that literal string is not an account and returns **404**.
 
 Set the id once, then use `$id` in every later command (same Terminal 2 window):
 
@@ -591,7 +592,11 @@ public record UpdateAccountRequest(
 ) {
 }
 '@ | Set-Content -Encoding ascii "src\main\java\com\md287\account\api\dto\UpdateAccountRequest.java"
+
+Select-String -Path "src\main\java\com\md287\account\api\dto\CreateAccountRequest.java" -Pattern "AccountType"
 ```
+
+Need two hits: `import com.md287.account.domain.AccountType;` and the `AccountType accountType` field. If either is missing, paste the create-DTO block again (do not save a truncated record).
 
 3. Start the app again:
 
@@ -721,11 +726,11 @@ curl.exe -s -w "`nHTTP:%{http_code}`n" `
 
 3. Look at the **Maven** console (the window running `spring-boot:run`), not the curl window.
 
-You should see lines like:
+You should see lines like (classroom example):
 
 ```text
-correlationId=... - Validation failed path=/api/v1/accounts fieldCount=1
-correlationId=lab1-demo - Created account accountId=ACC-... type=CHECKING status=PENDING
+c.m.a.a.e.GlobalExceptionHandler correlationId=6ae4a007-... - Validation failed path=/api/v1/accounts fieldCount=1
+c.m.account.service.AccountService correlationId=lab1-demo - Created account accountId=ACC-ECC03B61 type=CHECKING status=PENDING
 ```
 
 **Checklist — logs must NOT contain:**
@@ -774,7 +779,11 @@ If you added `log.info(request.toString())` anywhere, remove it.
 | `Terminate batch job (Y/N)?` | Type **`Y`** and Enter. That is how Windows Maven finishes after Ctrl+C. |
 | `curl: option --versioncd` | You pasted two commands on one line. Run `curl.exe --version` and `cd` separately. |
 | Lab 0 check WARN on port 5433 | OK if `docker compose ps` shows `md287-account-db` **(healthy)**. |
-| `ACCOUNT_NOT_FOUND` for `ACC-YOUR-ID` | That string is a placeholder. Use the `accountId` from your **201** create body (for example `ACC-27221E0B`) in `$id`. |
+| `ACCOUNT_NOT_FOUND` for `ACC-YOUR-ID` | That string is a placeholder. Use the `accountId` from your **201** create body (for example `ACC-27221E0B` or `ACC-ECC03B61`) in `$id`. |
+| `Port 8081 is already in use` / `Failed to start bean 'webServerStartStop'` | Leftover `mvn spring-boot:run`. Click that Maven tab: **Ctrl+C**, then **`Y`**. If you cannot find it, run the free-8081 block below. |
+| Maven `Nothing to compile` after Step 6 | The DTO file did not change on disk (often a truncated paste). Confirm `Select-String ... AccountType` shows the import **and** the field, then `mvn spring-boot:run` again. |
+| `CreateAccountRequest` will not compile / missing `AccountType` | The here-string was cut off. Paste the **full** Step 6 create-DTO block, including `import com.md287.account.domain.AccountType;` and the `AccountType accountType` field. |
+| PSReadLine crash / huge paste | You pasted a whole chat into the terminal. Copy **one** command block only. |
 | `git pull`: not a git repository | You are in the home folder. `cd $env:USERPROFILE\MD287` then `git pull`. |
 | `destination path 'MD287' already exists` | Do not clone. You already have the repo. Run Step 0. |
 | `docker info` / `docker compose` cannot connect | Start **Docker Desktop** and wait until the engine is ready, then retry. |
@@ -789,18 +798,24 @@ If you added `log.info(request.toString())` anywhere, remove it.
 | `mvn test` prints Mockito / dynamic-agent warnings | Ignore them if you also see `Tests run: 13, Failures: 0` and `BUILD SUCCESS`. |
 | Flyway says V1 already applied but the table is missing | You pointed at an old Docker volume. Run `docker compose down -v` then `docker compose up -d` (**this deletes local lab data**). |
 
+Free port **8081** if a leftover Maven process is still listening:
+
+```powershell
+$p = (Get-NetTCPConnection -LocalPort 8081 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1).OwningProcess
+if ($p) { Stop-Process -Id $p -Force; "Stopped PID $p" } else { "8081 is free" }
+```
+
 ---
 
 ## Clean shutdown
 
-```powershell
-# Terminal 1: Ctrl+C, then Y if asked
+Stop the app only (**Ctrl+C**, then **`Y`** if asked). **Leave Postgres running** (`md287-account-db` on **5433**) for extra practice and Lab 2. Do **not** run `oc login`.
 
+```powershell
+# Optional — only if you are done for the day and the instructor says to stop Postgres:
 cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
 docker compose down
 ```
-
-Keep the database running if you will jump straight into extra practice.
 
 ---
 
