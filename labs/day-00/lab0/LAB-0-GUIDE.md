@@ -378,7 +378,7 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 | `python` opens the Microsoft Store | Store stub. Need Python 3.12+ on PATH (`C:\Python312` or similar), not `WindowsApps`. |
 | `git clone` asks for a password | Wrong URL, or a proxy intercepting GitHub. Public clone needs **no** login. |
 | `git clone` fails / SSL error | Outbound HTTPS to `github.com` — TEKsystems network. |
-| Terminal is in `...\.vscode\...-participant` | Rename that folder to `%USERPROFILE%\MD287` (Lab 0 Step 4 `Move-Item`), then **File → Open Folder** → `MD287`. |
+| Terminal is in `...\.vscode\...-participant` | Rename to `%USERPROFILE%\MD287` ([Tip — short folder](../../TIP-SHORT-FOLDER.md)), then delete leftovers ([Tip — delete old copies](../../TIP-DELETE-OLD-COPIES.md)). |
 | `check-environment.ps1` missing | You are not at repo root. `cd $env:USERPROFILE\MD287` so `labs\` is a child of the current directory. |
 | `docker info` → `error during connect` | Start Docker Desktop; wait until the whale is idle; retry. Firewall must allow **Docker Desktop Backend**. |
 | `docker compose` not found | Need Compose **v2** (`docker compose`, two words). TEKsystems. |

@@ -12,7 +12,7 @@ git clone https://github.com/Innovation-In-Software/springboot-microservices-wit
 cd MD287
 ```
 
-If VS Code already cloned the long GitHub repo name (often under `%USERPROFILE%\.vscode\`), rename that folder to `%USERPROFILE%\MD287` — see **[Tip — short folder `MD287`](TIP-SHORT-FOLDER.md)** (and [Lab 0 Step 4](day-00/lab0/LAB-0-GUIDE.md)). Do not keep two copies.
+If VS Code already cloned the long GitHub repo name (often under `%USERPROFILE%\.vscode\`), rename that folder to `%USERPROFILE%\MD287` — see **[Tip — short folder `MD287`](TIP-SHORT-FOLDER.md)** (and [Lab 0 Step 4](day-00/lab0/LAB-0-GUIDE.md)). Then delete leftovers: **[Tip — delete old copies](TIP-DELETE-OLD-COPIES.md)**. Do not keep two copies.
 
 If you are not on the VM desktop yet, start with **[Lab 0](day-00/lab0/LAB-0-GUIDE.md) Step 1**. Use **`curl.exe`** in PowerShell.
 
@@ -24,6 +24,7 @@ Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matche
 
 - [Lab 0 — Log in to the Ablaze VM and set up the workstation](day-00/lab0/LAB-0-GUIDE.md) — before Module 1
 - [Tip — short folder `MD287`](TIP-SHORT-FOLDER.md) — rename a long VS Code clone
+- [Tip — delete old copies](TIP-DELETE-OLD-COPIES.md) — remove leftover long-named folders
 
 ## Day 1: Architecture, API Design, and Spring Boot
 

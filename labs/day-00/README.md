@@ -15,7 +15,7 @@ lab0/
   tools/check-environment.ps1
 ```
 
-Tip for the clone folder: [../TIP-SHORT-FOLDER.md](../TIP-SHORT-FOLDER.md).
+Tip for the clone folder: [../TIP-SHORT-FOLDER.md](../TIP-SHORT-FOLDER.md). Delete leftovers: [../TIP-DELETE-OLD-COPIES.md](../TIP-DELETE-OLD-COPIES.md).
 
 There is no `starter/` Java project and no `solution/`. Lab 0 does not add a microservice.
 
@@ -24,5 +24,6 @@ There is no `starter/` Java project and no `solution/`. Lab 0 does not add a mic
 | Start here | [lab0/README.md](lab0/README.md) |
 | Lab guide | [lab0/LAB-0-GUIDE.md](lab0/LAB-0-GUIDE.md) |
 | Tip — short folder | [../TIP-SHORT-FOLDER.md](../TIP-SHORT-FOLDER.md) |
+| Tip — delete old copies | [../TIP-DELETE-OLD-COPIES.md](../TIP-DELETE-OLD-COPIES.md) |
 | Check script | [lab0/tools/check-environment.ps1](lab0/tools/check-environment.ps1) |
 | Next lab | [../day-01/lab1/LAB-1-GUIDE.md](../day-01/lab1/LAB-1-GUIDE.md) |

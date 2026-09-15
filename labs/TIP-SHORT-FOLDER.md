@@ -57,7 +57,7 @@ You should see `README.md` and `labs\`.
 
 Then in VS Code: **File → Open Folder** → `%USERPROFILE%\MD287`.
 
-If `$short` already exists, do not `Move-Item`. Stay in `MD287` and delete or ignore the long folder after you confirm `labs\` is in `MD287`.
+If `$short` already exists, do not `Move-Item`. Stay in `MD287` and delete the long folder: [Tip — delete old copies](TIP-DELETE-OLD-COPIES.md).
 
 ---
 
