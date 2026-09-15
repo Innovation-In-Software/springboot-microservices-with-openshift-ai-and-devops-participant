@@ -4,10 +4,10 @@ This folder is the **participant starter** for Lab 3.
 
 It already contains working Lab 1 and Lab 2 code. You add JWT, token relay, a circuit breaker, and tests.
 
-Open the service you are editing in VS Code (under `%USERPROFILE%\MD287`) and follow:
-
 **[LAB-3-GUIDE.md](../LAB-3-GUIDE.md)**
 
-Do not copy files from `../solution/` until the instructor says the lab is over.
+Do **all** of this **on the Ablaze VM** in `%USERPROFILE%\MD287`. Use **`curl.exe`**. Do **not** run `oc login` in Lab 3.
 
-**Required:** Docker Desktop. You will run Account Service (8081) and Transaction Service (8082) together.
+You need **three** terminals: Account Service (**8081**), Transaction Service (**8082**), and `curl.exe` / `issue-jwt.py`.
+
+Do not copy files from a `solution/` folder.

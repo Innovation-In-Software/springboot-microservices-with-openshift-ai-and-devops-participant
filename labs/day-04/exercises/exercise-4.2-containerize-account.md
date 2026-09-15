@@ -14,7 +14,7 @@ This is the official OUTLINE.md checkpoint. Complete it before or as directed in
 1. Multi-stage build: Maven compile in builder, JRE runtime in final image
 2. USER md287 (non-root). OpenShift also sets runAsNonRoot: true
 3. Immutable tag 1.0.0 — not :latest
-4. Images are built from Lab 3 solution context — do not recopy Java trees
+4. Images are built from the Lab 3 **starter** you finished (`labs/day-03/lab3/starter/`) — do not recopy Java trees and do not use a `solution/` folder
 
 ## Expected result
 

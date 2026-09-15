@@ -1,16 +1,18 @@
 # Lab 4 starter — Deploy the Capstone Services
 
-Participant folder. Follow **[LAB-4-GUIDE.md](../LAB-4-GUIDE.md)**. Paths are under `%USERPROFILE%\MD287`.
+Participant folder. Follow **[LAB-4-GUIDE.md](../LAB-4-GUIDE.md)**.
 
-You write Containerfiles and probe/resource YAML here. Java stays in Lab 3 solution — do not copy those trees.
+Do **all** of this **on the Ablaze VM** in `%USERPROFILE%\MD287`. Use **`curl.exe`**. **`oc login` is required** in this lab.
+
+You write Containerfiles and probe/resource YAML here. Java stays in the Lab 3 **starter** you finished. Do not copy from a `solution/` folder.
 
 ```text
 starter/
-  account-service/Containerfile      ← TODO: USER + EXPOSE 8081
-  transaction-service/Containerfile  ← TODO: USER + EXPOSE 8082
-  docker-compose.yml                 ← full stack (build context = Lab 3 solution)
-  openshift/                         ← ConfigMap, Secret, Deployment (probes TODO)
-  pipeline/                          ← prepared Tekton YAML + ownership worksheet
+  account-service/Containerfile
+  transaction-service/Containerfile
+  docker-compose.yml
+  openshift/
+  pipeline/
 ```
 
 Shared tools (SBOM, scan gate) live in `../tools/`.

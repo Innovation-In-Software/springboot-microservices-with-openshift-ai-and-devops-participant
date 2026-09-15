@@ -3,7 +3,7 @@
 **Lab 4:** Deploy the Capstone Services  
 **Day outcome:** Services observable, containerized, and **deployed to the pre-provisioned OpenShift project**, plus a completed prepared pipeline (SBOM, scan, signature).
 
-Run **Lab 4** as the Day 4 hands-on. Stop Lab 1–3 Compose stacks first — they share ports 8081, 8082, 5433, 5434, and 9092. Work from `%USERPROFILE%\MD287`.
+Run **Lab 4** as the Day 4 hands-on. Stop Lab 1–3 Compose stacks first — they share ports 8081, 8082, 5433, 5434, and 9092. Work from `%USERPROFILE%\MD287`. Start with `git pull` (Lab 4 Step 0). Use **`curl.exe`**. **`oc login` is required.** Images build from the Lab 3 **starter**.
 
 ## Layout
 

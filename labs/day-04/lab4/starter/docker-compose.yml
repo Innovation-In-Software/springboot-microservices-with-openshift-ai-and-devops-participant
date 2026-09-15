@@ -1,4 +1,4 @@
-# Full-stack classroom run. Build context is the Lab 3 solution source.
+# Full-stack classroom run. Build context is the Lab 3 starter you finished.
 # From this folder: docker compose up -d --build
 #
 # Stop Lab 1–3 Compose stacks first — they also bind 5433, 5434, 8081, 8082, and 9092.

@@ -2,7 +2,7 @@
 
 **Module 7** (DevOps and CI/CD) · Day 4 · **Checkpoint C**
 
-Fill the **Who typically owns it** column before you look at the solution copy.
+Fill the **Who typically owns it** column. The instructor will review it. Do **not** copy from a `solution/` folder.
 
 | Stage | What happens | Who typically owns it | Fail means |
 | --- | --- | --- | --- |
@@ -18,4 +18,4 @@ Fill the **Who typically owns it** column before you look at the solution copy.
 | smoke | Readiness + a synthetic API check | | Version is live but not healthy |
 | approval | Human promote to a higher env | | No production push without review |
 
-Compare with `../../solution/pipeline/OWNERSHIP.md` when the instructor says the exercise is over.
+Keep this file. You will confirm scan / SBOM / sign in Lab 4 Step 6.
