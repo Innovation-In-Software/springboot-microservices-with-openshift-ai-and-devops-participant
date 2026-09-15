@@ -81,8 +81,9 @@ Work in `labs\day-04\lab4\starter\`. Java stays in the Lab 3 starter you finishe
 | Cluster item | Value |
 | --- | --- |
 | API | `https://api.aro-md287.centralus.aroapp.io:6443/` |
-| Your project | `md287-<your-username>` |
-| Username / password | Issued by the instructor (same class password as Ablaze). Do not use `MSMICR26-TD`. |
+| OpenShift username | `student01` … `student25` from the instructor. **Not** `student.VLAB`. **Not** `MSMICR26-26`. |
+| OpenShift project | `md287-student01` (same number as your OpenShift username) |
+| Password | Class password from the instructor. Do not use `MSMICR26-TD`. |
 | Image registry | `default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io` |
 
 **Port map (same as Labs 1–3):**
@@ -103,6 +104,8 @@ Follow these steps in order. Finish one step before starting the next.
 
 ### Step 0 — Pull the latest repo
 
+Get the latest Lab 4 guide and starter from GitHub. Do **not** clone. Do **not** run `mklink`.
+
 ```powershell
 cd $env:USERPROFILE\MD287
 git pull
@@ -111,6 +114,8 @@ git pull
 **Expected:** `Already up to date.` or a Fast-forward. Prompt ends with `\MD287>`.
 
 Then: **File → Open Folder** → `%USERPROFILE%\MD287` if it is not already open.
+
+`git pull` only works **inside** the repo. Do not run it from `C:\Users\student.VLAB`.
 
 ### Step 1 — Stop older labs and confirm the Lab 3 starter
 
@@ -208,7 +213,7 @@ Select-String -Path "account-service\Containerfile","transaction-service\Contain
 
 Need `USER md287`, `EXPOSE 8081` / `8082`, and **no** `TODO`.
 
-Build Account (first build downloads Maven inside Docker — several minutes):
+Build Account (first build downloads Maven inside Docker — several minutes). Leave this in **Terminal 1**:
 
 ```powershell
 cd "$env:USERPROFILE\MD287\labs\day-04\lab4\starter"
@@ -231,9 +236,11 @@ Confirm the image is not root:
 
 ```powershell
 docker run --rm --entrypoint id md287/account-service:1.0.0
+docker images md287/account-service
+docker images md287/transaction-service
 ```
 
-**Expected result:** `uid=100` (or similar) `md287`, **not** `uid=0(root)`. `docker images md287/account-service` shows tag `1.0.0`.
+**Expected result:** `uid=100(md287) gid=100(md287)` — **not** `uid=0(root)`. Both images show tag `1.0.0`. Build logs end with `Successfully tagged md287/account-service:1.0.0` (and the same for transaction).
 
 **Why this matters:** A container that runs as root is one break-out away from host power. OpenShift will often **refuse** a root image when `runAsNonRoot: true` is set.
 
@@ -253,13 +260,16 @@ docker history md287/account-service:1.0.0
 
 ### Step 4 — Run the stack and prove probes, metrics, and correlation
 
+**Do this** in **Terminal 1**:
+
 ```powershell
 cd "$env:USERPROFILE\MD287\labs\day-04\lab4\starter"
 docker compose up -d --build
+Start-Sleep -Seconds 30
 docker compose ps
 ```
 
-Wait until `md287-lab4-account` and `md287-lab4-transaction` are running (first boot runs Flyway). If status is still starting, wait and run `docker compose ps` again.
+Wait until `md287-lab4-account` and `md287-lab4-transaction` are running (first boot runs Flyway). If status is still `starting`, wait 15 seconds and run `docker compose ps` again. `md287-lab4-kafka-init` should have **exited**.
 
 **Terminal 2:**
 
@@ -342,12 +352,16 @@ curl.exe -s -w "`nHTTP:%{http_code}`n" `
 
 Change `$txnId` to **your** id. GET should become `"status":"SUBMITTED"` (wait and GET again if it is still `RECEIVED`).
 
-Logs:
+Logs (**Terminal 1** or a new terminal):
 
 ```powershell
 docker logs md287-lab4-account --tail 40
 docker logs md287-lab4-transaction --tail 40
 ```
+
+**Checklist — logs must NOT contain:** `Authorization`, `Bearer`, `eyJ`, request JSON, DB passwords.
+
+**Checklist — logs MAY contain:** `accountId`, `transactionId`, `correlationId=lab4-demo`.
 
 **Expected result:**
 
@@ -582,15 +596,23 @@ Select-String -Path "openshift\10-account.yaml","openshift\20-transaction.yaml" 
 
 Need `readinessProbe` and `runAsUser: 100`. No `TODO`.
 
-2. Log in and select **your** project. Get **your** username and the class password from the instructor. Do not use `MSMICR26-TD`.
+2. Log in. Get **your OpenShift** username (`student01` … `student25`) and the class password from the instructor. This is **not** the Ablaze id `MSMICR26-26` and **not** `student.VLAB`. Do not use `MSMICR26-TD`.
 
 ```powershell
 oc login https://api.aro-md287.centralus.aroapp.io:6443/
-oc whoami
-oc project md287-<your-username>
 ```
 
-`oc login` will prompt for username and password. **Expected:** `oc whoami` prints your participant account. `oc project` shows only `md287-<your-username>`. If login fails, **stop** — get the instructor. YAML review alone does not complete this lab.
+At the prompts type your **OpenShift** username (example `student12`) and the class password. Then:
+
+```powershell
+oc whoami
+oc project md287-student12
+oc project -q
+```
+
+Change `md287-student12` to **your** number (username `student12` → project `md287-student12`).
+
+**Expected:** `oc whoami` prints `student12` (your number). `oc project -q` prints `md287-student12`. If login fails or the project is Forbidden, **stop** — get the instructor. YAML review alone does not complete this lab.
 
 3. Confirm backing services exist:
 
@@ -669,9 +691,7 @@ oc get pipelinerun -n $PROJECT
 
 If the Pipelines operator is missing, `oc apply` will error. The **local script still satisfies** the outline’s prepared pipeline (scan / SBOM / sign). Record that in Exercise 4.3.
 
-Open `tools\sample-sbom-account-service.json`. Confirm it lists `spring-boot-starter-web` **3.4.5** and Temurin 21.
-
-**Expected result:** scan **PASS** on `sample-scan-pass.json`, scan **FAIL** on `sample-scan-fail.json` (CRITICAL). Signature script prints the Cosign verify command. SBOM file exists under `tools/`.
+**Expected result:** the script prints stages including scan PASS, then a **GATE FAIL** on the CRITICAL sample, then SBOM and signature. That fail is **success** for the gate. Confirm `tools\sample-sbom-account-service.json` lists `spring-boot-starter-web` **3.4.5** and Temurin 21.
 
 **Why this matters:** A green deploy with a CRITICAL CVE is not a success. An SBOM is how you answer “what did we actually ship?” after a new CVE drops on Friday.
 
@@ -693,7 +713,7 @@ oc -n $PROJECT rollout history deploy/account-service
 curl.exe -sk https://$HOST/actuator/info
 ```
 
-**Expected:** undo restores the previous ReplicaSet. `oc rollout history` shows more than one revision. `/actuator/info` returns to `"version":"1.0.0"`.
+**Expected:** first `/actuator/info` shows `"version":"1.0.1"`. After undo, history has more than one revision and `/actuator/info` returns `"version":"1.0.0"`.
 
 **Why this matters:** Banks need a rehearsed rollback. “Redeploy yesterday’s tag” is faster than debugging a bad Friday release in production.
 
@@ -706,7 +726,7 @@ curl.exe -sk https://$HOST/actuator/info
 - [ ] Compose stack: liveness, readiness, `/actuator/metrics`, `/actuator/info`
 - [ ] JWT still required on business APIs; health stays public
 - [ ] Correlation id appears in logs; no `Authorization` text
-- [ ] `oc whoami` works; manifests applied in the **assigned** project (not `00-namespace.yaml`)
+- [ ] `oc whoami` is `studentNN`; manifests applied in `md287-studentNN` (not `00-namespace.yaml`)
 - [ ] Images pushed; pods Ready; Account **Route** readiness **200**
 - [ ] Pipeline: CRITICAL scan fails the gate; SBOM reviewed; signature command reviewed
 - [ ] `oc rollout undo` restored `1.0.0` (history shows more than one revision)
@@ -727,8 +747,9 @@ curl.exe -sk https://$HOST/actuator/info
 | `ACCOUNT_NOT_FOUND` for `ACC-YOUR-ID` / `TXN-YOUR-ID` | Placeholders. Use the id from your **201** body. |
 | 401 with a token | Re-run `issue-jwt.py` into `$TELLER` / `$OPS`. Use `curl.exe`. Same secret as Lab 3. |
 | 503 on POST transaction | Account container not ready — Lab 3 safe fallback, **do not** fake ACTIVE |
-| `oc whoami` failed | Required. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). Do not skip OpenShift. |
-| `oc apply` Unauthorized | Wrong project. Stay in `md287-<your-username>`. |
+| `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
+| `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
+| `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
 | ImagePullBackOff | Run `tools\push-images.ps1`, then `oc set image` to the internal pullspec |
 | Pod `CreateContainerConfigError` / `non-numeric user` | Keep `runAsNonRoot: true` and `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
 | Registry Route missing | `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"` then re-run `push-images.ps1` |

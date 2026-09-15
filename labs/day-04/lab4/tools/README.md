@@ -1,4 +1,6 @@
-# Shared tools for Lab 4 (starter and solution)
+# Shared tools for Lab 4
+
+Use these from `labs\day-04\lab4` as in [LAB-4-GUIDE.md](../LAB-4-GUIDE.md). Do **not** copy from a `solution/` folder.
 
 | Script / file | Purpose |
 | --- | --- |
