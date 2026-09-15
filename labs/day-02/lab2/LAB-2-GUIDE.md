@@ -78,9 +78,11 @@ Synthetic IDs only: `ACC-` + 8 hex, `TXN-` + 8 hex, amounts in USD.
 
 **Demonstration environment:** Windows 10/11 · PowerShell in VS Code (press Ctrl+` to open the terminal)
 
+**Repo root (from Lab 0):** `%USERPROFILE%\MD287` (short folder name). Every `labs/day-02/...` path below is relative to that folder. If VS Code still shows the long `...-participant` folder, rename it as in Lab 0 Step 4, then **File → Open Folder** → `%USERPROFILE%\MD287`.
+
 | Task | How |
 | --- | --- |
-| Open the starter | File → Open Folder → `labs/day-02/lab2/starter/transaction-service` |
+| Open the starter | File → Open Folder → `labs/day-02/lab2/starter/transaction-service` (under `%USERPROFILE%\MD287`) |
 | Terminal | Ctrl+` → PowerShell |
 | HTTP calls | Use **`curl.exe`** (not `curl` — PowerShell aliases `curl` to something else) |
 | GitHub Copilot | **Copilot Free** is already on this VM. Use it to explain and draft; **review before accept**. |
@@ -114,7 +116,7 @@ curl.exe -s http://localhost:8081/actuator/health
 
 You need `"status":"UP"`. If not, start Lab 1 postgres and `mvn spring-boot:run` in the Account Service folder.
 
-2. Open the Lab 2 starter:
+2. Open the Lab 2 starter under `%USERPROFILE%\MD287`:
 
 `labs/day-02/lab2/starter/transaction-service`
 

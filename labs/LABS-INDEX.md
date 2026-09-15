@@ -4,20 +4,26 @@ Log in to your **Ablaze virtual machine** first, then clone this participant rep
 
 **Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. Every student VM and the instructor VM already have **GitHub Copilot Free** in VS Code (sign in during Lab 0). **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. Workstation checklist: [Lab 0](day-00/lab0/LAB-0-GUIDE.md).
 
-Portal: **https://my.ablazedesktop.com** (find your name, username, and password in [LAB-ACCESS.md](../LAB-ACCESS.md)). After the Windows desktop appears, clone **inside the VM**:
+Portal: **https://my.ablazedesktop.com** (find your name, username, and password in [LAB-ACCESS.md](../LAB-ACCESS.md)). After the Windows desktop appears, clone **inside the VM** into the **short folder** `MD287`:
 
 ```powershell
+cd $env:USERPROFILE
 git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
 cd MD287
 ```
 
+If VS Code already cloned the long GitHub repo name (often under `%USERPROFILE%\.vscode\`), rename that folder to `%USERPROFILE%\MD287` — see **[Tip — short folder `MD287`](TIP-SHORT-FOLDER.md)** (and [Lab 0 Step 4](day-00/lab0/LAB-0-GUIDE.md)). Do not keep two copies.
+
 If you are not on the VM desktop yet, start with **[Lab 0](day-00/lab0/LAB-0-GUIDE.md) Step 1**. Use **`curl.exe`** in PowerShell.
+
+**Labs 1–5** use paths under that same repo root (`labs/day-NN/...`). Stay in the clone from Lab 0. Do not clone a second copy.
 
 Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the module PDFs in `slides/`). In-slide activity answers: [practice-exercises/](practice-exercises/).
 
 ## Day 1 morning: Log in and set up the VM
 
 - [Lab 0 — Log in to the Ablaze VM and set up the workstation](day-00/lab0/LAB-0-GUIDE.md) — before Module 1
+- [Tip — short folder `MD287`](TIP-SHORT-FOLDER.md) — rename a long VS Code clone
 
 ## Day 1: Architecture, API Design, and Spring Boot
 
@@ -44,7 +50,7 @@ Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matche
 - [Lab 5 — Risk Assessment Service](day-05/lab5/LAB-5-GUIDE.md)
 - Exercises: [5.1](day-05/exercises/exercise-5.1-model-policy-disposition.md) · [5.2](day-05/exercises/exercise-5.2-policy-rules.md) · [5.3](day-05/lab5/starter/mcp-controls.md)
 
-Work in each lab's `starter/` folder. This pack has no `solution/`.
+Work in each lab's `starter/` folder. This pack has no `solution/`. Paths such as `labs/day-01/lab1/starter/` are relative to `%USERPROFILE%\MD287`.
 
 ## Per-day layout
 

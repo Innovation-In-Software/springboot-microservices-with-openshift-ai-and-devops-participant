@@ -3,7 +3,7 @@
 **Lab 2:** Transaction Service  
 **Day outcome:** A two-service workflow using REST validation and TransactionSubmitted events.
 
-Run **Lab 2** as the Day 2 hands-on. Keep Lab 1 Account Service running.
+Run **Lab 2** as the Day 2 hands-on. Keep Lab 1 Account Service running. Work from `%USERPROFILE%\MD287`.
 
 ## Layout
 

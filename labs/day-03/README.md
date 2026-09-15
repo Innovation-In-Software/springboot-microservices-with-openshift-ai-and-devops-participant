@@ -3,7 +3,7 @@
 **Lab 3:** Secure and Resilient Services  
 **Day outcome:** JWT-protected Account and Transaction APIs, a circuit breaker on the Account dependency, and tests that prove 401/403/503.
 
-Run **Lab 3** as the Day 3 hands-on. Start from the Lab 3 starter (it already contains Lab 1 + Lab 2 code).
+Run **Lab 3** as the Day 3 hands-on. Start from the Lab 3 starter (it already contains Lab 1 + Lab 2 code). Work from `%USERPROFILE%\MD287`.
 
 ## Layout
 

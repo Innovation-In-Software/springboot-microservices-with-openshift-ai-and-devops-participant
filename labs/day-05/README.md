@@ -3,7 +3,7 @@
 **Lab 5:** Risk Assessment Service  
 **Day outcome:** Risk Assessment Service + **pre-deployed OpenShift AI** endpoint; deploy to OpenShift; capstone demonstration.
 
-Run **Lab 5** as the Day 5 hands-on. Stop Lab 1–4 Compose stacks if they still bind port 9092.
+Run **Lab 5** as the Day 5 hands-on. Stop Lab 1–4 Compose stacks if they still bind port 9092. Work from `%USERPROFILE%\MD287`.
 
 ## Layout
 

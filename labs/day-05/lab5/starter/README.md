@@ -1,6 +1,6 @@
 # Lab 5 starter — Risk Assessment Service
 
-Participant folder. Follow **[LAB-5-GUIDE.md](../LAB-5-GUIDE.md)**.
+Participant folder. Follow **[LAB-5-GUIDE.md](../LAB-5-GUIDE.md)**. Paths are under `%USERPROFILE%\MD287`.
 
 Complete `PolicyEngine` and the JWT scope rules in `SecurityConfig`. Java for Account and Transaction stays in Labs 1–3.
 

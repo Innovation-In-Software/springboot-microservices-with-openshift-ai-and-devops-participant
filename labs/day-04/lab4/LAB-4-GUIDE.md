@@ -55,9 +55,11 @@ Jenkins is **awareness only** (Module 11). Do not install Jenkins. GitOps is con
 
 **Demonstration environment:** Windows 10/11 · PowerShell in VS Code (Ctrl+`)
 
+**Repo root (from Lab 0):** `%USERPROFILE%\MD287` (short folder name). Every `labs/day-04/...` path below is relative to that folder. If VS Code still shows the long `...-participant` folder, rename it as in Lab 0 Step 4, then **File → Open Folder** → `%USERPROFILE%\MD287`.
+
 | Task | How |
 | --- | --- |
-| Work folder | `labs/day-04/lab4/starter/` |
+| Work folder | `labs/day-04/lab4/starter/` (under `%USERPROFILE%\MD287`) |
 | HTTP | **`curl.exe`**, not `curl` |
 | Tokens | `python labs\day-03\lab3\tools\issue-jwt.py teller` (and `ops`) |
 | Stop older labs first | Lab 1–3 Compose stacks use the same host ports |
@@ -126,6 +128,8 @@ Replace the TODOs with the pattern from the solution (Alpine JRE, group/user `md
 Account exposes **8081**. Transaction exposes **8082**.
 
 **Do this:**
+
+From `%USERPROFILE%\MD287`:
 
 ```powershell
 cd labs\day-04\lab4\starter

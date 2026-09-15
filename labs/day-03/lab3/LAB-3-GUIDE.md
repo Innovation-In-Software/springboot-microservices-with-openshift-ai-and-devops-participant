@@ -67,9 +67,11 @@ When Account Service is slow, down, or the circuit is open:
 
 **Demonstration environment:** Windows 10/11 · PowerShell in VS Code (Ctrl+`)
 
+**Repo root (from Lab 0):** `%USERPROFILE%\MD287` (short folder name). Every `labs/day-03/...` path below is relative to that folder. If VS Code still shows the long `...-participant` folder, rename it as in Lab 0 Step 4, then **File → Open Folder** → `%USERPROFILE%\MD287`.
+
 | Task | How |
 | --- | --- |
-| Open Account Service | File → Open Folder → `labs/day-03/lab3/starter/account-service` |
+| Open Account Service | File → Open Folder → `labs/day-03/lab3/starter/account-service` (under `%USERPROFILE%\MD287`) |
 | Open Transaction Service | … `starter/transaction-service` (second VS Code window is fine) |
 | HTTP | **`curl.exe`**, not `curl` |
 | GitHub Copilot | **Copilot Free** is already on this VM. Use it to explain and draft; **review before accept**. |
@@ -77,7 +79,7 @@ When Account Service is slow, down, or the circuit is open:
 **You need:**
 
 - Java 21, Maven 3.9+, Docker Desktop
-- Open the **Day 3** starters (`labs/day-03/lab3/starter/account-service` and `transaction-service`), not yesterday's trees
+- Open the **Day 3** starters (`labs/day-03/lab3/starter/account-service` and `transaction-service` under `%USERPROFILE%\MD287`), not yesterday's trees
 - HTTP calls: **`curl.exe`** (not `curl` — PowerShell aliases `curl`)
 - Tokens from `tools/issue-jwt.py` (HMAC classroom JWT)
 
@@ -135,7 +137,7 @@ Open `config/SecurityConfig.java`. Replace the filter chain with the solution pa
 
 Restart Account Service.
 
-Issue a teller token (from the **lab3** folder, not inside the Maven module):
+Issue a teller token (from the **lab3** folder, not inside the Maven module). From `%USERPROFILE%\MD287`:
 
 ```powershell
 cd labs\day-03\lab3

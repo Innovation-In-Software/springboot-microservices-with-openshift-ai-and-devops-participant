@@ -4,7 +4,7 @@ This folder is the **participant starter** for Lab 3.
 
 It already contains working Lab 1 and Lab 2 code. You add JWT, token relay, a circuit breaker, and tests.
 
-Open the service you are editing in VS Code and follow:
+Open the service you are editing in VS Code (under `%USERPROFILE%\MD287`) and follow:
 
 **[LAB-3-GUIDE.md](../LAB-3-GUIDE.md)**
 

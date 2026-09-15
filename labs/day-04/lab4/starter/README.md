@@ -1,6 +1,6 @@
 # Lab 4 starter — Deploy the Capstone Services
 
-Participant folder. Follow **[LAB-4-GUIDE.md](../LAB-4-GUIDE.md)**.
+Participant folder. Follow **[LAB-4-GUIDE.md](../LAB-4-GUIDE.md)**. Paths are under `%USERPROFILE%\MD287`.
 
 You write Containerfiles and probe/resource YAML here. Java stays in Lab 3 solution — do not copy those trees.
 

@@ -8,7 +8,7 @@ Participant helper for **Lab 0 — Environment Setup**.
 
 GitHub Copilot Free is signed in during Lab 0 Step 2 (VS Code). The check script does **not** verify Copilot; confirm the status bar shows Copilot ready.
 
-From the cloned repo root:
+From the cloned repo root `%USERPROFILE%\MD287`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "labs\day-00\lab0\tools\check-environment.ps1"

@@ -238,10 +238,10 @@ if ($repoRoot) {
     if ((Test-Path $accountPom) -and (Test-Path $composeFile)) {
         Add-Check "Course repo" "PASS" $repoRoot
     } else {
-        Add-Check "Course repo" "FAIL" "MD287 clone incomplete at $repoRoot"
+        Add-Check "Course repo" "FAIL" "Clone incomplete at $repoRoot (need labs\\day-01\\lab1\\starter\\account-service)"
     }
 } else {
-    Add-Check "Course repo" "WARN" "Run this script from the cloned MD287 repo (or after Step 4 of LAB-0-GUIDE.md)"
+    Add-Check "Course repo" "WARN" "Run this script from the cloned repo root %USERPROFILE%\\MD287. See Step 4 of LAB-0-GUIDE.md."
 }
 
 # --- Lab 1 ports ---

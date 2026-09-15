@@ -19,7 +19,7 @@ By the end of this lab you will have:
 
 - A browser session at **https://my.ablazedesktop.com** showing **your** Windows VM desktop (not a classmate’s)
 - **GitHub Copilot Free** signed in inside VS Code on that VM (every participant VM and the instructor VM already have Copilot)
-- The course repo cloned to `%USERPROFILE%\MD287`
+- The course repo cloned to the **short folder** `%USERPROFILE%\MD287` (for example `C:\Users\student.VLAB\MD287`)
 - Java **21** first on PATH, and Maven using that JDK
 - Docker Desktop **engine** running (not only installed)
 - Git, Python 3.12+, OpenShift CLI `oc`, and **`curl.exe`** verified
@@ -42,7 +42,7 @@ Read this once. Each idea shows up in a later step.
 | **`curl.exe` vs `curl`** | PowerShell aliases `curl` to `Invoke-WebRequest`. Always type **`curl.exe`**. |
 | **Java 21 first on PATH** | `java -version` must print **21**. A second JDK 17 first on PATH breaks every lab. |
 | **Docker engine vs Docker Desktop** | The whale icon idle means the engine is up. `docker info` must print a **Server Version**. |
-| **Public clone, no GitHub login** | You clone the course repo yourself. Do not copy labs from a USB stick as a substitute. Clone still needs **no** GitHub password. |
+| **Public clone, no GitHub login** | You clone the course repo yourself into the **short folder** `MD287`. Do not copy labs from a USB stick as a substitute. Clone still needs **no** GitHub password. |
 | **GitHub Copilot Free** | Every student VM and the instructor VM already have Copilot via a **free** GitHub Copilot account. Sign in once in VS Code on this VM. That sign-in is for the editor only — it is not required for `git clone`. **Review before accept** on every later lab. |
 | **Work in `starter/`** | Each later lab has a `starter/` folder. This participant pack has no `solution/`. |
 | **One Compose stack at a time** | Account Postgres uses host **5433**. If that port is busy, stop the other container first. |
@@ -79,7 +79,7 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 | After desktop loads | Use **Start → Visual Studio Code** on the VM (not an editor on your laptop) |
 | GitHub Copilot | Sign in on this VM with the GitHub account that has **Copilot Free**. Every participant VM and the instructor VM already have it. |
 | Terminal | On the VM: Ctrl+` → PowerShell |
-| Clone folder | On the VM: `%USERPROFILE%\MD287` (for example `C:\Users\student.VLAB\MD287`) |
+| Clone folder | On the VM: **`%USERPROFILE%\MD287`** (short name). Later steps run from there. If VS Code cloned the long repo name, rename it to `MD287` (Step 4). |
 | HTTP calls | Use **`curl.exe`**, not `curl` |
 | Escalate VM / Docker / Java | Lab assistant → **TEKsystems** |
 | Escalate OpenShift | Not today |
@@ -88,6 +88,7 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 
 - Install another JDK, Maven, or Docker beside the gold image
 - Fork the course repo, or type a GitHub password for `git clone` (the clone URL is public)
+- Leave the clone under the long GitHub repo name — rename it to **`MD287`** so later labs match the guide
 - Skip Copilot sign-in in VS Code — you already have **Copilot Free** on this VM
 - Run `oc login`
 - Copy files from a `solution/` folder (this pack does not include one)
@@ -181,7 +182,9 @@ If `java` prints **17** (or anything other than 21), raise a hand. Do **not** in
 
 ### Step 4 — Clone the course repo on the VM
 
-**Do this:**
+Use the **short folder name `MD287`**. Do not keep the long GitHub repo name as the folder.
+
+**Do this (preferred — PowerShell):**
 
 Still in **VM** PowerShell (not a terminal on your laptop):
 
@@ -191,6 +194,8 @@ git clone https://github.com/Innovation-In-Software/springboot-microservices-wit
 cd MD287
 ```
 
+The last argument (`MD287`) is the folder name. That is what makes the path short: `%USERPROFILE%\MD287`.
+
 If `MD287` already exists from a previous attempt:
 
 ```powershell
@@ -199,24 +204,43 @@ git status
 git pull
 ```
 
+**If VS Code already cloned the long name:** the folder is often `%USERPROFILE%\.vscode\springboot-microservices-with-openshift-ai-and-devops-participant`. Rename it once, then reopen it. Do **not** clone a second copy. Full copy-paste: **[Tip — short folder `MD287`](../../TIP-SHORT-FOLDER.md)**.
+
+```powershell
+$long = "$env:USERPROFILE\.vscode\springboot-microservices-with-openshift-ai-and-devops-participant"
+$short = "$env:USERPROFILE\MD287"
+if ((Test-Path $long) -and -not (Test-Path $short)) {
+  Move-Item $long $short
+}
+cd $env:USERPROFILE\MD287
+```
+
+Then in VS Code: **File → Open Folder** → `%USERPROFILE%\MD287`.
+
+**If you clone with VS Code instead of PowerShell:**
+
+1. **Ctrl+Shift+P** → **Git: Clone**.
+2. Paste the same GitHub URL (or the **participant** URL the instructor issued).
+3. Choose **`%USERPROFILE%`** as the parent folder (**not** `.vscode`).
+4. After the clone finishes, rename the long folder to `MD287` with the `Move-Item` commands above, then **File → Open Folder** → `%USERPROFILE%\MD287`.
+
 Confirm you see `README.md` and `labs\`:
 
 ```powershell
+cd $env:USERPROFILE\MD287
 Get-ChildItem
 ```
-
-In VS Code: **File → Open Folder** → `%USERPROFILE%\MD287`.
 
 **Expected result:**
 
 - Clone finishes without asking for a GitHub username or password (Copilot sign-in in VS Code is separate and does not change this)
 - `labs\day-00\lab0\LAB-0-GUIDE.md` exists (this file)
 - `labs\day-01\lab1\starter\account-service\pom.xml` exists
-- VS Code is rooted at the `MD287` folder
+- VS Code is rooted at **`MD287`** (the prompt ends with `\MD287>`)
 
 If `git clone` hangs or fails with a proxy / SSL error, raise a hand (network / TEKsystems). Do **not** download a ZIP from a personal laptop as a workaround unless the instructor says so.
 
-**Why this matters:** Labs live in this repo. Pre-copying files onto the VM hides clone problems that every later `git pull` would hit anyway.
+**Why this matters:** Labs live in this repo. The short folder `MD287` is what every later `cd` command uses. Pre-copying files onto the VM hides clone problems that every later `git pull` would hit anyway.
 
 ---
 
@@ -249,7 +273,7 @@ If the engine is down, wait and retry. Do not start Step 6 until this passes.
 
 **Do this:**
 
-From the repo root (`MD287`):
+From the **repo root** `%USERPROFILE%\MD287`:
 
 ```powershell
 cd $env:USERPROFILE\MD287
@@ -264,7 +288,7 @@ Read the table it prints. Fix any **FAIL** with the troubleshooting section belo
 - Java 21, Maven-on-21, Git, Python 3.12+, `oc` client, `curl.exe`, and Docker engine are all green
 - Host ports **8081** and **5433** are free (or already used by `md287-account-db` from a retry — that is OK)
 
-If the script is missing, you are not in the cloned repo. Go back to Step 4.
+If the script is missing, you are not in the cloned repo. Go back to Step 4 and `cd $env:USERPROFILE\MD287`.
 
 **Why this matters:** The same checks are what lab assistants look at on the floor. A screenshot of PASS is enough evidence that your VM is ready.
 
@@ -300,7 +324,7 @@ If port **5433** is already allocated, run `docker ps` and stop the other contai
 
 **Do this:**
 
-Still in `labs\day-01\lab1\starter\account-service`:
+Still in `labs\day-01\lab1\starter\account-service` under `%USERPROFILE%\MD287`:
 
 ```powershell
 mvn -q -DskipTests dependency:go-offline
@@ -354,6 +378,8 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 | `python` opens the Microsoft Store | Store stub. Need Python 3.12+ on PATH (`C:\Python312` or similar), not `WindowsApps`. |
 | `git clone` asks for a password | Wrong URL, or a proxy intercepting GitHub. Public clone needs **no** login. |
 | `git clone` fails / SSL error | Outbound HTTPS to `github.com` — TEKsystems network. |
+| Terminal is in `...\.vscode\...-participant` | Rename that folder to `%USERPROFILE%\MD287` (Lab 0 Step 4 `Move-Item`), then **File → Open Folder** → `MD287`. |
+| `check-environment.ps1` missing | You are not at repo root. `cd $env:USERPROFILE\MD287` so `labs\` is a child of the current directory. |
 | `docker info` → `error during connect` | Start Docker Desktop; wait until the whale is idle; retry. Firewall must allow **Docker Desktop Backend**. |
 | `docker compose` not found | Need Compose **v2** (`docker compose`, two words). TEKsystems. |
 | Port 5433 already in use | `docker ps`; `docker compose down` in the other folder that bound 5433. |

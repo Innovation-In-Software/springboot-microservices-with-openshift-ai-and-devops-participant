@@ -22,7 +22,7 @@ Worksheets live next to the day’s lab. **4.3** and **5.3** live inside the lab
 | [5.2](day-05/exercises/exercise-5.2-policy-rules.md) | 9 GitHub Copilot | 5 | Write policy rules for Approve / Hold / Decline |
 | [5.3](day-05/lab5/starter/mcp-controls.md) | 11 MCP | 5 | MCP security controls for banking APIs |
 
-**Lab 0** (workstation gate, before Module 1): [day-00/lab0/LAB-0-GUIDE.md](day-00/lab0/LAB-0-GUIDE.md)
+**Lab 0** (workstation gate, before Module 1): [day-00/lab0/LAB-0-GUIDE.md](day-00/lab0/LAB-0-GUIDE.md). Labs 1–5 paths are under `%USERPROFILE%\MD287`.
 
 In-module practice slides use an **order / e-commerce** story. Official checkpoints and Labs 1–5 use the **banking** Account → Transaction → Risk platform only.
 

@@ -14,6 +14,8 @@ git clone https://github.com/Innovation-In-Software/springboot-microservices-wit
 cd MD287
 ```
 
+The last argument (`MD287`) is the **short folder name**. If VS Code already cloned the long GitHub repo name, rename that folder — **[Tip — short folder `MD287`](labs/TIP-SHORT-FOLDER.md)**. Do not keep two copies.
+
 No GitHub login for clone. Sign in to **GitHub Copilot Free** in VS Code on the VM during Lab 0. Work in each lab's `starter/` folder.
 
 ## Technology stack
@@ -38,7 +40,7 @@ Per-module reading packs (PDF): [slides/supplementary material](slides/supplemen
 
 ## Labs
 
-Index: [labs/LABS-INDEX.md](labs/LABS-INDEX.md) · Checkpoints: [labs/EXERCISES-INDEX.md](labs/EXERCISES-INDEX.md) · In-slide activity answers: [labs/practice-exercises/](labs/practice-exercises/)
+Index: [labs/LABS-INDEX.md](labs/LABS-INDEX.md) · Checkpoints: [labs/EXERCISES-INDEX.md](labs/EXERCISES-INDEX.md) · In-slide activity answers: [labs/practice-exercises/](labs/practice-exercises/) · Tip: [labs/TIP-SHORT-FOLDER.md](labs/TIP-SHORT-FOLDER.md)
 
 | Day | Lab | Exercises |
 | --- | --- | --- |

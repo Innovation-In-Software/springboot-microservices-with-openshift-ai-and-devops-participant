@@ -2,7 +2,7 @@
 
 This folder is the **participant starter** for Lab 2.
 
-Open `transaction-service/` in VS Code and follow:
+Open `transaction-service/` in VS Code (under `%USERPROFILE%\MD287`) and follow:
 
 **[LAB-2-GUIDE.md](../LAB-2-GUIDE.md)**
 

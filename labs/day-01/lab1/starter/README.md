@@ -2,7 +2,7 @@
 
 This folder is the **participant starter** for Lab 1.
 
-Open `account-service/` in VS Code and follow:
+Open `account-service/` in VS Code (under `%USERPROFILE%\MD287`) and follow:
 
 **[LAB-1-GUIDE.md](../LAB-1-GUIDE.md)**
 

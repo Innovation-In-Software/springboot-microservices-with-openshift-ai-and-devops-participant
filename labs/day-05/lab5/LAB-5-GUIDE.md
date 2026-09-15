@@ -66,9 +66,11 @@ Health stays public.
 
 **Demonstration environment:** Windows 10/11 · PowerShell in VS Code (Ctrl+`)
 
+**Repo root (from Lab 0):** `%USERPROFILE%\MD287` (short folder name). Every `labs/day-05/...` path below is relative to that folder. If VS Code still shows the long `...-participant` folder, rename it as in Lab 0 Step 4, then **File → Open Folder** → `%USERPROFILE%\MD287`.
+
 | Task | How |
 | --- | --- |
-| Work folder | `labs/day-05/lab5/starter/risk-assessment-service` |
+| Work folder | `labs/day-05/lab5/starter/risk-assessment-service` (under `%USERPROFILE%\MD287`) |
 | HTTP | **`curl.exe`**, not `curl` |
 | Tokens | `python labs\day-05\lab5\tools\issue-jwt.py ops` (and `reviewer`) |
 | Stop older labs first | Labs 1–4 may still bind **9092** |
@@ -77,7 +79,7 @@ Health stays public.
 **You need:**
 
 - Java 21, Maven 3.9+, Docker Desktop, Python 3, **`oc` login** to `md287-<your-username>`
-- Open the **Day 5** starter (`labs/day-05/lab5/starter/risk-assessment-service`), not yesterday's trees
+- Open the **Day 5** starter (`labs/day-05/lab5/starter/risk-assessment-service` under `%USERPROFILE%\MD287`), not yesterday's trees
 - HTTP calls: **`curl.exe`** (not `curl` — PowerShell aliases `curl`)
 - Tokens from `labs/day-05/lab5/tools/issue-jwt.py` (`ops` / `reviewer`). Lab 3 ops has **no** `risk.read`
 - Classroom **OpenShift AI model Route** must be UP (`MD287_MODEL_ROUTE`); local mock is `:8090`
@@ -110,7 +112,7 @@ curl.exe -s "$env:MD287_MODEL_ROUTE/v1/health"
 
 **Expected result:** JSON includes `"status":"UP"` and a model name/version. If this fails, **stop** — the model must be pre-deployed. Do not invent scores.
 
-2. For coding on the VM, start Compose (local Kafka, `risk_db`, and a **same-contract** mock on **8090**):
+2. For coding on the VM, start Compose (local Kafka, `risk_db`, and a **same-contract** mock on **8090**). From `%USERPROFILE%\MD287`:
 
 ```powershell
 cd labs\day-05\lab5\starter
