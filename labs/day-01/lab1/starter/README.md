@@ -2,7 +2,7 @@
 
 This folder is the **participant starter** for Lab 1.
 
-From `%USERPROFILE%\MD287` run `git pull`, then open `account-service/` and follow:
+Copy-paste **[LAB-1-GUIDE.md](../LAB-1-GUIDE.md)** on the Ablaze VM. First: `cd $env:USERPROFILE\MD287` then `git pull`. When Maven asks `Terminate batch job (Y/N)?`, type **Y**.
 
 **[LAB-1-GUIDE.md](../LAB-1-GUIDE.md)**
 

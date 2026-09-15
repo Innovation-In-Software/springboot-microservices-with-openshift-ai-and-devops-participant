@@ -100,20 +100,20 @@ Never use Social Security numbers, PAN/card numbers, or real emails.
 
 ## Environment basics (read this first)
 
-Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **not** run `oc login`.
+Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **not** run `oc login`. Copy **one block at a time**. Do not paste two commands on the same line (`curl.exe --version` and `cd` must be separate).
 
-**Repo root (from Lab 0):** `%USERPROFILE%\MD287`. Example: `C:\Users\student.VLAB\MD287`. Do **not** clone. Do **not** run `mklink`. If the prompt shows the long `.vscode\...-participant` path, that is the same repo — `cd` to `MD287` before commands.
+**Repo root (from Lab 0):** `%USERPROFILE%\MD287`. Example: `C:\Users\student.VLAB\MD287`. Do **not** clone. Do **not** run `mklink`. If the prompt shows the long `.vscode\...-participant` path, that is the same repo — `cd` to `MD287` before git commands.
 
 | Task | How |
 | --- | --- |
 | Folder | **File → Open Folder** → `%USERPROFILE%\MD287` |
-| Terminal | Ctrl+` → Windows PowerShell |
-| Working directory | Every `docker compose`, `mvn`, and `curl.exe` command is from **`account-service`** (`pom.xml`, `docker-compose.yml`, `requests/`) |
+| Terminal 1 | Runs `mvn spring-boot:run`. Leave it until the step says stop. |
+| Stop the app | **Ctrl+C**. If Maven prints `Terminate batch job (Y/N)?`, type **`Y`** and Enter. Wait for `account-service>`. |
+| Terminal 2 | **Terminal → New Terminal**. All `curl.exe` commands. |
 | HTTP calls | **`curl.exe`** (not `curl`) |
-| Two terminals | Terminal → New Terminal. App runs in the first. `curl.exe` in the second. |
 | GitHub Copilot | Signed in during Lab 0. Review before accept. |
 
-**Already finished [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md)?** Docker Desktop is running, Maven cache is warm, and `md287-account-db` may already be **(healthy)** on port **5433**. Start at **Step 0** (`git pull`), then Step 1. `docker compose up -d` is safe to repeat.
+**Already finished [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md)?** Docker Desktop is running, Maven cache is warm, and `md287-account-db` may already be **(healthy)** on **5433**. A Lab 0 check **WARN** on port 5433 is OK. Start at **Step 0**.
 
 If Lab 0 is not done, stop and finish it first.
 
@@ -198,17 +198,18 @@ Leave the application running if you can. For later steps that change Java or SQ
 
 ### Step 2 — Apply the Flyway migration
 
-The starter has **no** schema yet. Flyway will create the table from a versioned SQL file.
+The starter has **no** schema yet. Flyway creates the table from a versioned SQL file.
 
 **Do this:**
 
-1. Stop the app (`Ctrl+C`) if it is running.
+1. Stop the app: **Ctrl+C**, then **`Y`** if asked.
 
-2. Create this file:
+2. Create the migration (filename is `V1__create_accounts.sql` — two underscores):
 
-   `src/main/resources/db/migration/V1__create_accounts.sql`
-
-```sql
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
+New-Item -ItemType Directory -Force -Path "src\main\resources\db\migration" | Out-Null
+@'
 CREATE TABLE accounts (
     account_id   VARCHAR(36)  PRIMARY KEY,
     customer_id  VARCHAR(32)  NOT NULL,
@@ -223,44 +224,37 @@ CREATE TABLE accounts (
 
 CREATE INDEX idx_accounts_customer_id ON accounts (customer_id);
 CREATE INDEX idx_accounts_status ON accounts (status);
+'@ | Set-Content -Encoding ascii "src\main\resources\db\migration\V1__create_accounts.sql"
+Get-Content "src\main\resources\db\migration\V1__create_accounts.sql"
 ```
 
-The file name is part of the contract:
-
-- `V1` = version 1 (next change would be `V2__...`)
-- `__` = two underscores
-- `create_accounts` = a short description
-
-3. Start the app again:
+3. Start the app again (leave it running):
 
 ```powershell
 mvn spring-boot:run
 ```
 
-**Expected result:** Startup logs include lines similar to:
+**Expected result:** Logs include:
 
 ```text
 Migrating schema "public" to version "1 - create accounts"
 Successfully applied 1 migration to schema "public", now at version v1
+Started AccountServiceApplication
 ```
 
-(Your Flyway version may add an execution-time suffix. The important words are **applied 1 migration** and **version v1**.)
+If you restart later, Flyway does **not** re-run V1.
 
-If you restart again, Flyway does **not** re-run V1. It records the version in `flyway_schema_history`.
-
-**Why this matters:** `spring.jpa.hibernate.ddl-auto` must not create production tables. Flyway is the source of truth for schema. That is the same idea you will use in every later capstone service.
+**Why this matters:** `spring.jpa.hibernate.ddl-auto` must not create production tables. Flyway is the source of truth for schema.
 
 ---
 
 ### Step 3 — Confirm the entity and repository
 
-The starter already contains the JPA mapping. Your job is to **read it** and then ask Hibernate to check that it matches Flyway.
+The starter already contains the JPA mapping. Read it, then ask Hibernate to check that it matches Flyway.
 
 **Do this:**
 
-1. Open `src/main/java/com/md287/account/domain/Account.java`.
-
-   Confirm these mappings:
+1. Open `src\main\java\com\md287\account\domain\Account.java` and confirm:
 
    | Java field | Database column |
    | --- | --- |
@@ -272,52 +266,83 @@ The starter already contains the JPA mapping. Your job is to **read it** and the
    | `nickname` | `nickname` (nullable) |
    | `createdAt` / `updatedAt` / `closedAt` | timestamps |
 
-2. Open `src/main/java/com/md287/account/repository/AccountRepository.java`.
+2. Open `src\main\java\com\md287\account\repository\AccountRepository.java`. It extends `JpaRepository<Account, String>`.
 
-   It extends `JpaRepository<Account, String>`. That gives you `save`, `findById`, and `existsById` without writing SQL.
+3. Stop the app: **Ctrl+C**, then **`Y`** if asked.
 
-3. In `src/main/resources/application.yml`, change:
+4. Switch Hibernate to validate:
 
-```yaml
-    hibernate:
-      ddl-auto: none
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
+(Get-Content "src\main\resources\application.yml") -replace "ddl-auto: none", "ddl-auto: validate" | Set-Content -Encoding ascii "src\main\resources\application.yml"
+Select-String -Path "src\main\resources\application.yml" -Pattern "ddl-auto"
 ```
 
-to:
+Need `ddl-auto: validate`.
 
-```yaml
-    hibernate:
-      ddl-auto: validate
-```
-
-4. Stop the app with `Ctrl+C` in the Maven terminal (a YAML change does not apply until restart), then start it again:
+5. Start the app again (leave it running):
 
 ```powershell
 mvn spring-boot:run
 ```
 
-**Expected result:** The application starts (`Started AccountServiceApplication`). Hibernate does not print a loud “schema OK” line — success is a clean start. If Flyway and the entity disagree, startup **fails** with a schema-validation error. That is a feature: you want mismatch to be loud.
+**Expected result:** `Started AccountServiceApplication` with no schema-validation error. Hibernate does not print a loud “schema OK” line — a clean start is success.
 
-**Why this matters:** The **repository** is persistence. The **entity** is the table. The **service** (next step) is where banking rules live. Controllers should stay thin.
+**Why this matters:** The **repository** is persistence. The **entity** is the table. The **service** (next step) is where banking rules live.
 
 ---
 
 ### Step 4 — Complete service-layer state transitions
 
-This is the main coding step. Open:
+This is the main coding step. Stop the app (**Ctrl+C**, then **`Y`** if asked) and replace `AccountService.java`.
 
-`src/main/java/com/md287/account/service/AccountService.java`
+Keep this behavior:
 
-Replace each `throw new UnsupportedOperationException(...)` method with the code below. Keep the constructor and the two private helpers (`requireAccount` and `nextAccountId`) — they are already written.
+- `create` — new accounts are **PENDING**; only USD
+- `get` — load or 404
+- `update` — nickname only; **409** if CLOSED
+- `activate` — PENDING or FROZEN → ACTIVE; ACTIVE is idempotent; CLOSED is **409**
+- `freeze` — ACTIVE → FROZEN; FROZEN is idempotent; otherwise **409**
+- `close` — mark CLOSED and keep the row (no delete)
 
-Helpers you already have:
+Do **not** log emails, nicknames, or request JSON. Log `accountId`, `type`, and `status` only.
 
-- `requireAccount(id)` — loads the row or throws `AccountNotFoundException`
-- `nextAccountId()` — returns `ACC-` plus eight hex characters
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
+@'
+package com.md287.account.service;
 
-#### 4.1 `create` — new accounts are PENDING
+import com.md287.account.api.dto.AccountResponse;
+import com.md287.account.api.dto.CreateAccountRequest;
+import com.md287.account.api.dto.UpdateAccountRequest;
+import com.md287.account.api.exception.AccountNotFoundException;
+import com.md287.account.api.exception.BusinessRuleException;
+import com.md287.account.api.exception.InvalidAccountStateException;
+import com.md287.account.domain.Account;
+import com.md287.account.domain.AccountStatus;
+import com.md287.account.repository.AccountRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-```java
+import java.time.OffsetDateTime;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
+
+@Service
+public class AccountService {
+
+    private static final Logger log = LoggerFactory.getLogger(AccountService.class);
+    private static final Set<String> SUPPORTED_CURRENCIES = Set.of("USD");
+
+    private final AccountRepository accountRepository;
+
+    public AccountService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
     @Transactional
     public AccountResponse create(CreateAccountRequest request) {
         OffsetDateTime now = OffsetDateTime.now();
@@ -343,22 +368,12 @@ Helpers you already have:
                 saved.getAccountId(), saved.getAccountType(), saved.getStatus());
         return AccountResponse.from(saved);
     }
-```
 
-Notice what is **not** logged: customer email, nickname, request JSON.
-
-#### 4.2 `get`
-
-```java
     @Transactional(readOnly = true)
     public AccountResponse get(String accountId) {
         return AccountResponse.from(requireAccount(accountId));
     }
-```
 
-#### 4.3 `update` — nickname only, never on CLOSED
-
-```java
     @Transactional
     public AccountResponse update(String accountId, UpdateAccountRequest request) {
         Account account = requireAccount(accountId);
@@ -369,13 +384,7 @@ Notice what is **not** logged: customer email, nickname, request JSON.
         log.info("Updated account attributes accountId={} status={}", accountId, account.getStatus());
         return AccountResponse.from(account);
     }
-```
 
-You do not call `save` after a field change inside a `@Transactional` method. JPA flushes the dirty entity at commit time.
-
-#### 4.4 `activate`
-
-```java
     @Transactional
     public AccountResponse activate(String accountId) {
         Account account = requireAccount(accountId);
@@ -389,11 +398,7 @@ You do not call `save` after a field change inside a `@Transactional` method. JP
         log.info("Activated account accountId={} status={}", accountId, account.getStatus());
         return AccountResponse.from(account);
     }
-```
 
-#### 4.5 `freeze`
-
-```java
     @Transactional
     public AccountResponse freeze(String accountId) {
         Account account = requireAccount(accountId);
@@ -407,11 +412,7 @@ You do not call `save` after a field change inside a `@Transactional` method. JP
         log.info("Froze account accountId={} status={}", accountId, account.getStatus());
         return AccountResponse.from(account);
     }
-```
 
-#### 4.6 `close` — retain the row
-
-```java
     @Transactional
     public AccountResponse close(String accountId) {
         Account account = requireAccount(accountId);
@@ -423,13 +424,28 @@ You do not call `save` after a field change inside a `@Transactional` method. JP
                 accountId, account.getStatus());
         return AccountResponse.from(account);
     }
+
+    private Account requireAccount(String accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+    }
+
+    private String nextAccountId() {
+        return "ACC-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase(Locale.ROOT);
+    }
+}
+'@ | Set-Content -Encoding ascii "src\main\java\com\md287\account\service\AccountService.java"
 ```
 
-Restart the app after saving.
+Start the app (leave it running):
 
-**Expected result:** The project compiles. `POST /api/v1/accounts` now returns **201** (you will prove that in Step 5).
+```powershell
+mvn spring-boot:run
+```
 
-**Why this matters:** Constructor injection (`AccountService(AccountRepository ...)`) is the Spring default for testability. `@Transactional` sets the local transaction boundary — this service never starts a two-phase commit with another database.
+**Expected result:** Compiles and prints `Started AccountServiceApplication`. You prove **201** in Step 5.
+
+**Why this matters:** Constructor injection is the Spring default for tests. `@Transactional` is the local transaction boundary — this service never starts a two-phase commit with another database. You do not call `save` after a field change inside `@Transactional`; JPA flushes at commit.
 
 ---
 
@@ -439,9 +455,13 @@ The controller is already wired in `AccountController`. It is thin on purpose: i
 
 **Do this:**
 
-Stay in `account-service/` (the folder that contains `requests/`). Run these commands **in order**. Use **`curl.exe`**.
+**Terminal 2.** Stay in `account-service/` (the folder that contains `requests/`). Run these **in order**. Use **`curl.exe`**.
 
-Create (`-i` prints response headers so you can see `Location` and `X-Correlation-Id`):
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
+```
+
+Create (`-i` prints headers so you can see `Location` and `X-Correlation-Id`):
 
 ```powershell
 curl.exe -s -i -w "`nHTTP:%{http_code}`n" `
@@ -533,13 +553,17 @@ Error bodies look like:
 
 ### Step 6 — Add validation
 
-Right now `CreateAccountRequest` accepts any string. A real email must be rejected.
+Right now `CreateAccountRequest` accepts any string. A real email must be rejected. The controller already has `@Valid`.
 
 **Do this:**
 
-Replace `CreateAccountRequest.java` with:
+1. Stop the app: **Ctrl+C**, then **`Y`** if asked.
 
-```java
+2. Replace the DTO files:
+
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
+@'
 package com.md287.account.api.dto;
 
 import com.md287.account.domain.AccountType;
@@ -564,11 +588,9 @@ public record CreateAccountRequest(
         String nickname
 ) {
 }
-```
+'@ | Set-Content -Encoding ascii "src\main\java\com\md287\account\api\dto\CreateAccountRequest.java"
 
-Replace `UpdateAccountRequest.java` with:
-
-```java
+@'
 package com.md287.account.api.dto;
 
 import jakarta.validation.constraints.Size;
@@ -578,13 +600,19 @@ public record UpdateAccountRequest(
         String nickname
 ) {
 }
+'@ | Set-Content -Encoding ascii "src\main\java\com\md287\account\api\dto\UpdateAccountRequest.java"
 ```
 
-The controller already has `@Valid`. That is what triggers Jakarta Validation before the service runs.
-
-Stop the app (`Ctrl+C`) and start it again (`mvn spring-boot:run`) so the new DTO annotations load. Then:
+3. Start the app again:
 
 ```powershell
+mvn spring-boot:run
+```
+
+4. **Terminal 2:**
+
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
 curl.exe -s -w "`nHTTP:%{http_code}`n" `
   -H "Content-Type: application/json" `
   --data-binary "@requests/create-invalid-customer.json" `
@@ -609,12 +637,14 @@ Two layers is intentional: the DTO guards *shape*; the service guards *banking p
 
 ### Step 7 — Verify health and API documentation
 
-**Do this:**
+**Do this** in **Terminal 2**:
 
 ```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
 curl.exe -s http://localhost:8081/actuator/health
 curl.exe -s -o NUL -w "info:%{http_code}`n" http://localhost:8081/actuator/info
 curl.exe -s -o NUL -w "openapi:%{http_code}`n" http://localhost:8081/v3/api-docs
+curl.exe -s http://localhost:8081/actuator
 ```
 
 Open a browser:
@@ -625,11 +655,7 @@ Open a browser:
 
 In Swagger UI, expand `POST /api/v1/accounts` and confirm the request body shows `customerId`, `accountType`, `currency`, and `nickname`.
 
-Confirm which Actuator endpoints are exposed:
-
-```powershell
-curl.exe -s http://localhost:8081/actuator
-```
+Confirm which Actuator endpoints are exposed (already in the block above). The JSON `_links` should contain only **self**, **health**, **health-path**, and **info**.
 
 **Expected result:**
 
@@ -648,9 +674,10 @@ Tests are already in the starter. They fail until Steps 4 and 6 are done.
 
 **Do this:**
 
-Stop the running app (`Ctrl+C`) so the test JVM is not fighting over files. Then:
+Stop the running app (**Ctrl+C**, then **`Y`** if asked) so the test JVM is not fighting over port 8081. Then:
 
 ```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
 mvn test
 ```
 
@@ -676,8 +703,18 @@ and `BUILD SUCCESS`.
 
 **Do this:**
 
-1. Start the app again (`mvn spring-boot:run`) and wait for `Started AccountServiceApplication`.
-2. In the second terminal, from `account-service/`, send the invalid customer payload (it contains `john.doe@bank.com`) and then a successful create:
+1. Start the app again and wait for `Started AccountServiceApplication`:
+
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
+mvn spring-boot:run
+```
+
+2. In **Terminal 2**, from `account-service/`, send the invalid customer payload (it contains `john.doe@bank.com`) and then a successful create:
+
+```powershell
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
+```
 
 ```powershell
 curl.exe -s -w "`nHTTP:%{http_code}`n" `
@@ -744,6 +781,9 @@ If you added `log.info(request.toString())` anywhere, remove it.
 
 | Symptom | What to check |
 | --- | --- |
+| `Terminate batch job (Y/N)?` | Type **`Y`** and Enter. That is how Windows Maven finishes after Ctrl+C. |
+| `curl: option --versioncd` | You pasted two commands on one line. Run `curl.exe --version` and `cd` separately. |
+| Lab 0 check WARN on port 5433 | OK if `docker compose ps` shows `md287-account-db` **(healthy)**. |
 | `git pull`: not a git repository | You are in the home folder. `cd $env:USERPROFILE\MD287` then `git pull`. |
 | `destination path 'MD287' already exists` | Do not clone. You already have the repo. Run Step 0. |
 | `docker info` / `docker compose` cannot connect | Start **Docker Desktop** and wait until the engine is ready, then retry. |
@@ -763,9 +803,9 @@ If you added `log.info(request.toString())` anywhere, remove it.
 ## Clean shutdown
 
 ```powershell
-# in the app terminal
-Ctrl+C
+# Terminal 1: Ctrl+C, then Y if asked
 
+cd "$env:USERPROFILE\MD287\labs\day-01\lab1\starter\account-service"
 docker compose down
 ```
 
