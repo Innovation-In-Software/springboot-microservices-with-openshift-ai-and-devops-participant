@@ -473,45 +473,35 @@ curl.exe -s -i -w "`nHTTP:%{http_code}`n" `
 
 Confirm the headers include `X-Correlation-Id: lab1-demo` and `Location: http://localhost:8081/api/v1/accounts/ACC-...`.
 
-Copy the `accountId` from the JSON body (example: `ACC-1F4E6A52`). In every command below, replace **`ACC-YOUR-ID`** with your value. Do not leave the placeholder in the URL.
+Need **HTTP:201** and `"status":"PENDING"`. Copy **your** `accountId` from the JSON (classroom example: `ACC-27221E0B`). Do **not** call `/accounts/ACC-YOUR-ID` — that literal string is not an account and returns **404**.
 
-Retrieve:
+Set the id once, then use `$id` in every later command (same Terminal 2 window):
 
 ```powershell
-curl.exe -s -w "`nHTTP:%{http_code}`n" http://localhost:8081/api/v1/accounts/ACC-YOUR-ID
+$id = "ACC-27221E0B"
 ```
 
-Freeze while still PENDING (should be rejected):
+Change the value to **your** create response, then:
 
 ```powershell
-curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/ACC-YOUR-ID/freeze
-```
+curl.exe -s -w "`nHTTP:%{http_code}`n" http://localhost:8081/api/v1/accounts/$id
 
-Activate, update, freeze, unfreeze, close:
+curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/$id/freeze
 
-```powershell
-curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/ACC-YOUR-ID/activate
+curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/$id/activate
 
 curl.exe -s -w "`nHTTP:%{http_code}`n" -X PATCH -H "Content-Type: application/json" `
   --data-binary "@requests/update-nickname.json" `
-  http://localhost:8081/api/v1/accounts/ACC-YOUR-ID
+  http://localhost:8081/api/v1/accounts/$id
 
-curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/ACC-YOUR-ID/freeze
+curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/$id/freeze
 
-curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/ACC-YOUR-ID/activate
+curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/$id/activate
 
-curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/ACC-YOUR-ID/close
-```
+curl.exe -s -w "`nHTTP:%{http_code}`n" -X POST http://localhost:8081/api/v1/accounts/$id/close
 
-Closed records stay in the database:
+curl.exe -s -w "`nHTTP:%{http_code}`n" http://localhost:8081/api/v1/accounts/$id
 
-```powershell
-curl.exe -s -w "`nHTTP:%{http_code}`n" http://localhost:8081/api/v1/accounts/ACC-YOUR-ID
-```
-
-Missing account:
-
-```powershell
 curl.exe -s -w "`nHTTP:%{http_code}`n" http://localhost:8081/api/v1/accounts/ACC-MISSING
 ```
 
@@ -784,6 +774,7 @@ If you added `log.info(request.toString())` anywhere, remove it.
 | `Terminate batch job (Y/N)?` | Type **`Y`** and Enter. That is how Windows Maven finishes after Ctrl+C. |
 | `curl: option --versioncd` | You pasted two commands on one line. Run `curl.exe --version` and `cd` separately. |
 | Lab 0 check WARN on port 5433 | OK if `docker compose ps` shows `md287-account-db` **(healthy)**. |
+| `ACCOUNT_NOT_FOUND` for `ACC-YOUR-ID` | That string is a placeholder. Use the `accountId` from your **201** create body (for example `ACC-27221E0B`) in `$id`. |
 | `git pull`: not a git repository | You are in the home folder. `cd $env:USERPROFILE\MD287` then `git pull`. |
 | `destination path 'MD287' already exists` | Do not clone. You already have the repo. Run Step 0. |
 | `docker info` / `docker compose` cannot connect | Start **Docker Desktop** and wait until the engine is ready, then retry. |
