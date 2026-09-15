@@ -38,7 +38,7 @@ Per-module reading packs (PDF): [slides/supplementary material](slides/supplemen
 
 ## Labs
 
-Index: [labs/LABS-INDEX.md](labs/LABS-INDEX.md) · Checkpoints: [labs/EXERCISES-INDEX.md](labs/EXERCISES-INDEX.md)
+Index: [labs/LABS-INDEX.md](labs/LABS-INDEX.md) · Checkpoints: [labs/EXERCISES-INDEX.md](labs/EXERCISES-INDEX.md) · In-slide activity answers: [labs/practice-exercises/](labs/practice-exercises/)
 
 | Day | Lab | Exercises |
 | --- | --- | --- |

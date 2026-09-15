@@ -13,7 +13,7 @@ cd MD287
 
 If you are not on the VM desktop yet, start with **[Lab 0](day-00/lab0/LAB-0-GUIDE.md) Step 1**. Use **`curl.exe`** in PowerShell.
 
-Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the module PDFs in `slides/`).
+Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the module PDFs in `slides/`). In-slide activity answers: [practice-exercises/](practice-exercises/).
 
 ## Day 1 morning: Log in and set up the VM
 
