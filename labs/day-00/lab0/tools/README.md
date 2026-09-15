@@ -6,6 +6,8 @@ Participant helper for **Lab 0 — Environment Setup**.
 | ------ | ------- |
 | [`check-environment.ps1`](check-environment.ps1) | Verify Java 21, Maven, Git, Python, `oc`, `curl.exe`, Docker, and Lab 1 ports |
 
+GitHub Copilot Free is signed in during Lab 0 Step 2 (VS Code). The check script does **not** verify Copilot; confirm the status bar shows Copilot ready.
+
 From the cloned repo root:
 
 ```powershell

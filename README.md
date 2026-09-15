@@ -14,7 +14,7 @@ git clone https://github.com/Innovation-In-Software/springboot-microservices-wit
 cd MD287
 ```
 
-No GitHub login. Work in each lab's `starter/` folder.
+No GitHub login for clone. Sign in to **GitHub Copilot Free** in VS Code on the VM during Lab 0. Work in each lab's `starter/` folder.
 
 ## Technology stack
 
@@ -26,7 +26,7 @@ Docker Desktop      Red Hat OpenShift     OpenShift Pipelines
 GitHub Copilot      OpenShift AI          MCP
 ```
 
-**Workstations:** TEKsystems Ablaze VMs (required all five days). **OpenShift (ARO):** required for Labs 4–5.
+**Workstations:** TEKsystems Ablaze VMs (required all five days). Every student VM and the instructor VM already have **GitHub Copilot Free** in VS Code (sign in during Lab 0). **OpenShift (ARO):** required for Labs 4–5.
 
 **Your login:** find your name in [LAB-ACCESS.md](LAB-ACCESS.md) (Ablaze portal, username, passwords, OpenShift project). Then start [Lab 0](labs/day-00/lab0/README.md) **on that VM**, not on a laptop.
 

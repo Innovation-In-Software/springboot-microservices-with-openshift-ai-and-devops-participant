@@ -14,7 +14,7 @@ This is the official OUTLINE.md checkpoint. Complete it before or as directed in
 1. Open labs/day-01/lab1/starter and find controller, service, DTO, and validation TODOs
 2. Name the layers: Controller → Service → Repository → PostgreSQL (Flyway, not Hibernate DDL)
 3. List validation rules you will enforce (customerId CUST- plus four digits, nickname length, legal status change). accountId is generated
-4. Confirm logs will use accountId/status only — no request bodies or PII
+4. Confirm logs will use accountId/status only — no request bodies or PII. GitHub Copilot (Free, already on this VM) can explain the starter TODOs; **review before accept** — do not skip into generated Lab 2 code.
 
 ## Expected result
 

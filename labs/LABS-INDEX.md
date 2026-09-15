@@ -2,9 +2,9 @@
 
 Log in to your **Ablaze virtual machine** first, then clone this participant repo **on that VM**. Each day has one progressive lab that continues the banking platform.
 
-**Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. Workstation checklist: [Lab 0](day-00/lab0/LAB-0-GUIDE.md).
+**Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. Every student VM and the instructor VM already have **GitHub Copilot Free** in VS Code (sign in during Lab 0). **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. Workstation checklist: [Lab 0](day-00/lab0/LAB-0-GUIDE.md).
 
-Portal: **https://my.ablazedesktop.com** — find your name, username, and passwords in [LAB-ACCESS.md](../LAB-ACCESS.md). After the Windows desktop appears, clone **inside the VM**:
+Portal: **https://my.ablazedesktop.com** (find your name, username, and password in [LAB-ACCESS.md](../LAB-ACCESS.md)). After the Windows desktop appears, clone **inside the VM**:
 
 ```powershell
 git clone https://github.com/Innovation-In-Software/springboot-microservices-with-openshift-ai-and-devops-participant.git MD287
@@ -55,5 +55,5 @@ labs/day-NN/
   exercises/             ← checkpoint worksheets
   labN/
     LAB-N-GUIDE.md
-    starter/             ← you work here
+    starter/
 ```

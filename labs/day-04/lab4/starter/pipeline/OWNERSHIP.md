@@ -2,7 +2,7 @@
 
 **Module 7** (DevOps and CI/CD) · Day 4 · **Checkpoint C**
 
-Fill the **Who typically owns it** column. Discuss with the class when the instructor asks.
+Fill the **Who typically owns it** column before you look at the solution copy.
 
 | Stage | What happens | Who typically owns it | Fail means |
 | --- | --- | --- | --- |
@@ -18,4 +18,4 @@ Fill the **Who typically owns it** column. Discuss with the class when the instr
 | smoke | Readiness + a synthetic API check | | Version is live but not healthy |
 | approval | Human promote to a higher env | | No production push without review |
 
-Walk the table with the class. There is no separate answer key in this pack.
+Compare with `../../solution/pipeline/OWNERSHIP.md` when the instructor says the exercise is over.

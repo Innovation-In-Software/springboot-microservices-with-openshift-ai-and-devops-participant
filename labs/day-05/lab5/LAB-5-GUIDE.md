@@ -36,6 +36,7 @@ Code and tests run on the VM. Sample `TransactionSubmitted` JSON is the required
 | **Human review** | HOLD rows stay `PENDING` until a reviewer posts APPROVE or DECLINE |
 | **Audit** | Persist `modelName`, `modelVersion`, `modelScore`, `policyVersion`, `correlationId` |
 | **MCP** | Walk Exercise 5.3 worksheet (already filled) — auth, HITL, audit. No MCP server. |
+| **GitHub Copilot Free** | Already on this VM. Copilot may draft `PolicyEngine` if/else — **review before accept**; tests must prove the table. |
 | **runAsUser 100** | Named `USER md287` is not enough on ARO. Keep `runAsNonRoot` and set uid **100**. |
 
 ### Policy table (`policy-v1`)
@@ -71,6 +72,7 @@ Health stays public.
 | HTTP | **`curl.exe`**, not `curl` |
 | Tokens | `python labs\day-05\lab5\tools\issue-jwt.py ops` (and `reviewer`) |
 | Stop older labs first | Labs 1–4 may still bind **9092** |
+| GitHub Copilot | **Copilot Free** is already on this VM. Use it to draft `PolicyEngine`; tests must prove the table. **Review before accept**. |
 
 **You need:**
 
@@ -137,6 +139,8 @@ Policy tests fail until Step 3. That is expected.
 
 Open `policy/PolicyEngine.java`. Replace the TODO with the table above. Use the injected `Md287Properties.Policy` thresholds — do not hard-code magic numbers.
 
+GitHub Copilot (Free, already on this VM) may draft the if/else. **Review before accept.** Reject any suggestion that auto-APPROVEs when the model is down. Tests must prove every row of the table.
+
 ```powershell
 mvn -Dtest=PolicyEngineTest test
 ```
@@ -149,7 +153,7 @@ mvn -Dtest=PolicyEngineTest test
 
 ### Step 4 — Safe model fallback
 
-`ModelClient` already sets connect/read timeouts. Confirm the `catch` blocks return `ModelScore.timeout()` / `unavailable()` and **never** invent a score.
+`ModelClient` already sets connect/read timeouts. Confirm the `catch` blocks return `ModelScore.timeout()` / `unavailable()` and **never** invent a score. If Copilot suggests `return ModelScore.ok(...)` in a catch block, reject it.
 
 `AssessmentService` must call `policyEngine.decide` with that result so a timeout becomes HOLD.
 
@@ -272,7 +276,7 @@ curl.exe -s https://$RISK/actuator/health/readiness
 
 **Expected result:** Pod Ready. Route readiness **200**. This is the OpenShift evidence for the capstone demo.
 
-3. Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls. You do **not** run an MCP server.
+3. Fill `mcp-controls.md` in this starter folder (Exercise 5.3): if an MCP tool called `get_assessment` / `submit_review`, list auth, HITL, and audit controls. Compare with `../solution/mcp-controls.md` when the instructor says to. You do **not** run an MCP server.
 
 ---
 

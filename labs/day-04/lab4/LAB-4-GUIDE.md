@@ -39,6 +39,7 @@ Lab 5 will add Risk Assessment and OpenShift AI. Do not add a third Java service
 | **Immutable tags** | Promote `1.0.0` / `1.0.1`, not `:latest`. |
 | **Pipeline gates** | CRITICAL CVE → fail. SBOM is the ingredients list. Unsigned images must not run. |
 | **Rollback** | Compose tag swap to practice, then **`oc rollout undo` on the assigned project** (required). |
+| **GitHub Copilot Free** | Already on this VM. Ask Copilot to *explain* `USER md287` / non-root. **Review before accept.** |
 
 ### What you are not installing today
 
@@ -60,6 +61,7 @@ Jenkins is **awareness only** (Module 11). Do not install Jenkins. GitOps is con
 | HTTP | **`curl.exe`**, not `curl` |
 | Tokens | `python labs\day-03\lab3\tools\issue-jwt.py teller` (and `ops`) |
 | Stop older labs first | Lab 1–3 Compose stacks use the same host ports |
+| GitHub Copilot | **Copilot Free** is already on this VM. Use it to explain Containerfiles and manifests; **review before accept**. |
 
 **You need:** Docker Desktop, Python 3 for JWTs, **OpenShift `oc`**, and classroom `oc login` to your assigned project. Java 21 only if you open the Lab 3 source.
 
@@ -104,9 +106,9 @@ You package **working** Lab 3 services. You do not rebuild JWT or Kafka logic he
 management.endpoint.health.probes.enabled: true
 ```
 
-2. Confirm `.dockerignore` exists in each Lab 3 starter module (`target/`, tests, IDE files). That keeps image layers small.
+2. Confirm `.dockerignore` exists in each Lab 3 solution module (`target/`, tests, IDE files). That keeps image layers small.
 
-**Expected result:** you know the build **context** is your Lab 3 starter, and the Containerfile lives in Lab 4.
+**Expected result:** you know the build **context** is Lab 3 solution, and the Containerfile lives in Lab 4.
 
 **Why this matters:** Twelve-factor **build** is separate from **run**. The JAR you ship should be the one you already tested.
 
@@ -119,7 +121,7 @@ Open:
 - `starter/account-service/Containerfile`
 - `starter/transaction-service/Containerfile`
 
-Replace the TODOs with a multi-stage Alpine JRE image: group/user `md287`, `chown`, `USER`, `EXPOSE`.
+Replace the TODOs with the pattern from the solution (Alpine JRE, group/user `md287`, `chown`, `USER`, `EXPOSE`). GitHub Copilot (Free, already on this VM) can draft or explain the Containerfile — **review before accept**. Do not accept a `USER root` image.
 
 Account exposes **8081**. Transaction exposes **8082**.
 
@@ -155,7 +157,7 @@ docker run --rm --entrypoint id md287/account-service:1.0.0
 
 **Why this matters:** A container that runs as root is one break-out away from host power. OpenShift will often **refuse** a root image when `runAsNonRoot: true` is set.
 
-If you get stuck, compare with a classmate’s Containerfile or raise a hand. Do not wait for a `solution/` folder — this pack does not include one.
+If you get stuck, copy the two Containerfiles from `../solution/` and rebuild.
 
 ---
 
@@ -244,9 +246,9 @@ The outline deploys to **pre-provisioned** projects. You do **not** create a nam
 
 **Do this:**
 
-1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Use liveness `/actuator/health/liveness`, readiness `/actuator/health/readiness`, and small CPU/memory requests and limits.
+1. In `starter/openshift/10-account.yaml` and `20-transaction.yaml`, replace the probe and resource TODOs. Match `../solution/openshift/`.
 
-2. Log in and select **your** project (API URL is the classroom cluster; username and password are in [LAB-ACCESS.md](../../../LAB-ACCESS.md)):
+2. Log in and select **your** project (API URL is the classroom cluster; username and password come from the instructor):
 
 ```powershell
 oc login https://api.aro-md287.centralus.aroapp.io:6443/ --username <your-username> --password <password>
@@ -367,7 +369,7 @@ curl.exe -s https://$HOST/actuator/info
 
 ## Success criteria
 
-- [ ] Account and Transaction images build from Lab 3 starter context
+- [ ] Account and Transaction images build from Lab 3 solution context
 - [ ] Container process is **not** root (`docker run --rm --entrypoint id ...`)
 - [ ] Compose stack: liveness, readiness, `/actuator/metrics`, `/actuator/info`
 - [ ] JWT still required on business APIs; health stays public
@@ -385,7 +387,7 @@ curl.exe -s https://$HOST/actuator/info
 | Symptom | What to check |
 | --- | --- |
 | Port already allocated | `docker compose down` in Lab 1–3 folders; `docker ps` |
-| Image build COPY fails | Build **context** must be the Lab 3 starter module, `-f` is the Lab 4 Containerfile |
+| Image build COPY fails | Build **context** must be the Lab 3 solution module, `-f` is the Lab 4 Containerfile |
 | `id` still shows root | `USER md287` missing; rebuild without cache `docker build --no-cache ...` |
 | Readiness never 200 | Postgres/Kafka not healthy; `docker compose ps` and `docker logs md287-lab4-account` |
 | Transaction stays RECEIVED | Kafka topics: `kafka-init` must complete; wait and GET again |

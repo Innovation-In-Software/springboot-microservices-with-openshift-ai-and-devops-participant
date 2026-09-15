@@ -1,6 +1,6 @@
 # Day 0 / Day 1 morning — Log in and set up the VM
 
-**Lab 0:** Sign in to your TEKsystems Ablaze VM, then prove **that VM** can run Labs 1–5.  
+**Lab 0:** Sign in to your TEKsystems Ablaze VM, sign in to **GitHub Copilot Free** in VS Code on that VM, then prove **that VM** can run Labs 1–5.  
 **When:** Day 1 morning, **before Module 1**.  
 **Day outcome:** You are on your assigned VM; toolchain verified; repo cloned; Account Postgres healthy; Maven cache warmed.
 

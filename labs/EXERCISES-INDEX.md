@@ -25,3 +25,4 @@ Worksheets live next to the day’s lab. **4.3** and **5.3** live inside the lab
 **Lab 0** (workstation gate, before Module 1): [day-00/lab0/LAB-0-GUIDE.md](day-00/lab0/LAB-0-GUIDE.md)
 
 In-module practice slides use an **order / e-commerce** story. Official checkpoints and Labs 1–5 use the **banking** Account → Transaction → Risk platform only.
+

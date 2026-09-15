@@ -35,6 +35,7 @@ Lab 4 will containerize these services. Keep the JWT secret in `application.yml`
 | **Safe fallback** | Fallback throws 503. It must **not** return a synthetic ACTIVE account. |
 | **409 does not trip it** | FROZEN or missing account is `ACCOUNT_NOT_ELIGIBLE`; listed in `ignoreExceptions`. |
 | **Log redaction** | Log `accountId` and `status`. Never log Bearer tokens or JWT claims. |
+| **GitHub Copilot Free** | Already on this VM. Ask Copilot to *explain* fallbacks. Reject any dummy ACTIVE `AccountView`. **Review before accept.** |
 
 ### Who can call what
 
@@ -71,6 +72,7 @@ When Account Service is slow, down, or the circuit is open:
 | Open Account Service | File → Open Folder → `labs/day-03/lab3/starter/account-service` |
 | Open Transaction Service | … `starter/transaction-service` (second VS Code window is fine) |
 | HTTP | **`curl.exe`**, not `curl` |
+| GitHub Copilot | **Copilot Free** is already on this VM. Use it to explain and draft; **review before accept**. |
 
 **You need:**
 
@@ -230,7 +232,7 @@ Start Account Service again. Wait ~10s (open-state wait). A later POST should su
 
 ### Step 6 — Tests and log review
 
-Write these test classes if they are not already in your tree:
+Copy these test classes from `solution/` if they are not in your tree:
 
 - `account-service/.../AccountSecurityTest.java`
 - `transaction-service/.../TransactionSecurityTest.java`
@@ -251,7 +253,7 @@ Log checklist:
 - [ ] No JWT payload (`scope`, `sub` dumps)
 - [ ] 503 path does **not** log a fake ACTIVE status
 
-Optional Copilot: ask it to **explain** the fallback methods. Reject any suggestion that returns a dummy ACTIVE `AccountView`.
+GitHub Copilot (Free, already on this VM): ask it to **explain** the fallback methods. Reject any suggestion that returns a dummy ACTIVE `AccountView`.
 
 ---
 

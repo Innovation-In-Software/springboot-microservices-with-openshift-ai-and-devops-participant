@@ -5,7 +5,7 @@
 **Time:** 20–30 minutes  
 **Difficulty:** Beginner
 
-**Objective:** Sign in to **your assigned TEKsystems Ablaze virtual machine**, then do **all** setup **on that VM**: clone the course repo and prove Java 21, Maven, Docker, Git, Python, `oc`, and `curl.exe` work **before** you write any Account Service code.
+**Objective:** Sign in to **your assigned TEKsystems Ablaze virtual machine**, then do **all** setup **on that VM**: clone the course repo, sign in to **GitHub Copilot Free** in VS Code, and prove Java 21, Maven, Docker, Git, Python, `oc`, and `curl.exe` work **before** you write any Account Service code.
 
 Do **not** run Labs 1–5 on your personal laptop. The gold image (JDK, Maven, Docker, `oc`) is on the VM.
 
@@ -18,6 +18,7 @@ Do **not** run Labs 1–5 on your personal laptop. The gold image (JDK, Maven, D
 By the end of this lab you will have:
 
 - A browser session at **https://my.ablazedesktop.com** showing **your** Windows VM desktop (not a classmate’s)
+- **GitHub Copilot Free** signed in inside VS Code on that VM (every participant VM and the instructor VM already have Copilot)
 - The course repo cloned to `%USERPROFILE%\MD287`
 - Java **21** first on PATH, and Maven using that JDK
 - Docker Desktop **engine** running (not only installed)
@@ -41,7 +42,8 @@ Read this once. Each idea shows up in a later step.
 | **`curl.exe` vs `curl`** | PowerShell aliases `curl` to `Invoke-WebRequest`. Always type **`curl.exe`**. |
 | **Java 21 first on PATH** | `java -version` must print **21**. A second JDK 17 first on PATH breaks every lab. |
 | **Docker engine vs Docker Desktop** | The whale icon idle means the engine is up. `docker info` must print a **Server Version**. |
-| **Public clone, no GitHub login** | You clone the course repo yourself. Do not copy labs from a USB stick as a substitute. |
+| **Public clone, no GitHub login** | You clone the course repo yourself. Do not copy labs from a USB stick as a substitute. Clone still needs **no** GitHub password. |
+| **GitHub Copilot Free** | Every student VM and the instructor VM already have Copilot via a **free** GitHub Copilot account. Sign in once in VS Code on this VM. That sign-in is for the editor only — it is not required for `git clone`. **Review before accept** on every later lab. |
 | **Work in `starter/`** | Each later lab has a `starter/` folder. This participant pack has no `solution/`. |
 | **One Compose stack at a time** | Account Postgres uses host **5433**. If that port is busy, stop the other container first. |
 | **OpenShift is later** | `oc version --client` today. `oc login` is **Day 4**. Do not invent a cluster URL. |
@@ -59,6 +61,7 @@ Read this once. Each idea shows up in a later step.
 | Python | 3.12+ (not `WindowsApps` Store stub) |
 | OpenShift CLI | `oc` 4.x client |
 | HTTP | **`curl.exe`** |
+| GitHub Copilot | **Copilot Free** in VS Code — already available on this VM |
 
 OpenShift **login**, the ARO project, and the model Route are **not** part of Lab 0. The instructor issues those before Lab 4.
 
@@ -74,6 +77,7 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 | Username | Your Ablaze login from [LAB-ACCESS.md](../../../LAB-ACCESS.md) (pattern `MSMICR26-` plus two digits) |
 | Password | The class password in [LAB-ACCESS.md](../../../LAB-ACCESS.md) (same for every seat) |
 | After desktop loads | Use **Start → Visual Studio Code** on the VM (not an editor on your laptop) |
+| GitHub Copilot | Sign in on this VM with the GitHub account that has **Copilot Free**. Every participant VM and the instructor VM already have it. |
 | Terminal | On the VM: Ctrl+` → PowerShell |
 | Clone folder | On the VM: `%USERPROFILE%\MD287` (for example `C:\Users\student.VLAB\MD287`) |
 | HTTP calls | Use **`curl.exe`**, not `curl` |
@@ -83,7 +87,8 @@ OpenShift **login**, the ARO project, and the model Route are **not** part of La
 **Do not:**
 
 - Install another JDK, Maven, or Docker beside the gold image
-- Create a GitHub account or fork the repo
+- Fork the course repo, or type a GitHub password for `git clone` (the clone URL is public)
+- Skip Copilot sign-in in VS Code — you already have **Copilot Free** on this VM
 - Run `oc login`
 - Copy files from a `solution/` folder (this pack does not include one)
 - Start coding Account Service (that is Lab 1)
@@ -122,6 +127,11 @@ You can do this step from the classroom laptop, a loaner, or any browser. You do
 
 1. **Inside the Ablaze desktop** (not on your local PC), open **Visual Studio Code** from the Start menu. Cursor is not required.
 2. Press **Ctrl+`** for a terminal. If the shell is not PowerShell, click the `+` dropdown and choose **Windows PowerShell**.
+3. Sign in to **GitHub Copilot** in VS Code. Every student VM and the instructor VM already have Copilot via a **Copilot Free** account.
+   - Open the Command Palette (`Ctrl+Shift+P`) and run **GitHub Copilot: Sign In**, or click the Copilot icon in the status bar.
+   - Sign in with the GitHub account that already has Copilot Free. Do not create a new GitHub account during this lab unless the instructor says the Free plan is not yet on your account.
+   - Confirm the status bar shows Copilot ready (not “Sign in” or inactive).
+   - This sign-in is **only** for the editor. Step 4 `git clone` still needs no GitHub password. Do **not** fork the course repo.
 
 Confirm the prompt is a VM profile, for example `PS C:\Users\student>` or `PS C:\Users\student.VLAB>`.
 
@@ -129,8 +139,9 @@ Confirm the prompt is a VM profile, for example `PS C:\Users\student>` or `PS C:
 
 - VS Code is running **on the virtual machine**
 - You can type in PowerShell (the prompt is not frozen)
+- GitHub Copilot is signed in on this VM (Copilot Free)
 
-**Why this matters:** If you open VS Code on your laptop instead of the VM, `java` and `docker` will not be the classroom toolchain.
+**Why this matters:** If you open VS Code on your laptop instead of the VM, `java` and `docker` will not be the classroom toolchain. Copilot on this VM is how you will explain and draft later lab code — still **review before accept**.
 
 ---
 
@@ -198,7 +209,7 @@ In VS Code: **File → Open Folder** → `%USERPROFILE%\MD287`.
 
 **Expected result:**
 
-- Clone finishes without asking for a GitHub username or password
+- Clone finishes without asking for a GitHub username or password (Copilot sign-in in VS Code is separate and does not change this)
 - `labs\day-00\lab0\LAB-0-GUIDE.md` exists (this file)
 - `labs\day-01\lab1\starter\account-service\pom.xml` exists
 - VS Code is rooted at the `MD287` folder
@@ -312,6 +323,7 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 
 - [ ] Browser is on **https://my.ablazedesktop.com** and shows **your** Windows VM desktop
 - [ ] VS Code + PowerShell are open **on that VM** (not on your laptop)
+- [ ] GitHub Copilot is signed in on this VM (Copilot Free)
 - [ ] `java -version` prints **21**
 - [ ] `mvn -version` uses Java **21**
 - [ ] `git --version` works
@@ -336,6 +348,7 @@ If this hangs or fails on `Could not transfer artifact`, raise a hand (outbound 
 | Desktop never appears / black screen | Lab assistant → **TEKsystems**. Do not share someone else’s VM. |
 | You ran `java` on your laptop | Close that window. Type only **inside** the Ablaze desktop. |
 | VS Code missing / frozen desktop | TEKsystems image issue. Do not install Cursor on the VM unless the instructor says so. |
+| Copilot asks you to sign in / shows inactive | Use **GitHub Copilot: Sign In** in VS Code on the VM with the GitHub account that has **Copilot Free**. Every student VM and the instructor VM already have Copilot. Raise a hand if the extension is missing. |
 | `java -version` shows 17 | JDK 21 is not first on PATH. TEKsystems — do not install a second JDK yourself. |
 | `mvn` not recognized | Maven is not on PATH. TEKsystems gold image. |
 | `python` opens the Microsoft Store | Store stub. Need Python 3.12+ on PATH (`C:\Python312` or similar), not `WindowsApps`. |

@@ -14,7 +14,7 @@ This is the official OUTLINE.md checkpoint. Complete it before or as directed in
 1. First match wins: model not OK → HOLD MODEL_UNAVAILABLE
 2. Amount ≥ 5000 → HOLD HIGH_VALUE. Score ≥ 70 → DECLINE HIGH_SCORE
 3. Score < 40 and amount < 1000 → APPROVE LOW_SCORE_LOW_VALUE. Else HOLD REVIEW_BAND
-4. Copilot may draft the if/else — review before accept; tests must prove the table
+4. Use GitHub Copilot (Free, already on this VM) to draft the if/else — **review before accept**; tests must prove the table
 
 ## Expected result
 

@@ -36,6 +36,7 @@ Lab 5 will add Risk Assessment as the long-term consumer of this event. Today yo
 | **Idempotent consumer** | Table `processed_events` keyed by `event_id`. A replay is a no-op. |
 | **Dead-letter topic** | After 2 retries, unreadable/poison messages go to `transactions.submitted.DLT`. |
 | **No distributed transaction** | You do **not** update Account Service's database. Eventual consistency is enough for this step. |
+| **GitHub Copilot Free** | Already on this VM. Ask Copilot to *explain* the consumer. **Review before accept.** |
 
 ### Status flow
 
@@ -82,10 +83,11 @@ Synthetic IDs only: `ACC-` + 8 hex, `TXN-` + 8 hex, amounts in USD.
 | Open the starter | File → Open Folder → `labs/day-02/lab2/starter/transaction-service` |
 | Terminal | Ctrl+` → PowerShell |
 | HTTP calls | Use **`curl.exe`** (not `curl` — PowerShell aliases `curl` to something else) |
+| GitHub Copilot | **Copilot Free** is already on this VM. Use it to explain and draft; **review before accept**. |
 
 **You need:**
 
-- Completed **Lab 1 Account Service** running on **8081** (your finished Lab 1 starter)
+- Completed **Lab 1 Account Service** running on **8081** (your finished lab or `labs/day-01/lab1/starter/account-service`)
 - Java 21
 - Maven 3.9+
 - Docker Desktop running (PostgreSQL **and** Kafka)
@@ -512,7 +514,7 @@ mvn test
 
 **Expected:** tests pass (service, consumer, controller).
 
-Optional Copilot: ask it to **explain** `TransactionSubmittedConsumer`. Do not accept generated Kafka code until you can say what happens on a duplicate `eventId`.
+GitHub Copilot (Free, already on this VM): ask it to **explain** `TransactionSubmittedConsumer`. Do not accept generated Kafka code until you can say what happens on a duplicate `eventId`.
 
 Log checklist:
 

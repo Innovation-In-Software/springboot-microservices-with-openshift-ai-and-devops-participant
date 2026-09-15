@@ -8,7 +8,7 @@ Run **Lab 0** before Module 1. Run **Lab 1** as the Day 1 coding lab.
 ## Layout
 
 ```text
-exercises/                   ← checkpoints 1.1–1.3 (1.1 and 1.2 include a reference solution)
+exercises/                   ← checkpoints 1.1–1.3
 lab1/
   LAB-1-GUIDE.md
   starter/account-service/   ← you work here
