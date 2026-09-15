@@ -3,7 +3,7 @@
 **Lab 2:** Transaction Service  
 **Day outcome:** A two-service workflow using REST validation and TransactionSubmitted events.
 
-Run **Lab 2** as the Day 2 hands-on. Keep Lab 1 Account Service running. Work from `%USERPROFILE%\MD287`.
+Run **Lab 2** as the Day 2 hands-on. Keep Lab 1 Account Service running on **8081**. Work from `%USERPROFILE%\MD287`. Start with `git pull` (Lab 2 Step 0). Do **not** clone, `mklink`, or `oc login`. Use **`curl.exe`**.
 
 ## Layout
 

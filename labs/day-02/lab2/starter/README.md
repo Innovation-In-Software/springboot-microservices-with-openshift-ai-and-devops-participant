@@ -2,10 +2,10 @@
 
 This folder is the **participant starter** for Lab 2.
 
-Open `transaction-service/` in VS Code (under `%USERPROFILE%\MD287`) and follow:
-
 **[LAB-2-GUIDE.md](../LAB-2-GUIDE.md)**
 
-Do not copy files from `../solution/` until the instructor says the lab is over.
+Do **all** of this **on the Ablaze VM** in `%USERPROFILE%\MD287`. Use **`curl.exe`**. Do **not** run `oc login`.
 
-**Required:** Lab 1 Account Service running on port 8081.
+**Required:** your Lab 1 Account Service running on port **8081** (`labs\day-01\lab1\starter\account-service`). Do not copy files from a `solution/` folder.
+
+You need **three** terminals: Account Service, Transaction Service, and `curl.exe`.
