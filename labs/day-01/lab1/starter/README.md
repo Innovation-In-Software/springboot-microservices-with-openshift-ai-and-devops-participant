@@ -2,7 +2,7 @@
 
 This folder is the **participant starter** for Lab 1.
 
-Open `account-service/` in VS Code (under `%USERPROFILE%\MD287`) and follow:
+From `%USERPROFILE%\MD287` run `git pull`, then open `account-service/` and follow:
 
 **[LAB-1-GUIDE.md](../LAB-1-GUIDE.md)**
 

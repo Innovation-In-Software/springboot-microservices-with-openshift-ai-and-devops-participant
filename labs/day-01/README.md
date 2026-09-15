@@ -3,7 +3,7 @@
 **Labs:** [Lab 0 — Environment Setup](../day-00/lab0/LAB-0-GUIDE.md) (morning) · Lab 1 — Account Service  
 **Day outcome:** A functional, documented Spring Boot Account Service — capstone service 1 of 3.
 
-Run **Lab 0** before Module 1. Run **Lab 1** as the Day 1 coding lab. Work from `%USERPROFILE%\MD287`.
+Run **Lab 0** before Module 1. Run **Lab 1** as the Day 1 coding lab. Work from `%USERPROFILE%\MD287`. First Lab 1 command: `cd $env:USERPROFILE\MD287` then `git pull`.
 
 ## Layout
 

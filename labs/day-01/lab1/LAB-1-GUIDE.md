@@ -113,7 +113,7 @@ Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **n
 | Two terminals | Terminal → New Terminal. App runs in the first. `curl.exe` in the second. |
 | GitHub Copilot | Signed in during Lab 0. Review before accept. |
 
-**Already finished [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md)?** Docker Desktop is running, Maven cache is warm, and `md287-account-db` may already be **(healthy)** on port **5433**. Start at Step 1. `docker compose up -d` is safe to repeat.
+**Already finished [Lab 0](../../day-00/lab0/LAB-0-GUIDE.md)?** Docker Desktop is running, Maven cache is warm, and `md287-account-db` may already be **(healthy)** on port **5433**. Start at **Step 0** (`git pull`), then Step 1. `docker compose up -d` is safe to repeat.
 
 If Lab 0 is not done, stop and finish it first.
 
@@ -122,6 +122,21 @@ If Lab 0 is not done, stop and finish it first.
 ## Steps from the training slides
 
 Follow these steps in order. Finish one step before starting the next.
+
+### Step 0 — Pull the latest repo
+
+Get the latest Lab 1 guide and starter from GitHub. Do **not** clone. Do **not** run `mklink`.
+
+```powershell
+cd $env:USERPROFILE\MD287
+git pull
+```
+
+**Expected:** `Already up to date.` or a Fast-forward. Prompt ends with `\MD287>`.
+
+Then: **File → Open Folder** → `%USERPROFILE%\MD287` if it is not already open.
+
+`git pull` only works **inside** the repo. Do not run it from `C:\Users\student.VLAB`. If clone/`mklink` says the folder already exists, ignore that and stay in `MD287`.
 
 ### Step 1 — Run and validate the starter
 
@@ -729,6 +744,8 @@ If you added `log.info(request.toString())` anywhere, remove it.
 
 | Symptom | What to check |
 | --- | --- |
+| `git pull`: not a git repository | You are in the home folder. `cd $env:USERPROFILE\MD287` then `git pull`. |
+| `destination path 'MD287' already exists` | Do not clone. You already have the repo. Run Step 0. |
 | `docker info` / `docker compose` cannot connect | Start **Docker Desktop** and wait until the engine is ready, then retry. |
 | `docker compose ps` still says `(health: starting)` | Wait ~10 seconds and run `docker compose ps` again before `mvn spring-boot:run`. |
 | Port 5433 already in use | Another Postgres is bound to 5433. Stop it, or change the left-hand port in `docker-compose.yml` **and** in `application-local.yml`. |
