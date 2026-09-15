@@ -110,10 +110,11 @@ if (-not $javaPath) {
     Add-Check "Java" "FAIL" "java is not on PATH"
 } else {
     $javaText = Get-JavaVersionText
-    if ($javaText -match 'version\s+"21([\.\-"]|$)') {
+    # Windows PowerShell 5.1 cannot parse a regex that mixes " and [ in one quoted string.
+    if ($javaText -match 'version "21') {
         $line = ($javaText -split "`n")[0].Trim()
         Add-Check "Java 21" "PASS" "$line  ($javaPath)"
-    } elseif ($javaText -match 'version\s+"(\d+)') {
+    } elseif ($javaText -match 'version "(\d+)') {
         Add-Check "Java 21" "FAIL" "Found Java $($Matches[1]) at $javaPath — need 21 first on PATH"
     } else {
         Add-Check "Java 21" "FAIL" "Could not parse java -version. Output: $javaText"
@@ -216,7 +217,7 @@ if (-not $dockerPath) {
         }
     }
     $composeText = (& docker compose version 2>&1 | ForEach-Object { $_.ToString() }) -join " "
-    if ($LASTEXITCODE -eq 0 -and $composeText -match "v?2\.|version") {
+    if ($LASTEXITCODE -eq 0 -and $composeText -match "version") {
         Add-Check "Docker Compose v2" "PASS" $composeText.Trim()
     } else {
         Add-Check "Docker Compose v2" "FAIL" "docker compose version failed. Need Compose v2 (docker compose, two words)."
