@@ -1,6 +1,6 @@
 # Exercises — official checkpoints (new module PowerPoints)
 
-These 15 worksheets are the **official numbered checkpoints** matching the module PDFs in [`slides/`](../slides/README.md) (Modules 1–12 + capstone). In-slide practice exercises (for example “Retry or Not?”) have reference answers in [practice-exercises/](practice-exercises/).
+These 15 worksheets are the **official numbered checkpoints** matching the module PDFs in [`slides/`](../slides/README.md) (Modules 1–12 + capstone). In-slide practice exercises (for example “Retry or Not?”) have reference answers in [practice-exercises/](practice-exercises/). Instructor copies of those keys: [`../instructor/practice-exercise-solutions/`](../instructor/practice-exercise-solutions/).
 
 Worksheets live next to the day’s lab. **4.3** and **5.3** live inside the lab starter.
 
