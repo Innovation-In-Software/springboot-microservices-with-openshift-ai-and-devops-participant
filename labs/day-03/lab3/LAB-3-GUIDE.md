@@ -35,7 +35,7 @@ Read this once before you type. Each idea shows up in a later step.
 | **Scopes** | `accounts.read` / `accounts.write` and `transactions.read` / `transactions.write`. |
 | **Workload vs user** | The human caller holds the JWT. Transaction Service **relays** that token to Account Service. |
 | **Timeout** | RestClient already uses a 2s connect / 3s read timeout. That is the timeout. |
-| **Circuit breaker** | Resilience4j wraps `AccountClient.requireActiveAccount`. Opens after **4** failed calls (50%); wait **10s**. |
+| **Circuit breaker** | Resilience4j wraps `AccountClient.requireActiveAccount`. Opens after **4** failed calls (`minimumNumberOfCalls: 4` at 50%; YAML `slidingWindowSize: 6`). Wait **10s**. The 5th call then fails fast (`Account circuit open`). |
 | **Safe fallback** | Fallback throws 503. It must **not** return a synthetic ACTIVE account. |
 | **409 does not trip it** | FROZEN or missing account is `ACCOUNT_NOT_ELIGIBLE`; listed in `ignoreExceptions`. |
 | **Log redaction** | Log `accountId` and `status`. Never log Bearer tokens or JWT claims. |
@@ -640,11 +640,11 @@ mvn spring-boot:run
 
 4. Stop **Account Service only** (**Terminal A**: **Ctrl+C**, then **`Y`**). Leave Transaction Service running.
 
-5. **Terminal C** — POST a transaction with `$OPS` **four times** (the breaker window is 4 calls / 50%). Re-issue `$OPS` if needed. Stay in the transaction-service folder so `requests\create-valid.json` exists:
+5. **Terminal C** — POST a transaction with `$OPS` **five times** (4 failures open the breaker; the 5th fails fast). Re-issue `$OPS` if needed. Stay in the transaction-service folder so `requests\create-valid.json` exists:
 
 ```powershell
 cd "$env:USERPROFILE\MD287\labs\day-03\lab3\starter\transaction-service"
-1..4 | ForEach-Object {
+1..5 | ForEach-Object {
   Write-Host "POST $_"
   curl.exe -s -w "`nHTTP:%{http_code}`n" `
     -H "Authorization: Bearer $OPS" `
@@ -654,7 +654,7 @@ cd "$env:USERPROFILE\MD287\labs\day-03\lab3\starter\transaction-service"
 }
 ```
 
-**Expected result:** each call **503** `ACCOUNT_SERVICE_UNAVAILABLE`. No `TransactionSubmitted` publish. **Terminal B** logs fallback or `Account circuit open` — still no token text.
+**Expected result:** each call **503** `ACCOUNT_SERVICE_UNAVAILABLE`. No `TransactionSubmitted` publish. The first four still reach AccountClient (Account is down). The fifth fails fast — **Terminal B** logs `Account circuit open`. Still no token text.
 
 6. Start Account Service again in **Terminal A**:
 

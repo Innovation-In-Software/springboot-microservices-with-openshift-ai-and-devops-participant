@@ -12,7 +12,7 @@ This is the official OUTLINE.md checkpoint. Complete it before or as directed in
 ## Do this
 
 1. Unit-test 401/403 on a protected Account or Transaction endpoint
-2. Unit-test circuit-open → 503 fallback (no fake ACTIVE account)
+2. Unit-test circuit-open → `CallNotPermittedException` (fail-fast). HTTP 503 `ACCOUNT_SERVICE_UNAVAILABLE` is the REST handler — the unit test does not call MockMvc
 3. Name AccountPersistenceTest — Testcontainers Postgres 16; Docker must be running for mvn test
 4. Testcontainers is required for that integration test, not optional awareness
 

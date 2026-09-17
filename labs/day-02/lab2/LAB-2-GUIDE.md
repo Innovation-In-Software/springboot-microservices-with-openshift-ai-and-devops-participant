@@ -688,7 +688,7 @@ mvn spring-boot:run
 
 You need an **ACTIVE** account. Lab 1 accounts that you **closed** will **409**. Create a **new** one.
 
-**Terminal C.** Stay in folders as written. Use **`curl.exe`**. Do **not** call `/transactions/TXN-YOUR-ID` — that literal string is not a transaction and returns **404**.
+**Terminal C.** Stay in folders as written. Use **`curl.exe`**. Do **not** call `/api/v1/transactions/TXN-YOUR-ID` — that literal string is not a transaction and returns **404**.
 
 1. Create and activate an account (Account Service on **8081**):
 
@@ -944,7 +944,7 @@ If you added `log.info(request.toString())` anywhere, remove it.
 | Account health down | Lab 1 `docker compose` + `mvn spring-boot:run` in `labs\day-01\lab1\starter\account-service`. |
 | `git pull`: not a git repository | You are in the home folder. `cd $env:USERPROFILE\MD287` then `git pull`. |
 | `destination path 'MD287' already exists` | Do not clone. You already have the repo. Run Step 0. |
-| `ACCOUNT_NOT_FOUND` for `TXN-YOUR-ID` | That string is a placeholder. Use the `transactionId` from your **201** body in `$txnId`. |
+| `TRANSACTION_NOT_FOUND` for `TXN-YOUR-ID` | That string is a placeholder. Use the `transactionId` from your **201** body in `$txnId`. |
 | `ACCOUNT_NOT_ELIGIBLE` on create | The account is not **ACTIVE** (PENDING, FROZEN, CLOSED, or missing). Create + activate a **new** Lab 1 account and update `requests\create-valid.json`. |
 | `ACCOUNT_SERVICE_UNAVAILABLE` | Account Service is not on **8081**, or `md287.account-service.base-url` is wrong. |
 | Status stuck on RECEIVED | Consumer exception in **Terminal B**; wait 2s and GET again; confirm Kafka is healthy and topic is `transactions.submitted`. |

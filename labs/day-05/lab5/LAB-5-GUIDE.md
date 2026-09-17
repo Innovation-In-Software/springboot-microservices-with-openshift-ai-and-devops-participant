@@ -206,7 +206,7 @@ cd "$env:USERPROFILE\MD287\labs\day-05\lab5\starter\risk-assessment-service"
 mvn test
 ```
 
-**Expected result:** `PolicyEngineTest` fails with `UnsupportedOperationException` / TODO. `AssessmentSecurityTest` fails until Step 5. That is expected. Do **not** copy a `solution/` tree.
+**Expected result:** `PolicyEngineTest` fails with `UnsupportedOperationException` / TODO. `AssessmentServiceTest.modelTimeoutStoresHold` also fails until Step 3 (it constructs a real `PolicyEngine`). `AssessmentSecurityTest` fails until Step 5. Duplicate-event and review tests can already pass. That is expected. Do **not** copy a `solution/` tree.
 
 **Why this matters:** The red tests are the spec. Green tests after you paste are the proof.
 

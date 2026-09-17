@@ -102,7 +102,7 @@ powershell -ExecutionPolicy Bypass -File "labs\day-00\lab0\tools\check-environme
 
 **Expected last line:** `LAB 0 ENVIRONMENT: PASS`
 
-Every row should be **PASS**. Warnings are OK. If **FAIL**, raise a hand and re-run after the fix.
+Every row should be **PASS**. Warnings are OK — if a port is already in use the script prints `PASS WITH WARNINGS`, which is also success. If **FAIL**, raise a hand and re-run after the fix.
 
 ---
 

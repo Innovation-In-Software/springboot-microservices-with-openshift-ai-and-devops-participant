@@ -297,7 +297,7 @@ foreach ($row in $rows) {
 Write-Host ""
 if ($script:failed -gt 0) {
     Write-Host ("LAB 0 ENVIRONMENT: FAIL  ({0} check(s) failed, {1} warning(s))" -f $script:failed, $script:warned) -ForegroundColor Red
-    Write-Host "Fix the FAIL rows using labs\day-00\lab0\LAB-0-GUIDE.md (Troubleshooting), then re-run." -ForegroundColor Red
+    Write-Host "Fix the FAIL rows using labs\day-00\lab0\LAB-0-GUIDE.md (If something fails), then re-run." -ForegroundColor Red
     exit 1
 }
 

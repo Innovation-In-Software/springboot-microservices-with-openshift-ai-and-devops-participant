@@ -746,7 +746,7 @@ curl.exe -sk https://$ROUTE_HOST/actuator/info
 | `id` still shows root | `USER md287` missing; rebuild `docker build --no-cache ...` |
 | Readiness never 200 | Postgres/Kafka not healthy; `docker compose ps` and `docker logs md287-lab4-account` |
 | Transaction stays RECEIVED | Wait 2s and GET `$txnId` again; `kafka-init` must complete |
-| `ACCOUNT_NOT_FOUND` for `ACC-YOUR-ID` / `TXN-YOUR-ID` | Placeholders. Use the id from your **201** body. |
+| `ACCOUNT_NOT_FOUND` for `ACC-YOUR-ID` / `TRANSACTION_NOT_FOUND` for `TXN-YOUR-ID` | Placeholders. Use the id from your **201** body. |
 | 401 with a token | Re-run `issue-jwt.py` into `$TELLER` / `$OPS`. Use `curl.exe`. Same secret as Lab 3. |
 | 503 on POST transaction | Account container not ready — Lab 3 safe fallback, **do not** fake ACTIVE |
 | `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
