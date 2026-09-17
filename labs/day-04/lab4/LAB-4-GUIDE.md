@@ -657,9 +657,11 @@ oc -n $PROJECT get pods,route
 
 ```powershell
 $PROJECT = oc project -q
-$HOST = oc -n $PROJECT get route account-service -o jsonpath="{.spec.host}"
-curl.exe -sk https://$HOST/actuator/health/readiness
+$ROUTE_HOST = oc -n $PROJECT get route account-service -o jsonpath="{.spec.host}"
+curl.exe -sk https://$ROUTE_HOST/actuator/health/readiness
 ```
+
+Do not use `$HOST` — PowerShell already owns that name (`$Host` is read-only).
 
 Use **`curl.exe -k`** (or `-sk`) only in this lab for the classroom certificate.
 
@@ -705,12 +707,12 @@ You will change **only the visible version** (`INFO_APP_VERSION`). You are pract
 $PROJECT = oc project -q
 oc -n $PROJECT set env deploy/account-service INFO_APP_VERSION=1.0.1
 oc -n $PROJECT rollout status deploy/account-service
-$HOST = oc -n $PROJECT get route account-service -o jsonpath="{.spec.host}"
-curl.exe -sk https://$HOST/actuator/info
+$ROUTE_HOST = oc -n $PROJECT get route account-service -o jsonpath="{.spec.host}"
+curl.exe -sk https://$ROUTE_HOST/actuator/info
 oc -n $PROJECT rollout undo deploy/account-service
 oc -n $PROJECT rollout status deploy/account-service
 oc -n $PROJECT rollout history deploy/account-service
-curl.exe -sk https://$HOST/actuator/info
+curl.exe -sk https://$ROUTE_HOST/actuator/info
 ```
 
 **Expected:** first `/actuator/info` shows `"version":"1.0.1"`. After undo, history has more than one revision and `/actuator/info` returns `"version":"1.0.0"`.
