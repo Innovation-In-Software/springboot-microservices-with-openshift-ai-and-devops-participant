@@ -700,9 +700,11 @@ oc get svc risk-db kafka md287-risk-model
 
 **Expected:** all three Services are listed. Kafka is used at **`kafka:19092`**. The model is `md287-risk-model:8090` in-cluster — not the public Route.
 
-4. Apply, push, wait for Ready:
+4. Apply, push, wait for Ready. **`git pull` first** if Lab 4 push already failed with **403** / `denied`.
 
 ```powershell
+cd "$env:USERPROFILE\MD287"
+git pull
 cd "$env:USERPROFILE\MD287\labs\day-05\lab5"
 $PROJECT = oc project -q
 oc apply -n $PROJECT -f starter\openshift\risk-assessment.yaml
@@ -778,6 +780,7 @@ curl.exe -sk https://$RISK/actuator/health/readiness
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
 | ImagePullBackOff on Risk | `tools\push-risk-image.ps1` then `oc set image` to the internal pullspec |
+| `docker push` **403** / `denied` | `git pull`, then re-run `tools\push-risk-image.ps1`. Do **not** `docker login` by hand. |
 | Pod `CreateContainerConfigError` / `non-numeric user (md287)` | Keep `runAsNonRoot: true` and `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
 | Registry Route missing | `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"` then re-run `push-risk-image.ps1` |
 | PSReadLine crash / huge paste | Copy **one** command block only. |
