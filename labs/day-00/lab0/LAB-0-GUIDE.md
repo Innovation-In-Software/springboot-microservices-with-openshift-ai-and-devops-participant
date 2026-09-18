@@ -5,7 +5,7 @@
 
 Do **all** of this **on the Ablaze VM**. Your laptop is only the browser.
 
-Do **not** run `mvn spring-boot:run`. Do **not** run `oc login`.
+Do **not** run `mvn spring-boot:run`. Do **not** run `oc login`. OpenShift stays idle until **Lab 4** (see the week flow in [`labs/LABS-INDEX.md`](../../LABS-INDEX.md)).
 
 Work in **`%USERPROFILE%\MD287`**. Example: `C:\Users\student.VLAB\MD287`.
 
@@ -15,7 +15,7 @@ Copy **one block at a time**. If a command says the folder already exists, skip 
 
 ### Step 1 — Log in to Ablaze
 
-1. Find **your name**, Ablaze username, and password in [LAB-ACCESS.md](../../../LAB-ACCESS.md). Do not use `MSMICR26-TD`.
+1. Get **your** username and the class password from the instructor. Do not use `MSMICR26-TD`.
 2. Open **https://my.ablazedesktop.com** and sign in.
 3. Wait for the **Windows desktop**. Leave this tab open all week.
 

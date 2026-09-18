@@ -70,6 +70,8 @@ Health stays public. Lab 3 `ops` does **not** include `risk.read` — use **Lab 
 
 Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Copy **one block at a time**. Do not paste two commands on the same line. Do **not** paste this whole guide (or a chat) into the terminal.
 
+**Where this lab sits:** Lab 4 already deployed Account and Transaction on ARO. Today you add Risk Assessment (service 3), call the **pre-deployed** model Route, then deploy Risk. Capstone evidence is Risk Route readiness **200** plus Lab 4 rollback.
+
 **Repo root (from Lab 0):** `%USERPROFILE%\MD287`. Example: `C:\Users\student.VLAB\MD287`. Do **not** clone. Do **not** run `mklink`. If the prompt shows the long `.vscode\...-participant` path, that is the same repo — `cd` to `MD287` before git commands.
 
 Work in `labs\day-05\lab5\starter\risk-assessment-service`.
@@ -567,7 +569,7 @@ docker build `
 docker run --rm --entrypoint id md287/risk-assessment-service:1.0.0
 ```
 
-**Expected:** `uid=100(md287) gid=100(md287)` — **not** `uid=0(root)`. Build log ends with `Successfully tagged md287/risk-assessment-service:1.0.0`.
+**Expected:** `uid=100(md287)` — **not** `uid=0(root)`. Alpine may print `gid=100` or `gid=101`; OpenShift uses **uid 100**. Build log ends with `Successfully tagged md287/risk-assessment-service:1.0.0`.
 
 2. Write the OpenShift manifest. Tick while you paste:
 
@@ -700,16 +702,37 @@ oc get svc risk-db kafka md287-risk-model
 
 **Expected:** all three Services are listed. Kafka is used at **`kafka:19092`**. The model is `md287-risk-model:8090` in-cluster — not the public Route.
 
-4. Apply, push, wait for Ready. **`git pull` first** if Lab 4 push already failed with **403** / `denied`.
+4. Apply, push, wait for Ready. You already pulled in **Step 0**. Do **not** `git pull` now if you just filled `risk-assessment.yaml`. Do **not** `docker login`.
 
 ```powershell
-cd "$env:USERPROFILE\MD287"
-git pull
 cd "$env:USERPROFILE\MD287\labs\day-05\lab5"
 $PROJECT = oc project -q
 oc apply -n $PROJECT -f starter\openshift\risk-assessment.yaml
 $env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 powershell -File tools\push-risk-image.ps1
+```
+
+**Expected:** `configmap/risk-assessment-config created` (or `configured`), then:
+
+```text
+Pushing with Python (skips TLS verify; avoids Docker Credential Manager). 1-2 minutes is normal.
+Pushed .../md287-student12/risk-assessment-service:1.0.0 (python)
+Pointed deploy/risk-assessment-service at image-registry.openshift-image-registry.svc:5000/md287-student12/risk-assessment-service:1.0.0 ...
+Pushed. Internal pullspec: image-registry.openshift-image-registry.svc:5000/md287-student12/risk-assessment-service:1.0.0
+```
+
+Then wait for Ready (the script already restarts the Deployment):
+
+```powershell
+$PROJECT = oc project -q
+oc -n $PROJECT rollout status deploy/risk-assessment-service
+oc -n $PROJECT get pods,route
+```
+
+If the pod is **ImagePullBackOff**, recover:
+
+```powershell
+$PROJECT = oc project -q
 oc -n $PROJECT set image deploy/risk-assessment-service risk-assessment-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/risk-assessment-service:1.0.0
 oc -n $PROJECT rollout restart deploy/risk-assessment-service
 oc -n $PROJECT delete pod -l app=risk-assessment-service --wait=false
@@ -727,7 +750,13 @@ $RISK = oc -n $PROJECT get route risk-assessment-service -o jsonpath="{.spec.hos
 curl.exe -sk https://$RISK/actuator/health/readiness
 ```
 
-**Expected result:** Pod Ready. Route readiness **200**. This is the OpenShift evidence for the capstone demo.
+**Expected:** Pod Ready (`1/1 Running`). Route readiness **200**:
+
+```text
+{"status":"UP"}
+```
+
+Host looks like `risk-assessment-service-md287-student12.apps.aro-md287.centralus.aroapp.io`. This is the OpenShift evidence for the capstone demo. A GET of `TXN-A1B2C3D4` on the Route returns **404** until that event is on **cluster** Kafka (sample JSON in Step 6 was local). Readiness **200** is the required evidence.
 
 6. Walk `starter\mcp-controls.md` (Exercise 5.3). The table is **already filled**. Read each row: authentication, scopes, human-in-the-loop, audit, data minimization. You do **not** run an MCP server, Keycloak, or a Microsoft agent runtime. Do **not** compare a `solution/` folder (the participant pack does not include one).
 
@@ -778,11 +807,11 @@ curl.exe -sk https://$RISK/actuator/health/readiness
 | All sample events APPROVE with `modelScore` 0 | Need `JdkClientHttpRequestFactory` (Step 4). Chunked POST + Content-Length-only mock → empty body → score 0. |
 | Second approve.json creates another row | Idempotency on `eventId` missing — `AssessmentService` in the starter already handles this |
 | PowerShell JSON / `{` script block | Use `@tools\requests\review-approve.json`, not inline `` `{`"decision`" `` |
-| `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
+| `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from the instructor. |
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
 | ImagePullBackOff on Risk | `git pull`, `push-risk-image.ps1`, then `$PROJECT = oc project -q` and `oc rollout restart deploy/risk-assessment-service`. Same tag does not re-pull by itself. |
-| `docker push` **403** / `denied` | `git pull`, then re-run `tools\push-risk-image.ps1`. Do **not** `docker login` by hand. |
+| `docker push` **403** / `denied` | Do **not** `docker login`. Re-run `tools\push-risk-image.ps1` with `$env:MD287_REGISTRY` set. Success is `Pushed ... (python)` or `(docker)`. |
 | Python `HTTP Error 400: Authentication information is not given` | Old pusher. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-risk-image.ps1`. `oc whoami` must be `studentNN`. |
 | HTML **Application is not available** on the Risk Route | Pods are not Ready yet (usually because the image push has not succeeded). Fix the push, then wait for Ready. |
 | Pod `CreateContainerConfigError` / `non-numeric user (md287)` | Keep `runAsNonRoot: true` and `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |

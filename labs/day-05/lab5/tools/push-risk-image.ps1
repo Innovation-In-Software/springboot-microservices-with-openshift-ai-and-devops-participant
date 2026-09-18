@@ -2,6 +2,8 @@
 # From labs/day-05/lab5:
 #   $env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 #   powershell -File tools\push-risk-image.ps1
+#
+# Same helper as Lab 4: Python first. Do NOT docker login by hand.
 
 $ErrorActionPreference = "Stop"
 

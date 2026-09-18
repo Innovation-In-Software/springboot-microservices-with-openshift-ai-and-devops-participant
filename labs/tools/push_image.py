@@ -403,7 +403,10 @@ def docker_save(image: str, dest: Path) -> None:
 def push_saved_image(archive: Path, registry: Registry, repo: str, reference: str) -> None:
     work = Path(tempfile.mkdtemp(prefix="md287-push-"))
     with tarfile.open(archive, "r") as tar:
-        tar.extractall(work)
+        try:
+            tar.extractall(work, filter="data")
+        except TypeError:
+            tar.extractall(work)
     manifests = json.loads((work / "manifest.json").read_text(encoding="utf-8"))
     if not manifests:
         die("docker save archive had an empty manifest.json")

@@ -87,7 +87,7 @@ Never use Social Security numbers, PAN/card numbers, or real emails.
 
 ## Environment basics (read this first)
 
-Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **not** run `oc login`. Copy **one block at a time**. Do not paste two commands on the same line. Do **not** paste this whole guide (or a chat) into the terminal.
+Do **all** of this **on the Ablaze VM**. Your laptop is only the browser. Do **not** run `oc login` (ARO stays idle until Lab 4). Copy **one block at a time**. Do not paste two commands on the same line. Do **not** paste this whole guide (or a chat) into the terminal.
 
 **Repo root (from Lab 0):** `%USERPROFILE%\MD287`. Example: `C:\Users\student.VLAB\MD287`. Do **not** clone. Do **not** run `mklink`. If the prompt shows the long `.vscode\...-participant` path, that is the same repo — `cd` to `MD287` before git commands.
 

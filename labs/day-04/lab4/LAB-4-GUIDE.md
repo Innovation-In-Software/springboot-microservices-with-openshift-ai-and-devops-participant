@@ -56,6 +56,8 @@ Postgres, Kafka, and the image registry are **platform** concerns. Compose start
 
 Jenkins is **awareness only**. Do not install Jenkins. GitOps is conceptual.
 
+**Where this lab sits:** Days 1–3 stayed on the VM. Today you prove probes on the VM, then **must** push images and roll back on ARO. The lab is not done when Compose is green.
+
 ---
 
 ## Environment basics (read this first)
@@ -242,7 +244,7 @@ docker images md287/account-service
 docker images md287/transaction-service
 ```
 
-**Expected result:** `uid=100(md287) gid=100(md287)` — **not** `uid=0(root)`. Both images show tag `1.0.0`. Build logs end with `Successfully tagged md287/account-service:1.0.0` (and the same for transaction).
+**Expected result:** `uid=100(md287)` — **not** `uid=0(root)`. Alpine may print `gid=100(md287)` or `gid=101(md287)`; OpenShift uses **uid 100**, so either gid is fine. Both images show tag `1.0.0`. Build logs end with `Successfully tagged md287/account-service:1.0.0` (and the same for transaction).
 
 **Why this matters:** A container that runs as root is one break-out away from host power. OpenShift will often **refuse** a root image when `runAsNonRoot: true` is set.
 
@@ -271,7 +273,17 @@ Start-Sleep -Seconds 30
 docker compose ps
 ```
 
-Wait until `md287-lab4-account` and `md287-lab4-transaction` are running (first boot runs Flyway). If status is still `starting`, wait 15 seconds and run `docker compose ps` again. `md287-lab4-kafka-init` should have **exited**.
+Wait until `md287-lab4-account` and `md287-lab4-transaction` are running (first boot runs Flyway — Account can take **1–2 minutes**). If status is still `starting`, wait 15 seconds and run `docker compose ps` again. `md287-lab4-kafka-init` should have **exited**.
+
+**Expected `docker compose ps` (names and host ports):**
+
+```text
+md287-lab4-account          ... Up ...   0.0.0.0:8081->8081/tcp
+md287-lab4-account-db       ... (healthy)  0.0.0.0:5433->5432/tcp
+md287-lab4-kafka            ... (healthy)  0.0.0.0:9092->9092/tcp
+md287-lab4-transaction      ... Up ...   0.0.0.0:8082->8082/tcp
+md287-lab4-transaction-db   ... (healthy)  0.0.0.0:5434->5432/tcp
+```
 
 **Terminal 2:**
 
@@ -636,28 +648,57 @@ oc apply -n $PROJECT -f openshift\20-transaction.yaml
 oc -n $PROJECT get deploy,svc,route,cm,secret
 ```
 
-5. Push the images from Step 2 into this project. **`git pull` first** if `docker push` already failed with **403** / `denied` — Ablaze Docker Desktop cannot store the OpenShift token in Windows Credential Manager. The script uses a throwaway docker login (then skopeo / Python if needed).
+5. Push **both** images from Step 2 into this project.
+
+You already pulled in **Step 0**. Do **not** `git pull` now — it can overwrite the YAML you just filled. Do **not** run `docker login`. Do **not** paste `oc whoami -t` into chat.
+
+Ablaze Docker Desktop **cannot** store the OpenShift token in Windows Credential Manager (`docker push` often returns **403**). The classroom script therefore pushes with **Python first**. That is success, not a workaround you invent.
 
 ```powershell
-cd "$env:USERPROFILE\MD287"
-git pull
 cd "$env:USERPROFILE\MD287\labs\day-04\lab4"
 $env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 powershell -File tools\push-images.ps1
 ```
 
-If `git pull` aborts because `10-account.yaml` / `20-transaction.yaml` have local edits, run this instead, then continue with `cd` / `$env:MD287_REGISTRY` / `push-images.ps1`:
+Leave this running. **1–2 minutes per image** is normal (`docker save` + layer upload). Do not Ctrl+C because the first lines mention Python.
 
-```powershell
-cd "$env:USERPROFILE\MD287"
-git stash push -m "lab4 yaml" -- labs/day-04/lab4/starter/openshift/10-account.yaml labs/day-04/lab4/starter/openshift/20-transaction.yaml
-git pull
-git stash pop
+**Expected output (verified classroom path)** — you must see **both** images, then `Push complete`:
+
+```text
+=== Account Service image ===
+Participant: student12
+Project:     md287-student12
+Registry:    default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io
+Pushing:     md287/account-service:1.0.0  ->  .../md287-student12/account-service:1.0.0
+Registry /v2/ HTTP 401 (401 here is normal before login)
+Pushing with Python (skips TLS verify; avoids Docker Credential Manager). 1-2 minutes is normal.
+Pushed .../md287-student12/account-service:1.0.0 (python)
+Pointed deploy/account-service at image-registry.openshift-image-registry.svc:5000/md287-student12/account-service:1.0.0 and restarted the rollout ...
+=== Transaction Service image ===
+...
+Pushed .../md287-student12/transaction-service:1.0.0 (python)
+Pointed deploy/transaction-service at ...
+Push complete. Both images must have printed: Pushed ... (python)  or  Pushed ... (docker)
 ```
 
-If `stash pop` reports a conflict, keep **your** filled YAML (probes / `runAsUser: 100`), not the starter TODOs.
+Change `student12` / `md287-student12` to **your** OpenShift user and project. `(python)` or `(docker)` are both pass. If the script stops after Account and never prints `=== Transaction Service image ===`, raise a hand and re-run the same two lines (do not `docker login`).
+
+If `git pull` in **Step 0** earlier aborted because `10-account.yaml` / `20-transaction.yaml` were already filled, stash only those two files, pull, pop, then continue — see **Troubleshooting**. Keep **your** filled YAML (probes / `runAsUser: 100`), not the starter TODOs.
 
 Participants have **edit** on their project only, so they cannot always read the Route in `openshift-image-registry`. Setting `$env:MD287_REGISTRY` is the reliable path.
+
+The script already points the Deployments and restarts them. Wait for Ready:
+
+```powershell
+$PROJECT = oc project -q
+oc -n $PROJECT rollout status deploy/account-service
+oc -n $PROJECT rollout status deploy/transaction-service
+oc -n $PROJECT get pods,route
+```
+
+**Expected:** `deployment "account-service" successfully rolled out` and the same for Transaction. Pods `account-service-…` and `transaction-service-…` show `1/1 Running`. Routes list hosts like `account-service-md287-student12.apps.aro-md287.centralus.aroapp.io`.
+
+If a pod stays **ImagePullBackOff**, recover with this block. You must assign `$PROJECT = oc project -q` in the **same** paste (`oc project -q` alone does not set `$PROJECT`):
 
 ```powershell
 $PROJECT = oc project -q
@@ -671,8 +712,6 @@ oc -n $PROJECT rollout status deploy/transaction-service
 oc -n $PROJECT get pods,route
 ```
 
-You must assign `$PROJECT = oc project -q` in this same paste. Running `oc project -q` alone does not set `$PROJECT`. The push script already `oc set image`s and restarts; this block recovers ImagePullBackOff after a same-tag push.
-
 6. Call the **Account Route** (not localhost):
 
 ```powershell
@@ -685,7 +724,23 @@ Do not use `$HOST` — PowerShell already owns that name (`$Host` is read-only).
 
 Use **`curl.exe -k`** (or `-sk`) only in this lab for the classroom certificate.
 
-**Expected result:** Deployments list probes, requests/limits, `runAsNonRoot: true`. Secret holds `MD287_JWT_SECRET`. ConfigMap holds JDBC and Kafka URLs — not the password. Pods become Ready. Readiness on the Route returns **200**.
+**Expected result:**
+
+```text
+{"status":"UP"}
+```
+
+and `curl.exe -sk` HTTP **200**. Your host looks like `account-service-md287-student12.apps.aro-md287.centralus.aroapp.io` (your project name, not `student12` copied from this guide).
+
+Optional check:
+
+```powershell
+curl.exe -sk https://$ROUTE_HOST/actuator/info
+```
+
+**Expected:** `"version":"1.0.0"` (or `"1.0.0"` under `app.version`). HTML **Application is not available** means the pod is not Ready yet — usually the image push has not finished. Wait for `rollout status`, then retry.
+
+**Expected result (Step 5 overall):** Deployments list probes, requests/limits, `runAsNonRoot: true`. Secret holds `MD287_JWT_SECRET`. ConfigMap holds JDBC and Kafka URLs — not the password. Pods become Ready. Readiness on the Route returns **200**.
 
 **Why this matters:** ConfigMaps are not for passwords. Probes stop sending traffic to a pod that is not ready. The outline requires a real deploy, not a YAML-only review.
 
@@ -713,7 +768,24 @@ oc get pipelinerun -n $PROJECT
 
 If the Pipelines operator is missing, `oc apply` will error. The **local script still satisfies** the outline’s prepared pipeline (scan / SBOM / sign). Record that in Exercise 4.3.
 
-**Expected result:** the script prints stages including scan PASS, then a **GATE FAIL** on the CRITICAL sample, then SBOM and signature. That fail is **success** for the gate. Confirm `tools\sample-sbom-account-service.json` lists `spring-boot-starter-web` **3.4.5** and Temurin 21.
+**Expected result:** the script prints stages including scan PASS, then a **GATE FAIL** on the CRITICAL sample, then SBOM and signature. That fail is **success** for the gate.
+
+```text
+======== STAGE: scan ========
+SCAN GATE PASS — 0 CRITICAL findings
+Demonstrating the fail sample (expected GATE FAIL):
+SCAN GATE FAIL — 1 CRITICAL finding(s)
+  CVE-2024-CLASSROOM-CRITICAL example-unsafe
+Gate correctly rejected CRITICAL. Continuing with the PASS report.
+======== STAGE: SBOM ========
+...
+======== STAGE: sign ========
+SIGNATURE VERIFY (classroom)
+...
+Pipeline review complete. Record: scan PASS (sample), SBOM present, signature reviewed.
+```
+
+Confirm `tools\sample-sbom-account-service.json` lists `spring-boot-starter-web` **3.4.5** and Temurin 21. If the Pipelines operator is missing, `oc apply` of `pipeline.yaml` errors with `no matches for kind "Pipeline"` — that is OK; the **local script still satisfies** the outline.
 
 **Why this matters:** A green deploy with a CRITICAL CVE is not a success. An SBOM is how you answer “what did we actually ship?” after a new CVE drops on Friday.
 
@@ -735,7 +807,15 @@ oc -n $PROJECT rollout history deploy/account-service
 curl.exe -sk https://$ROUTE_HOST/actuator/info
 ```
 
-**Expected:** first `/actuator/info` shows `"version":"1.0.1"`. After undo, history has more than one revision and `/actuator/info` returns `"version":"1.0.0"`.
+**Expected:** first `/actuator/info` shows `"version":"1.0.1"`. After undo, `rollout history` lists **more than one revision** and `/actuator/info` returns `"version":"1.0.0"`.
+
+Verified classroom shape:
+
+```text
+{"app":{"version":"1.0.1",...}}     ← after set env
+deployment.apps/account-service rolled back
+{"app":{"version":"1.0.0",...}}     ← after undo
+```
 
 **Why this matters:** Banks need a rehearsed rollback. “Redeploy yesterday’s tag” is faster than debugging a bad Friday release in production.
 
@@ -769,16 +849,18 @@ curl.exe -sk https://$ROUTE_HOST/actuator/info
 | `ACCOUNT_NOT_FOUND` for `ACC-YOUR-ID` / `TRANSACTION_NOT_FOUND` for `TXN-YOUR-ID` | Placeholders. Use the id from your **201** body. |
 | 401 with a token | Re-run `issue-jwt.py` into `$TELLER` / `$OPS`. Use `curl.exe`. Same secret as Lab 3. |
 | 503 on POST transaction | Account container not ready — Lab 3 safe fallback, **do not** fake ACTIVE |
-| `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
+| `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from the instructor. |
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
-| ImagePullBackOff | `git pull`, re-run `tools\push-images.ps1`, then **`$PROJECT = oc project -q`** (assignment required) and `oc rollout restart` / `oc delete pod -l app=account-service`. Same tag `1.0.0` does not create a new rollout by itself. AGE of 8d/18h means those pods never picked up the new push. |
-| Python `HTTP 307 Temporary Redirect` on `/blobs/sha256:...` | Old pusher treated storage redirects as failure. `git pull` and re-run `push-images.ps1`. |
-| `docker-daemon:... is not a valid image reference` | Harmless; the script falls through to Python. `git pull` picks up the `docker-daemon://` fix. |
-| `docker push` **403** / `denied` / `unauthorized` | `git pull`, then re-run `tools\push-images.ps1`. Do **not** `docker login` by hand (Windows Credential Manager truncates the token). Expected last line includes `Pushed ... (docker)` / `(skopeo)` / `(oc image mirror)` / `(python)`. |
-| Python `HTTP Error 400: Authentication information is not given` | Old pusher. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-images.ps1`. `oc whoami` must be `studentNN`, not `student.VLAB`. |
+| ImagePullBackOff | Re-run `tools\push-images.ps1` with `$env:MD287_REGISTRY` set. Then **`$PROJECT = oc project -q`** (assignment required) and the recover `oc set image` / `oc rollout restart` block in Step 5. Same tag `1.0.0` does not pull by itself. AGE of 8d/18h means those pods never picked up the new push. |
+| Script stops after Account; Transaction never prints `Pushed` | Old helper aborted on `oc patch`. Step 0 `git pull` if you have not filled YAML yet; then re-run `push-images.ps1`. Both images must print `Pushed`. |
+| `unknown flag: --disable-content-trust` | Old helper. Step 0 `git pull`, then re-run `push-images.ps1`. The current script does not pass that flag. |
+| Python `HTTP 307 Temporary Redirect` on `/blobs/sha256:...` | Old pusher treated storage redirects as failure. Step 0 `git pull` and re-run `push-images.ps1`. |
+| `docker-daemon:... is not a valid image reference` | Harmless leftover from `oc image mirror`. Current script uses Python first and skips that path. |
+| `docker push` **403** / `denied` / `unauthorized` | Do **not** `docker login`. Re-run `tools\push-images.ps1` after `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"`. Success is `Pushed ... (python)` or `(docker)` for **both** images, then `Push complete`. |
+| Python `HTTP Error 400: Authentication information is not given` | Old pusher. Step 0 `git pull`; re-run `push-images.ps1`. `oc whoami` must be `studentNN`, not `student.VLAB`. |
 | HTML **Application is not available** on the Account/Transaction Route | Pods are not Ready yet (usually ImagePullBackOff because the push has not succeeded). Fix the push, then wait for Ready. That page is **not** the registry. |
-| `x509` / certificate error on push | The script falls through to Python (`push_image.py`) which skips TLS verify. Wait for that attempt. |
+| `x509` / certificate error on push | Python push skips TLS verify. Wait for `Pushed ... (python)`. |
 | Pod `CreateContainerConfigError` / `non-numeric user` | Keep `runAsNonRoot: true` and `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
 | Registry Route missing | `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"` then re-run `push-images.ps1` |
 | Pipelines CRDs missing | Use `tools\run-pipeline-locally.ps1` (that is the prepared pipeline) |

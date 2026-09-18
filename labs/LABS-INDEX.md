@@ -2,11 +2,19 @@
 
 Log in to your **Ablaze virtual machine** first, then clone this participant repo **on that VM**. Each day has one progressive lab that continues the banking platform.
 
-**Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. Every student VM and the instructor VM already have **GitHub Copilot Free** in VS Code (sign in during Lab 0). **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. Workstation checklist: [Lab 0](day-00/lab0/LAB-0-GUIDE.md).
+**Week flow** (see [`docs/lab-environment-flow.svg`](../docs/lab-environment-flow.svg)):
 
-Portal: **https://my.ablazedesktop.com** (find your name, username, and password in [LAB-ACCESS.md](../LAB-ACCESS.md)). After the Windows desktop appears, follow **[Lab 0](day-00/lab0/LAB-0-GUIDE.md)** on the VM. Repo folder is `%USERPROFILE%\MD287`. Use **`curl.exe`**.
+| Days | Where you work | What finishes the day |
+| --- | --- | --- |
+| **1–3** (Labs 0–3) | Ablaze VM only. ARO is idle. Do **not** `oc login`. | Account on **8081**, Transaction on **8082**, JWT + circuit breaker tests |
+| **4** (Lab 4) | VM **and** ARO. `oc login` is required. | Non-root images, Compose probes, **`push-images.ps1`**, Account **Route 200**, `oc rollout undo` |
+| **5** (Lab 5) | VM **and** ARO. Model Route health **UP**. | PolicyEngine, sample events, Risk **Route 200** |
 
-Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the module PDFs in `slides/`). In-slide activity answers: [practice-exercises/](practice-exercises/).
+**Workstations:** TEKsystems Ablaze VMs (required) — not your personal laptop. Every student VM and the instructor VM already have **GitHub Copilot Free** in VS Code (sign in during Lab 0). **OpenShift (ARO):** classroom cluster `aro-md287` in **Central US** — required for Labs 4–5. Assigned project is `md287-<your-username>`. See [system requirements](../docs/SYSTEM-REQUIREMENTS.md).
+
+Portal: **https://my.ablazedesktop.com** (username and class password from the instructor). After the Windows desktop appears, follow **[Lab 0](day-00/lab0/LAB-0-GUIDE.md)** on the VM. Repo folder is `%USERPROFILE%\MD287`. Use **`curl.exe`**.
+
+Official checkpoint worksheets: [EXERCISES-INDEX.md](EXERCISES-INDEX.md) (matches the new module PowerPoints). In-slide activity answers: [practice-exercises/](practice-exercises/).
 
 ## Day 1 morning: Log in and set up the VM
 
@@ -49,4 +57,5 @@ labs/day-NN/
   labN/
     LAB-N-GUIDE.md
     starter/
+    solution/
 ```

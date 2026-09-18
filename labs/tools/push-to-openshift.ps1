@@ -1,10 +1,40 @@
 # Shared helper: push a local Docker image to the ARO integrated registry.
 # Dot-source from Lab 4 / Lab 5 push scripts. Do not run this file by itself.
+#
+# Classroom fact (verified 18 Sep 2026 on Docker Desktop 24.x / Windows):
+#   docker push against the ARO registry often fails (Credential Manager truncates
+#   the OpenShift token, or docker.exe rejects --disable-content-trust).
+#   Python (push_image.py) is the reliable path. It is tried FIRST.
+#   After a successful push this helper points the Deployment at the in-cluster
+#   pullspec and restarts the rollout. A noisy oc patch must NEVER abort the
+#   second image (Account then Transaction in Lab 4).
 
 $script:Md287RegistryDefault = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 $script:Md287PushImagePy = Join-Path $PSScriptRoot "push_image.py"
 
+function Add-Md287OcToPath {
+    if (Get-Command oc -ErrorAction SilentlyContinue) { return }
+    $hint = Join-Path $env:LOCALAPPDATA "Programs\openshift-client"
+    $exe = Join-Path $hint "oc.exe"
+    if (Test-Path $exe) {
+        $env:PATH = "$hint;$env:PATH"
+    }
+}
+
+function Invoke-Md287Oc {
+    Add-Md287OcToPath
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & oc @args
+        return $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+}
+
 function Get-Md287OcIdentity {
+    Add-Md287OcToPath
     $who = (oc whoami 2>$null | Out-String).Trim()
     if (-not $who) {
         throw "oc whoami failed. Log in first: oc login https://api.aro-md287.centralus.aroapp.io:6443/"
@@ -54,14 +84,18 @@ function Invoke-Md287DockerPush {
     )
     $oldCfg = $env:DOCKER_CONFIG
     $oldEap = $ErrorActionPreference
+    $oldTrust = $env:DOCKER_CONTENT_TRUST
     $env:DOCKER_CONFIG = $ConfigDir
+    $env:DOCKER_CONTENT_TRUST = "0"
     $ErrorActionPreference = "Continue"
     try {
-        docker --config $ConfigDir --disable-content-trust push $Remote
+        # Do not pass --disable-content-trust: Docker Desktop 24.x treats it as an unknown global flag.
+        docker --config $ConfigDir push $Remote
         return ($LASTEXITCODE -eq 0)
     } finally {
         $ErrorActionPreference = $oldEap
         if ($null -ne $oldCfg) { $env:DOCKER_CONFIG = $oldCfg } else { Remove-Item Env:DOCKER_CONFIG -ErrorAction SilentlyContinue }
+        if ($null -ne $oldTrust) { $env:DOCKER_CONTENT_TRUST = $oldTrust } else { Remove-Item Env:DOCKER_CONTENT_TRUST -ErrorAction SilentlyContinue }
     }
 }
 
@@ -123,23 +157,6 @@ Ask the instructor if IIS has not exposed the default-route in openshift-image-r
     Write-Host "Registry /v2/ HTTP $code (401 here is normal before login)"
 }
 
-function Invoke-Md287OcImageMirror {
-    param(
-        [Parameter(Mandatory = $true)][string]$Local,
-        [Parameter(Mandatory = $true)][string]$Registry,
-        [Parameter(Mandatory = $true)][string]$RepoTag
-    )
-    Write-Host "Trying oc image mirror (uses the oc token, not Docker Credential Manager)..."
-    $oldEap = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
-    try {
-        oc image mirror --insecure=true --keep-manifest-list=false "docker-daemon://${Local}" "docker://${Registry}/${RepoTag}"
-        return ($LASTEXITCODE -eq 0)
-    } finally {
-        $ErrorActionPreference = $oldEap
-    }
-}
-
 function Invoke-Md287PythonPush {
     param(
         [Parameter(Mandatory = $true)][string]$Local,
@@ -152,7 +169,7 @@ function Invoke-Md287PythonPush {
     if (-not $py -or -not (Test-Path $py)) {
         return $false
     }
-    Write-Host "Trying Python registry push (skips TLS verify; avoids Docker Credential Manager)..."
+    Write-Host "Pushing with Python (skips TLS verify; avoids Docker Credential Manager). 1-2 minutes is normal."
     $env:OC_USER = $User
     $env:OC_TOKEN = $Token
     $oldEap = $ErrorActionPreference
@@ -174,9 +191,39 @@ function Ensure-Md287ImageStream {
         [Parameter(Mandatory = $true)][string]$Name,
         [Parameter(Mandatory = $true)][string]$Project
     )
-    $exists = oc get is $Name -n $Project --ignore-not-found 2>$null
-    if (-not $exists) {
-        oc create is $Name -n $Project 2>$null | Out-Host
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $exists = oc get is $Name -n $Project --ignore-not-found 2>$null
+        if (-not $exists) {
+            oc create is $Name -n $Project 2>$null | Out-Host
+        }
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+}
+
+function Update-Md287DeploymentImage {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Project,
+        [Parameter(Mandatory = $true)][string]$Internal
+    )
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $deploy = oc get deploy $Name -n $Project --ignore-not-found 2>$null
+        if (-not $deploy) {
+            Write-Host "No deploy/$Name yet — apply the OpenShift YAML first, then re-run this script or the oc set image block in the guide."
+            return
+        }
+        oc set image "deploy/$Name" "${Name}=$Internal" -n $Project 2>$null | Out-Host
+        oc rollout restart "deploy/$Name" -n $Project 2>$null | Out-Host
+        Write-Host "Pointed deploy/$Name at $Internal and restarted the rollout (same tag does not pull by itself)."
+    } catch {
+        Write-Warning "Image is in the registry. Run the oc set image / rollout restart block in the lab guide. $_"
+    } finally {
+        $ErrorActionPreference = $oldEap
     }
 }
 
@@ -186,12 +233,18 @@ function Push-Md287Image {
         [Parameter(Mandatory = $true)][string]$Name,
         [string]$Tag = "1.0.0"
     )
-    if (-not (Get-Command oc -ErrorAction SilentlyContinue)) { throw "oc is not on PATH" }
+    Add-Md287OcToPath
+    if (-not (Get-Command oc -ErrorAction SilentlyContinue)) { throw "oc is not on PATH. Lab 0 should have installed it. Raise a hand." }
     if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { throw "docker is not on PATH" }
+    if (-not (Get-Command python -ErrorAction SilentlyContinue)) { throw "python is not on PATH (needed to push when docker push is blocked)" }
 
-    docker image inspect $Local | Out-Null
-    if ($LASTEXITCODE -ne 0) {
-        throw "Local image $Local not found. Build it first (Lab 4 Step 2 / Lab 5 Step 7)."
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    docker image inspect $Local 2>$null | Out-Null
+    $inspectCode = $LASTEXITCODE
+    $ErrorActionPreference = $oldEap
+    if ($inspectCode -ne 0) {
+        throw "Local image $Local not found. Build it first (Lab 4 Step 2 / Lab 5 Step 8)."
     }
 
     $id = Get-Md287OcIdentity
@@ -208,59 +261,45 @@ function Push-Md287Image {
     Ensure-Md287ImageStream -Name $Name -Project $id.Project
     docker tag $Local $remote
 
-    $cfg = New-Md287DockerConfig -Registry $registry -User $id.User -Token $id.Token
-    try {
-        $pushed = Invoke-Md287DockerPush -Remote $remote -ConfigDir $cfg
-        if (-not $pushed) {
-            Write-Host "docker push with isolated login failed; trying username unused..."
-            $cfgUnused = New-Md287DockerConfig -Registry $registry -User "unused" -Token $id.Token
-            try {
-                $pushed = Invoke-Md287DockerPush -Remote $remote -ConfigDir $cfgUnused
-            } finally {
-                Remove-Item $cfgUnused -Recurse -Force -ErrorAction SilentlyContinue
+    $how = $null
+    if (Invoke-Md287PythonPush -Local $Local -Registry $registry -RepoTag $repoTag -User $id.User -Token $id.Token) {
+        $how = "python"
+    } else {
+        Write-Host "Python push did not succeed; trying isolated docker push (often HTTP 403 on Ablaze)..."
+        $cfg = New-Md287DockerConfig -Registry $registry -User $id.User -Token $id.Token
+        try {
+            if (Invoke-Md287DockerPush -Remote $remote -ConfigDir $cfg) {
+                $how = "docker"
             }
+        } finally {
+            Remove-Item $cfg -Recurse -Force -ErrorAction SilentlyContinue
         }
-        if (-not $pushed) {
-            Write-Host "docker push with isolated login failed; trying oc registry login..."
-            oc registry login --registry $registry --to (Join-Path $cfg "config.json") --insecure --skip-check 2>$null | Out-Host
-            $pushed = Invoke-Md287DockerPush -Remote $remote -ConfigDir $cfg
+    }
+    if (-not $how) {
+        if (Invoke-Md287SkopeoPush -Local $Local -Registry $registry -RepoTag $repoTag -User $id.User -Token $id.Token) {
+            $how = "skopeo"
         }
-        if ($pushed) {
-            Write-Host "Pushed $remote (docker)"
-        } elseif (Invoke-Md287SkopeoPush -Local $Local -Registry $registry -RepoTag $repoTag -User $id.User -Token $id.Token) {
-            Write-Host "Pushed $remote (skopeo)"
-        } elseif (Invoke-Md287OcImageMirror -Local $Local -Registry $registry -RepoTag $repoTag) {
-            Write-Host "Pushed $remote (oc image mirror)"
-        } elseif (Invoke-Md287PythonPush -Local $Local -Registry $registry -RepoTag $repoTag -User $id.User -Token $id.Token) {
-            Write-Host "Pushed $remote (python)"
-        } else {
-            throw @"
+    }
+    if (-not $how) {
+        throw @"
 Could not push $Local to $remote.
 
-Ablaze Docker Desktop often returns HTTP 403 against the ARO registry because Windows Credential Manager truncates the OpenShift token. This script already tried an isolated docker login, oc image mirror, then Python.
+Do not run docker login by hand (Windows Credential Manager truncates the OpenShift token).
+Do not treat the Account Route HTML page as the registry.
 
 Check:
   1. oc whoami is studentNN (not MSMICR26-NN / student.VLAB)
   2. oc project -q is md287-studentNN
   3. The image exists: docker images $Local
-  4. IIS exposed the registry Route $registry
-  5. git pull from C:\Users\student.VLAB\MD287 then re-run this script
-The Account Route HTML "Application is not available" means pods are not Ready yet — usually because this push has not succeeded.
+  4. `$env:MD287_REGISTRY is default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io
+  5. python --version works (the classroom push uses Python)
 Raise a hand. Do not paste oc whoami -t into chat.
 "@
-        }
-    } finally {
-        Remove-Item $cfg -Recurse -Force -ErrorAction SilentlyContinue
     }
 
+    Write-Host "Pushed $remote ($how)"
+
     $internal = "image-registry.openshift-image-registry.svc:5000/{0}/{1}:{2}" -f $id.Project, $Name, $Tag
-    $deploy = oc get deploy $Name -n $id.Project --ignore-not-found
-    if ($deploy) {
-        oc set image "deploy/$Name" "${Name}=$internal" -n $id.Project | Out-Host
-        $pullPatch = '[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"Always"}]'
-        oc patch "deploy/$Name" -n $id.Project --type=json -p $pullPatch 2>$null | Out-Host
-        oc rollout restart "deploy/$Name" -n $id.Project | Out-Host
-        Write-Host "Pointed deploy/$Name at $internal and restarted the rollout (same tag does not pull by itself)."
-    }
+    Update-Md287DeploymentImage -Name $Name -Project $id.Project -Internal $internal
     return $internal
 }
