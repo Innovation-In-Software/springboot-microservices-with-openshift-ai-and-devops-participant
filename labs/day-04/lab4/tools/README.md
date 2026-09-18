@@ -4,7 +4,7 @@ Use these from `labs\day-04\lab4` as in [LAB-4-GUIDE.md](../LAB-4-GUIDE.md). Do 
 
 | Script / file | Purpose |
 | --- | --- |
-| `push-images.ps1` | Tag and push `md287/account-service:1.0.0` and `md287/transaction-service:1.0.0` to the assigned OpenShift project (Lab 4 Step 5). Uses an isolated docker login so Ablaze Docker Desktop does not 403. |
+| `push-images.ps1` | Tag and push `md287/account-service:1.0.0` and `md287/transaction-service:1.0.0` to the assigned OpenShift project (Lab 4 Step 5). Isolated docker login, then skopeo / `oc image mirror` / Python registry push. |
 | `generate-sbom.ps1` | Syft if installed; otherwise copies the classroom CycloneDX sample |
 | `sample-sbom-account-service.json` | Fallback SBOM for review |
 | `scan-gate.ps1` | Exit 1 if any CRITICAL finding exists |

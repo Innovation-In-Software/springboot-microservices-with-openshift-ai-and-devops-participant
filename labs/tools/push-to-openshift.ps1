@@ -91,6 +91,55 @@ function Invoke-Md287SkopeoPush {
     }
 }
 
+function Test-Md287RegistryHost {
+    param([Parameter(Mandatory = $true)][string]$Registry)
+    $tmp = Join-Path $env:TEMP ("md287-reg-" + [guid]::NewGuid().ToString("n") + ".txt")
+    $code = "000"
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $code = & curl.exe -k -sS -o $tmp -w "%{http_code}" --max-time 20 "https://$Registry/v2/"
+    } catch {
+        $code = "000"
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+    $body = ""
+    if (Test-Path $tmp) {
+        $body = (Get-Content -Raw -Path $tmp -ErrorAction SilentlyContinue)
+        Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+    }
+    if ($body -match "Application is not available" -or $body -match "host doesn't exist") {
+        throw @"
+Registry host $Registry is the OpenShift router default page, not the image registry.
+
+Use:
+  `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
+
+The Account/Transaction Route showing "Application is not available" is expected until the image is pushed and the pod is Ready. Do not curl that Route as MD287_REGISTRY.
+Ask the instructor if IIS has not exposed the default-route in openshift-image-registry.
+"@
+    }
+    Write-Host "Registry /v2/ HTTP $code (401 here is normal before login)"
+}
+
+function Invoke-Md287OcImageMirror {
+    param(
+        [Parameter(Mandatory = $true)][string]$Local,
+        [Parameter(Mandatory = $true)][string]$Registry,
+        [Parameter(Mandatory = $true)][string]$RepoTag
+    )
+    Write-Host "Trying oc image mirror (uses the oc token, not Docker Credential Manager)..."
+    $oldEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        oc image mirror --insecure=true --keep-manifest-list=false "docker-daemon:$Local" "${Registry}/${RepoTag}"
+        return ($LASTEXITCODE -eq 0)
+    } finally {
+        $ErrorActionPreference = $oldEap
+    }
+}
+
 function Invoke-Md287PythonPush {
     param(
         [Parameter(Mandatory = $true)][string]$Local,
@@ -153,12 +202,22 @@ function Push-Md287Image {
     Write-Host "Registry:    $registry"
     Write-Host "Pushing:     $Local  ->  $remote"
 
+    Test-Md287RegistryHost -Registry $registry
     Ensure-Md287ImageStream -Name $Name -Project $id.Project
     docker tag $Local $remote
 
     $cfg = New-Md287DockerConfig -Registry $registry -User $id.User -Token $id.Token
     try {
         $pushed = Invoke-Md287DockerPush -Remote $remote -ConfigDir $cfg
+        if (-not $pushed) {
+            Write-Host "docker push with isolated login failed; trying username unused..."
+            $cfgUnused = New-Md287DockerConfig -Registry $registry -User "unused" -Token $id.Token
+            try {
+                $pushed = Invoke-Md287DockerPush -Remote $remote -ConfigDir $cfgUnused
+            } finally {
+                Remove-Item $cfgUnused -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        }
         if (-not $pushed) {
             Write-Host "docker push with isolated login failed; trying oc registry login..."
             oc registry login --registry $registry --to (Join-Path $cfg "config.json") --insecure --skip-check 2>$null | Out-Host
@@ -168,19 +227,23 @@ function Push-Md287Image {
             Write-Host "Pushed $remote (docker)"
         } elseif (Invoke-Md287SkopeoPush -Local $Local -Registry $registry -RepoTag $repoTag -User $id.User -Token $id.Token) {
             Write-Host "Pushed $remote (skopeo)"
+        } elseif (Invoke-Md287OcImageMirror -Local $Local -Registry $registry -RepoTag $repoTag) {
+            Write-Host "Pushed $remote (oc image mirror)"
         } elseif (Invoke-Md287PythonPush -Local $Local -Registry $registry -RepoTag $repoTag -User $id.User -Token $id.Token) {
             Write-Host "Pushed $remote (python)"
         } else {
             throw @"
 Could not push $Local to $remote.
 
-Ablaze Docker Desktop often returns HTTP 403 against the ARO registry because Windows Credential Manager truncates the OpenShift token. This script already tried an isolated docker login, then skopeo, then Python.
+Ablaze Docker Desktop often returns HTTP 403 against the ARO registry because Windows Credential Manager truncates the OpenShift token. This script already tried an isolated docker login, oc image mirror, then Python.
 
 Check:
   1. oc whoami is studentNN (not MSMICR26-NN / student.VLAB)
   2. oc project -q is md287-studentNN
   3. The image exists: docker images $Local
   4. IIS exposed the registry Route $registry
+  5. git pull from C:\Users\student.VLAB\MD287 then re-run this script
+The Account Route HTML "Application is not available" means pods are not Ready yet — usually because this push has not succeeded.
 Raise a hand. Do not paste oc whoami -t into chat.
 "@
         }

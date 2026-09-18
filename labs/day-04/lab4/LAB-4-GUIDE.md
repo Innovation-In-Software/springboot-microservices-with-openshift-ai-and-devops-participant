@@ -755,7 +755,9 @@ curl.exe -sk https://$ROUTE_HOST/actuator/info
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
 | ImagePullBackOff | Run `tools\push-images.ps1`, then `oc set image` to the internal pullspec |
-| `docker push` **403** / `denied` / `unauthorized` | `git pull`, then re-run `tools\push-images.ps1`. Do **not** `docker login` by hand (Windows Credential Manager truncates the token). Expected last line includes `Pushed ... (docker)` or `(skopeo)` or `(python)`. |
+| `docker push` **403** / `denied` / `unauthorized` | `git pull`, then re-run `tools\push-images.ps1`. Do **not** `docker login` by hand (Windows Credential Manager truncates the token). Expected last line includes `Pushed ... (docker)` / `(skopeo)` / `(oc image mirror)` / `(python)`. |
+| Python `HTTP Error 400: Authentication information is not given` | Old pusher. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-images.ps1`. `oc whoami` must be `studentNN`, not `student.VLAB`. |
+| HTML **Application is not available** on the Account/Transaction Route | Pods are not Ready yet (usually ImagePullBackOff because the push has not succeeded). Fix the push, then wait for Ready. That page is **not** the registry. |
 | `x509` / certificate error on push | The script falls through to Python (`push_image.py`) which skips TLS verify. Wait for that attempt. |
 | Pod `CreateContainerConfigError` / `non-numeric user` | Keep `runAsNonRoot: true` and `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
 | Registry Route missing | `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"` then re-run `push-images.ps1` |
