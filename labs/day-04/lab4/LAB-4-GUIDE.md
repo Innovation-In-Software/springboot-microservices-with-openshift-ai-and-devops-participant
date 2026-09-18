@@ -117,6 +117,8 @@ Then: **File → Open Folder** → `%USERPROFILE%\MD287` if it is not already op
 
 `git pull` only works **inside** the repo. Do not run it from `C:\Users\student.VLAB`.
 
+If pull aborts with **Your local changes … would be overwritten by merge** on `openshift\10-account.yaml` / `20-transaction.yaml`, you already filled those files in this lab. Stash, pull, then restore — see **Troubleshooting**. Do **not** `git checkout --` those two files.
+
 ### Step 1 — Stop older labs and confirm the Lab 3 starter
 
 You package **your** Lab 3 services. You do not rebuild JWT or Kafka logic here.
@@ -644,6 +646,17 @@ $env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.cen
 powershell -File tools\push-images.ps1
 ```
 
+If `git pull` aborts because `10-account.yaml` / `20-transaction.yaml` have local edits, run this instead, then continue with `cd` / `$env:MD287_REGISTRY` / `push-images.ps1`:
+
+```powershell
+cd "$env:USERPROFILE\MD287"
+git stash push -m "lab4 yaml" -- labs/day-04/lab4/starter/openshift/10-account.yaml labs/day-04/lab4/starter/openshift/20-transaction.yaml
+git pull
+git stash pop
+```
+
+If `stash pop` reports a conflict, keep **your** filled YAML (probes / `runAsUser: 100`), not the starter TODOs.
+
 Participants have **edit** on their project only, so they cannot always read the Route in `openshift-image-registry`. Setting `$env:MD287_REGISTRY` is the reliable path.
 
 ```powershell
@@ -771,6 +784,7 @@ curl.exe -sk https://$ROUTE_HOST/actuator/info
 | Pipelines CRDs missing | Use `tools\run-pipeline-locally.ps1` (that is the prepared pipeline) |
 | PSReadLine crash / huge paste | Copy **one** command block only. |
 | `git pull`: not a git repository | `cd $env:USERPROFILE\MD287` then `git pull`. |
+| `git pull`: local changes would be overwritten (`10-account.yaml` / `20-transaction.yaml`) | Those files are **your** Step 4 YAML. From `%USERPROFILE%\MD287`: `git stash push -m "lab4 yaml" -- labs/day-04/lab4/starter/openshift/10-account.yaml labs/day-04/lab4/starter/openshift/20-transaction.yaml` then `git pull` then `git stash pop`. If pop conflicts, keep your filled YAML. Do **not** `git checkout --` those files. |
 
 ---
 
