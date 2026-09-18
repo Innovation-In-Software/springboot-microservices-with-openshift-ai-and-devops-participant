@@ -1,6 +1,6 @@
 # Supplementary material
 
-Reading packs, **one PDF file per module**. These are for review after class: diagrams and the full explanation behind each visual. Classroom teaching uses the [module slide PDFs](../README.md).
+Reading packs, **one PDF and one PowerPoint per module**. These are for review after class: diagrams and the full explanation behind each visual. Classroom teaching uses the [module slide PDFs](../README.md).
 
 | File | Module | Title | Day |
 | ---- | -----: | ----- | --- |
@@ -17,3 +17,5 @@ Reading packs, **one PDF file per module**. These are for review after class: di
 | [MD287_Module11_Supplementary_Material.pdf](MD287_Module11_Supplementary_Material.pdf) | 11 | DevOps and CI/CD | 4 — Lab 4 |
 | [MD287_Module12_Supplementary_Material.pdf](MD287_Module12_Supplementary_Material.pdf) | 12 | Copilot, OpenShift AI, and MCP | 5 |
 | [MD287_Module13_Supplementary_Material.pdf](MD287_Module13_Supplementary_Material.pdf) | 13 | Capstone Integration and Course Close | 5 — Lab 5 |
+
+Each PDF has a matching `.pptx` in this folder.

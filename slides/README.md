@@ -1,6 +1,6 @@
-# Slides (PDF)
+# Slides
 
-Per-module teaching decks, exported from PowerPoint. Per-module reading packs: [supplementary material](supplementary%20material/README.md).
+Per-module teaching decks as PDF (open anything) and PowerPoint (same basename). Per-module reading packs: [supplementary material](supplementary%20material/README.md).
 
 | File | Title |
 | ---- | ----- |
@@ -18,3 +18,5 @@ Per-module teaching decks, exported from PowerPoint. Per-module reading packs: [
 | [MD287_Module11_MCP_and_Microservices.pdf](MD287_Module11_MCP_and_Microservices.pdf) | Module 11 — MCP and Microservices |
 | [MD287_Module12_Security_and_Compliance.pdf](MD287_Module12_Security_and_Compliance.pdf) | Module 12 — Security and Compliance |
 | [MD287_Capstone_Putting_It_All_Together.pdf](MD287_Capstone_Putting_It_All_Together.pdf) | Capstone — Putting It All Together |
+
+Each PDF has a matching `.pptx` in this folder.
