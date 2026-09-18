@@ -26,6 +26,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Optional
 
 SSL = ssl._create_unverified_context()
@@ -232,32 +233,36 @@ class Registry:
         url = self._abs(url)
         hops = 0
         auth_tries = 0
+        auth_header = self.auth
         while hops < 12:
-            req = urllib.request.Request(
-                url, data=data, method=method, headers=self._headers(headers)
-            )
+            hdrs = {"User-Agent": UA}
+            if auth_header:
+                hdrs["Authorization"] = auth_header
+            if headers:
+                hdrs.update(headers)
+            req = urllib.request.Request(url, data=data, method=method, headers=hdrs)
             try:
                 return self._opener.open(req, timeout=timeout)
             except urllib.error.HTTPError as err:
                 if err.code in (301, 302, 303, 307, 308):
+                    blob_head = method in ("HEAD", "GET") and "/blobs/" in url and "/uploads/" not in url
+                    if blob_head:
+                        # OpenShift stores layers off-registry and 307s HEAD. That means the blob exists.
+                        return SimpleNamespace(headers=err.headers, status=err.code)
                     loc = err.headers.get("Location")
                     if not loc:
                         self._die_http(err, url)
                     nxt = self._abs(urllib.parse.urljoin(url, loc))
                     nxt_host = (urllib.parse.urlparse(nxt).hostname or "").lower()
-                    if nxt_host and nxt_host != self._registry_host():
-                        if allow_auth and auth_tries < 3:
-                            auth_tries += 1
-                            self._authenticate(err)
-                            hops += 1
-                            continue
-                        self._die_http(err, url)
+                    # Storage/upload URLs are often on another host and must not send the kube Bearer.
+                    auth_header = None if (nxt_host and nxt_host != self._registry_host()) else self.auth
                     url = nxt
                     hops += 1
                     continue
                 if err.code == 401 and allow_auth and auth_tries < 3:
                     auth_tries += 1
                     self._authenticate(err)
+                    auth_header = self.auth
                     hops += 1
                     continue
                 reason = (err.reason or "").lower()
@@ -271,6 +276,7 @@ class Registry:
                     if not self.auth:
                         self._set_basic(self.user)
                     self._authenticate(err)
+                    auth_header = self.auth
                     hops += 1
                     continue
                 raise
@@ -324,6 +330,8 @@ class Registry:
             self.request("HEAD", url, timeout=60)
             return True
         except urllib.error.HTTPError as err:
+            if err.code in (301, 302, 303, 307, 308):
+                return True
             if err.code == 404:
                 return False
             if err.code in (400, 405):

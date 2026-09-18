@@ -408,7 +408,7 @@ spec:
       containers:
         - name: account-service
           image: md287/account-service:1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
           envFrom:
@@ -510,7 +510,7 @@ spec:
       containers:
         - name: transaction-service
           image: md287/transaction-service:1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8082
           envFrom:
@@ -650,10 +650,15 @@ Participants have **edit** on their project only, so they cannot always read the
 $PROJECT = oc project -q
 oc -n $PROJECT set image deploy/account-service account-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/account-service:1.0.0
 oc -n $PROJECT set image deploy/transaction-service transaction-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/transaction-service:1.0.0
+oc -n $PROJECT rollout restart deploy/account-service deploy/transaction-service
+oc -n $PROJECT delete pod -l app=account-service --wait=false
+oc -n $PROJECT delete pod -l app=transaction-service --wait=false
 oc -n $PROJECT rollout status deploy/account-service
 oc -n $PROJECT rollout status deploy/transaction-service
 oc -n $PROJECT get pods,route
 ```
+
+You must assign `$PROJECT = oc project -q` in this same paste. Running `oc project -q` alone does not set `$PROJECT`. The push script already `oc set image`s and restarts; this block recovers ImagePullBackOff after a same-tag push.
 
 6. Call the **Account Route** (not localhost):
 
@@ -754,7 +759,9 @@ curl.exe -sk https://$ROUTE_HOST/actuator/info
 | `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
-| ImagePullBackOff | Run `tools\push-images.ps1`, then `oc set image` to the internal pullspec |
+| ImagePullBackOff | `git pull`, re-run `tools\push-images.ps1`, then **`$PROJECT = oc project -q`** (assignment required) and `oc rollout restart` / `oc delete pod -l app=account-service`. Same tag `1.0.0` does not create a new rollout by itself. AGE of 8d/18h means those pods never picked up the new push. |
+| Python `HTTP 307 Temporary Redirect` on `/blobs/sha256:...` | Old pusher treated storage redirects as failure. `git pull` and re-run `push-images.ps1`. |
+| `docker-daemon:... is not a valid image reference` | Harmless; the script falls through to Python. `git pull` picks up the `docker-daemon://` fix. |
 | `docker push` **403** / `denied` / `unauthorized` | `git pull`, then re-run `tools\push-images.ps1`. Do **not** `docker login` by hand (Windows Credential Manager truncates the token). Expected last line includes `Pushed ... (docker)` / `(skopeo)` / `(oc image mirror)` / `(python)`. |
 | Python `HTTP Error 400: Authentication information is not given` | Old pusher. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-images.ps1`. `oc whoami` must be `studentNN`, not `student.VLAB`. |
 | HTML **Application is not available** on the Account/Transaction Route | Pods are not Ready yet (usually ImagePullBackOff because the push has not succeeded). Fix the push, then wait for Ready. That page is **not** the registry. |

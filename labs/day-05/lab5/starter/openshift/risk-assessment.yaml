@@ -42,7 +42,7 @@ spec:
       containers:
         - name: risk-assessment-service
           image: md287/risk-assessment-service:1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8083
           envFrom:

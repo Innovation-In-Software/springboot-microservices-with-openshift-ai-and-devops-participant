@@ -133,7 +133,7 @@ function Invoke-Md287OcImageMirror {
     $oldEap = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        oc image mirror --insecure=true --keep-manifest-list=false "docker-daemon:$Local" "${Registry}/${RepoTag}"
+        oc image mirror --insecure=true --keep-manifest-list=false "docker-daemon://${Local}" "docker://${Registry}/${RepoTag}"
         return ($LASTEXITCODE -eq 0)
     } finally {
         $ErrorActionPreference = $oldEap
@@ -158,8 +158,10 @@ function Invoke-Md287PythonPush {
     $oldEap = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        python $py $Local $Registry $RepoTag
-        return ($LASTEXITCODE -eq 0)
+        & python $py $Local $Registry $RepoTag
+        $code = $LASTEXITCODE
+        if ($null -eq $code) { $code = 1 }
+        return ($code -eq 0)
     } finally {
         $ErrorActionPreference = $oldEap
         Remove-Item Env:OC_TOKEN -ErrorAction SilentlyContinue
@@ -255,7 +257,10 @@ Raise a hand. Do not paste oc whoami -t into chat.
     $deploy = oc get deploy $Name -n $id.Project --ignore-not-found
     if ($deploy) {
         oc set image "deploy/$Name" "${Name}=$internal" -n $id.Project | Out-Host
-        Write-Host "Pointed deploy/$Name at $internal"
+        $pullPatch = '[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"Always"}]'
+        oc patch "deploy/$Name" -n $id.Project --type=json -p $pullPatch 2>$null | Out-Host
+        oc rollout restart "deploy/$Name" -n $id.Project | Out-Host
+        Write-Host "Pointed deploy/$Name at $internal and restarted the rollout (same tag does not pull by itself)."
     }
     return $internal
 }

@@ -623,7 +623,7 @@ spec:
       containers:
         - name: risk-assessment-service
           image: md287/risk-assessment-service:1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8083
           envFrom:
@@ -711,6 +711,8 @@ oc apply -n $PROJECT -f starter\openshift\risk-assessment.yaml
 $env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
 powershell -File tools\push-risk-image.ps1
 oc -n $PROJECT set image deploy/risk-assessment-service risk-assessment-service=image-registry.openshift-image-registry.svc:5000/$PROJECT/risk-assessment-service:1.0.0
+oc -n $PROJECT rollout restart deploy/risk-assessment-service
+oc -n $PROJECT delete pod -l app=risk-assessment-service --wait=false
 oc -n $PROJECT rollout status deploy/risk-assessment-service
 oc -n $PROJECT get pods,route
 ```
@@ -779,7 +781,7 @@ curl.exe -sk https://$RISK/actuator/health/readiness
 | `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from [LAB-ACCESS.md](../../../LAB-ACCESS.md). |
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
-| ImagePullBackOff on Risk | `tools\push-risk-image.ps1` then `oc set image` to the internal pullspec |
+| ImagePullBackOff on Risk | `git pull`, `push-risk-image.ps1`, then `$PROJECT = oc project -q` and `oc rollout restart deploy/risk-assessment-service`. Same tag does not re-pull by itself. |
 | `docker push` **403** / `denied` | `git pull`, then re-run `tools\push-risk-image.ps1`. Do **not** `docker login` by hand. |
 | Python `HTTP Error 400: Authentication information is not given` | Old pusher. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-risk-image.ps1`. `oc whoami` must be `studentNN`. |
 | HTML **Application is not available** on the Risk Route | Pods are not Ready yet (usually because the image push has not succeeded). Fix the push, then wait for Ready. |
