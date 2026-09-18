@@ -162,7 +162,11 @@ docker ps
 oc login https://api.aro-md287.centralus.aroapp.io:6443/
 ```
 
-At the prompts type your **OpenShift** username (example `student12`) and the class password. Then:
+At the prompts type your **OpenShift** username (example `student12`) and the class password. Same console login as Lab 4:
+
+![OpenShift htpasswd login](../../screenshots/openshift/console-login.png)
+
+Then:
 
 ```powershell
 oc whoami
@@ -181,7 +185,21 @@ $env:MD287_MODEL_ROUTE = "http://md287-risk-model-$(oc project -q).apps.aro-md28
 curl.exe -s "$env:MD287_MODEL_ROUTE/v1/health"
 ```
 
-**Expected result:** JSON includes `"status":"UP"` and a model name/version. If this fails, **stop** for the cluster path — the model must be pre-deployed. Do not invent scores in Java. You can still code against the **local mock** in the next command, but you cannot skip the OpenShift deploy later.
+**Expected result:** JSON includes `"status":"UP"` and a model name/version:
+
+```text
+{"status": "UP", "modelName": "md287-risk-model", "modelVersion": "1.0.0"}
+```
+
+Open the **http** URL in a browser (the address bar must show **Not secure** / `http://`, not a padlock). Chrome often upgrades to https — that fails (next screenshot).
+
+![Model Route health over HTTP](../../screenshots/openshift/route-model-health-http.png)
+
+If you see **Application is not available**, you used **https**. The model Route has **no TLS**. Change the URL to `http://` and retry. Do **not** treat this as a down pod.
+
+![HTTPS on the model Route returns Application is not available](../../screenshots/openshift/route-model-https-unavailable.png)
+
+If HTTP also fails, **stop** for the cluster path — the model must be pre-deployed. Do not invent scores in Java. You can still code against the **local mock** in the next command, but you cannot skip the OpenShift deploy later.
 
 4. Start Lab 5 Compose (local Kafka, `risk_db`, and a **same-contract** mock on **8090**):
 
@@ -756,7 +774,11 @@ curl.exe -sk https://$RISK/actuator/health/readiness
 {"status":"UP"}
 ```
 
-Host looks like `risk-assessment-service-md287-student12.apps.aro-md287.centralus.aroapp.io`. This is the OpenShift evidence for the capstone demo. A GET of `TXN-A1B2C3D4` on the Route returns **404** until that event is on **cluster** Kafka (sample JSON in Step 6 was local). Readiness **200** is the required evidence.
+Host looks like `risk-assessment-service-md287-student12.apps.aro-md287.centralus.aroapp.io`. Browser check (https, classroom cert warning):
+
+![Risk Route readiness UP](../../screenshots/openshift/route-risk-readiness.png)
+
+This is the OpenShift evidence for the capstone demo. In the console, **Pods**, **Routes**, and **ImageStreams** now include `risk-assessment-service` (same screens as [Lab 4 Step 5](../../day-04/lab4/LAB-4-GUIDE.md) — the captures include Risk because they were taken after this step). A GET of `TXN-A1B2C3D4` on the Route returns **404** until that event is on **cluster** Kafka (sample JSON in Step 6 was local). Readiness **200** is the required evidence.
 
 6. Walk `starter\mcp-controls.md` (Exercise 5.3). The table is **already filled**. Read each row: authentication, scopes, human-in-the-loop, audit, data minimization. You do **not** run an MCP server, Keycloak, or a Microsoft agent runtime. Do **not** compare a `solution/` folder (the participant pack does not include one).
 
@@ -814,6 +836,7 @@ Host looks like `risk-assessment-service-md287-student12.apps.aro-md287.centralu
 | `docker push` **403** / `denied` | Do **not** `docker login`. Re-run `tools\push-risk-image.ps1` with `$env:MD287_REGISTRY` set. Success is `Pushed ... (python)` or `(docker)`. |
 | Python `HTTP Error 400: Authentication information is not given` | Old pusher. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-risk-image.ps1`. `oc whoami` must be `studentNN`. |
 | HTML **Application is not available** on the Risk Route | Pods are not Ready yet (usually because the image push has not succeeded). Fix the push, then wait for Ready. |
+| HTML **Application is not available** on the **model** Route (`md287-risk-model-…`) | Almost always **https** in the browser. The model Route is **http only**. Use `http://md287-risk-model-$(oc project -q).apps.aro-md287.centralus.aroapp.io/v1/health`. |
 | Pod `CreateContainerConfigError` / `non-numeric user (md287)` | Keep `runAsNonRoot: true` and `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
 | Registry Route missing | `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"` then re-run `push-risk-image.ps1` |
 | PSReadLine crash / huge paste | Copy **one** command block only. |

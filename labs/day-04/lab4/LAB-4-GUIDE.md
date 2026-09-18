@@ -616,7 +616,11 @@ Need `readinessProbe` and `runAsUser: 100`. No `TODO`.
 oc login https://api.aro-md287.centralus.aroapp.io:6443/
 ```
 
-At the prompts type your **OpenShift** username (example `student12`) and the class password. Then:
+At the prompts type your **OpenShift** username (example `student12`) and the class password. The browser console uses the same fields (htpasswd — not GitHub and not Ablaze):
+
+![OpenShift htpasswd login](../../screenshots/openshift/console-login.png)
+
+Then:
 
 ```powershell
 oc whoami
@@ -730,7 +734,11 @@ Use **`curl.exe -k`** (or `-sk`) only in this lab for the classroom certificate.
 {"status":"UP"}
 ```
 
-and `curl.exe -sk` HTTP **200**. Your host looks like `account-service-md287-student12.apps.aro-md287.centralus.aroapp.io` (your project name, not `student12` copied from this guide).
+and `curl.exe -sk` HTTP **200**. Your host looks like `account-service-md287-student12.apps.aro-md287.centralus.aroapp.io` (your project name, not `student12` copied from this guide). Browser check (accept the classroom certificate warning):
+
+![Account Route readiness UP](../../screenshots/openshift/route-account-readiness.png)
+
+![Transaction Route readiness UP](../../screenshots/openshift/route-transaction-readiness.png)
 
 Optional check:
 
@@ -741,6 +749,48 @@ curl.exe -sk https://$ROUTE_HOST/actuator/info
 **Expected:** `"version":"1.0.0"` (or `"1.0.0"` under `app.version`). HTML **Application is not available** means the pod is not Ready yet — usually the image push has not finished. Wait for `rollout status`, then retry.
 
 **Expected result (Step 5 overall):** Deployments list probes, requests/limits, `runAsNonRoot: true`. Secret holds `MD287_JWT_SECRET`. ConfigMap holds JDBC and Kafka URLs — not the password. Pods become Ready. Readiness on the Route returns **200**.
+
+Open the console ([https://console-openshift-console.apps.aro-md287.centralus.aroapp.io](https://console-openshift-console.apps.aro-md287.centralus.aroapp.io)) on **your** project (`md287-studentNN`). Classroom captures below are from `md287-instructor1` after Labs 4 **and** 5 — after **this** step you will have Account and Transaction (plus the pre-provisioned DBs, Kafka, and model). `risk-assessment-service` appears in Lab 5.
+
+**Topology** (Workloads tab). Blue **D** = Deployment. Green **J** = the one-shot `kafka-topic-init` Job (Completed is success).
+
+![Project topology](../../screenshots/openshift/console-topology.png)
+
+**Inventory** (project Overview). After Lab 4 you should already see Account and Transaction Deployments, Services, and Routes. ImageStreams appear after a successful push.
+
+![Project inventory counts](../../screenshots/openshift/console-inventory.png)
+
+**Pods** — app pods `Running` `1/1`, Restarts `0`. `kafka-topic-init` stays `Completed`.
+
+![Pods Running 1/1](../../screenshots/openshift/console-pods.png)
+
+**Deployments** — `1 of 1 pods` for Account, Transaction, and the pre-provisioned backing services.
+
+![Deployments 1 of 1](../../screenshots/openshift/console-deployments.png)
+
+**ConfigMaps** — lab files are `account-config` and `transaction-config`. The `*-ca.crt` entries are injected trust, not student work.
+
+![ConfigMaps](../../screenshots/openshift/console-configmaps.png)
+
+**Secrets** — lab files are `md287-db-secrets` (and later Lab 5 `risk-assessment-secrets`). The `*-dockercfg-*` secrets are auto-created for registry pull. Screenshot **names only** — do not photograph Secret data.
+
+![Secrets names only](../../screenshots/openshift/console-secrets.png)
+
+**Services** — in-cluster ClusterIPs. Kafka is **19092**. Account **8081**, Transaction **8082**. These are what the ConfigMaps use, not localhost.
+
+![Services](../../screenshots/openshift/console-services.png)
+
+**Routes** — Account and Transaction **https** (Accepted). The model Route is **http** (no TLS) — that is Lab 5.
+
+![Routes Accepted](../../screenshots/openshift/console-routes.png)
+
+**ImageStreams** — after `push-images.ps1` you must see `account-service` and `transaction-service`. `risk-assessment-service` is Lab 5.
+
+![ImageStreams after Python push](../../screenshots/openshift/console-imagestreams.png)
+
+**Events** during the first rollout often show `Startup probe failed: connection refused` (Spring Boot still booting) and a brief **ImagePullBackOff** on `docker.io/md287/...` if `oc apply` ran before the push retargeted the internal registry. Current pods `Running` + Route **200** means those events are history. Do not treat them as a failed lab.
+
+![Events startup probe and pull](../../screenshots/openshift/console-events.png)
 
 **Why this matters:** ConfigMaps are not for passwords. Probes stop sending traffic to a pod that is not ready. The outline requires a real deploy, not a YAML-only review.
 
@@ -852,7 +902,7 @@ deployment.apps/account-service rolled back
 | `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from the instructor. |
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
-| ImagePullBackOff | Re-run `tools\push-images.ps1` with `$env:MD287_REGISTRY` set. Then **`$PROJECT = oc project -q`** (assignment required) and the recover `oc set image` / `oc rollout restart` block in Step 5. Same tag `1.0.0` does not pull by itself. AGE of 8d/18h means those pods never picked up the new push. |
+| ImagePullBackOff | Re-run `tools\push-images.ps1` with `$env:MD287_REGISTRY` set. Then **`$PROJECT = oc project -q`** (assignment required) and the recover `oc set image` / `oc rollout restart` block in Step 5. Same tag `1.0.0` does not pull by itself. AGE of 8d/18h means those pods never picked up the new push. Events that mention `docker.io/md287/...` are the apply-before-push window — see the Events screenshot in Step 5. |
 | Script stops after Account; Transaction never prints `Pushed` | Old helper aborted on `oc patch`. Step 0 `git pull` if you have not filled YAML yet; then re-run `push-images.ps1`. Both images must print `Pushed`. |
 | `unknown flag: --disable-content-trust` | Old helper. Step 0 `git pull`, then re-run `push-images.ps1`. The current script does not pass that flag. |
 | Python `HTTP 307 Temporary Redirect` on `/blobs/sha256:...` | Old pusher treated storage redirects as failure. Step 0 `git pull` and re-run `push-images.ps1`. |
