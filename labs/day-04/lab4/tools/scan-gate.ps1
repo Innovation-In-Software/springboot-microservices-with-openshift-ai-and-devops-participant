@@ -21,10 +21,10 @@ foreach ($result in @($report.Results)) {
 }
 
 if ($critical.Count -gt 0) {
-    Write-Host "SCAN GATE FAIL — $($critical.Count) CRITICAL finding(s)"
+    Write-Host "SCAN GATE FAIL - $($critical.Count) CRITICAL finding(s)"
     $critical | ForEach-Object { Write-Host ("  {0} {1}" -f $_.VulnerabilityID, $_.PkgName) }
     exit 1
 }
 
-Write-Host "SCAN GATE PASS — 0 CRITICAL findings"
+Write-Host "SCAN GATE PASS - 0 CRITICAL findings"
 exit 0

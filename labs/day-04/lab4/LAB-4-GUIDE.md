@@ -822,9 +822,9 @@ If the Pipelines operator is missing, `oc apply` will error. The **local script 
 
 ```text
 ======== STAGE: scan ========
-SCAN GATE PASS — 0 CRITICAL findings
+SCAN GATE PASS - 0 CRITICAL findings
 Demonstrating the fail sample (expected GATE FAIL):
-SCAN GATE FAIL — 1 CRITICAL finding(s)
+SCAN GATE FAIL - 1 CRITICAL finding(s)
   CVE-2024-CLASSROOM-CRITICAL example-unsafe
 Gate correctly rejected CRITICAL. Continuing with the PASS report.
 ======== STAGE: SBOM ========
@@ -915,6 +915,7 @@ deployment.apps/account-service rolled back
 | `x509` / certificate error on push | Python push skips TLS verify. Wait for `Pushed ... (python)`. |
 | Pod `CreateContainerConfigError` / `non-numeric user` | Keep `runAsNonRoot: true` and `runAsUser: 100` (the uid `docker run --entrypoint id` printed). |
 | Registry Route missing | `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"` then re-run `push-images.ps1` |
+| `The string is missing the terminator` / parse error in `run-pipeline-locally.ps1` | Old script used a Unicode dash that Windows PowerShell treats as a quote. From `%USERPROFILE%\MD287`: `git pull`, then re-run `powershell -File tools\run-pipeline-locally.ps1`. |
 | Pipelines CRDs missing | Use `tools\run-pipeline-locally.ps1` (that is the prepared pipeline) |
 | PSReadLine crash / huge paste | Copy **one** command block only. |
 | `git pull`: not a git repository | `cd $env:USERPROFILE\MD287` then `git pull`. |

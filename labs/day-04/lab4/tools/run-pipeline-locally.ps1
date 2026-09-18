@@ -19,7 +19,7 @@ function Stage([string]$name, [scriptblock]$body) {
     & $body
 }
 
-Stage "checkout" { Write-Host "Git revision: master (classroom). No clone needed — you already have the repo." }
+Stage "checkout" { Write-Host "Git revision: master (classroom). No clone needed - you already have the repo." }
 Stage "compile" { Write-Host "Image build (Docker) compiles with Maven inside the Containerfile. Skip extra mvn here." }
 Stage "test" { Write-Host "Lab 3 unit tests already guard JWT and the circuit breaker. Do not skip them in a real pipeline." }
 Stage "scan" {
