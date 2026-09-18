@@ -1,6 +1,10 @@
 # Shared helper: push a local Docker image to the ARO integrated registry.
 # Dot-source from Lab 4 / Lab 5 push scripts. Do not run this file by itself.
 #
+# Do not use PowerShell here-strings. Ablaze Windows PowerShell 5.1 plus LF
+# checkout treats them as code, so a line starting with Do parses as a do-loop
+# (Missing statement body in do loop). Join string arrays with a newline.
+#
 # Classroom fact (verified 18 Sep 2026 on Docker Desktop 24.x / Windows):
 #   docker push against the ARO registry often fails (Credential Manager truncates
 #   the OpenShift token, or docker.exe rejects --disable-content-trust).
@@ -69,10 +73,8 @@ function New-Md287DockerConfig {
     New-Item -ItemType Directory -Force -Path $dir | Out-Null
     $pair = "{0}:{1}" -f $User, $Token
     $auth = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($pair))
-    # No credsStore / credHelpers — Docker Desktop's Windows helper truncates the OpenShift token (HTTP 403).
-    $json = @"
-{"auths":{"$Registry":{"auth":"$auth"},"https://$Registry":{"auth":"$auth"}}}
-"@
+    # No credsStore / credHelpers - Docker Desktop's Windows helper truncates the OpenShift token (HTTP 403).
+    $json = '{"auths":{"' + $Registry + '":{"auth":"' + $auth + '"},"https://' + $Registry + '":{"auth":"' + $auth + '"}}}'
     Set-Content -Path (Join-Path $dir "config.json") -Value $json -Encoding ascii
     return $dir
 }
@@ -144,15 +146,15 @@ function Test-Md287RegistryHost {
         Remove-Item $tmp -Force -ErrorAction SilentlyContinue
     }
     if ($body -match "Application is not available" -or $body -match "host doesn't exist") {
-        throw @"
-Registry host $Registry is the OpenShift router default page, not the image registry.
-
-Use:
-  `$env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"
-
-The Account/Transaction Route showing "Application is not available" is expected until the image is pushed and the pod is Ready. Do not curl that Route as MD287_REGISTRY.
-Ask the instructor if IIS has not exposed the default-route in openshift-image-registry.
-"@
+        throw @(
+            "Registry host $Registry is the OpenShift router default page, not the image registry.",
+            "",
+            "Use:",
+            '  $env:MD287_REGISTRY = "default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io"',
+            "",
+            'The Account/Transaction Route showing "Application is not available" is expected until the image is pushed and the pod is Ready. Do not curl that Route as MD287_REGISTRY.',
+            "Ask the instructor if IIS has not exposed the default-route in openshift-image-registry."
+        ) -join "`n"
     }
     Write-Host "Registry /v2/ HTTP $code (401 here is normal before login)"
 }
@@ -214,7 +216,7 @@ function Update-Md287DeploymentImage {
     try {
         $deploy = oc get deploy $Name -n $Project --ignore-not-found 2>$null
         if (-not $deploy) {
-            Write-Host "No deploy/$Name yet — apply the OpenShift YAML first, then re-run this script or the oc set image block in the guide."
+            Write-Host "No deploy/$Name yet - apply the OpenShift YAML first, then re-run this script or the oc set image block in the guide."
             return
         }
         oc set image "deploy/$Name" "${Name}=$Internal" -n $Project 2>$null | Out-Host
@@ -281,20 +283,20 @@ function Push-Md287Image {
         }
     }
     if (-not $how) {
-        throw @"
-Could not push $Local to $remote.
-
-Do not run docker login by hand (Windows Credential Manager truncates the OpenShift token).
-Do not treat the Account Route HTML page as the registry.
-
-Check:
-  1. oc whoami is studentNN (not MSMICR26-NN / student.VLAB)
-  2. oc project -q is md287-studentNN
-  3. The image exists: docker images $Local
-  4. `$env:MD287_REGISTRY is default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io
-  5. python --version works (the classroom push uses Python)
-Raise a hand. Do not paste oc whoami -t into chat.
-"@
+        throw @(
+            "Could not push $Local to $remote.",
+            "",
+            "Do not run docker login by hand (Windows Credential Manager truncates the OpenShift token).",
+            "Do not treat the Account Route HTML page as the registry.",
+            "",
+            "Check:",
+            "  1. oc whoami is studentNN (not MSMICR26-NN / student.VLAB)",
+            "  2. oc project -q is md287-studentNN",
+            "  3. The image exists: docker images $Local",
+            '  4. $env:MD287_REGISTRY is default-route-openshift-image-registry.apps.aro-md287.centralus.aroapp.io',
+            "  5. python --version works (the classroom push uses Python)",
+            "Raise a hand. Do not paste oc whoami -t into chat."
+        ) -join "`n"
     }
 
     Write-Host "Pushed $remote ($how)"

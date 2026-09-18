@@ -832,7 +832,8 @@ This is the OpenShift evidence for the capstone demo. In the console, **Pods**, 
 | `oc whoami` failed | Required. Use OpenShift `studentNN`, not Ablaze `MSMICR26-NN`. Get login from the instructor. |
 | `oc apply` Unauthorized / Forbidden | Wrong project. `oc project md287-studentNN` (same number as `oc whoami`). |
 | `oc login` with `student.VLAB` or `MSMICR26-26` | Those are Windows / Ablaze ids. OpenShift is `student01`–`student25`. |
-| ImagePullBackOff on Risk | `git pull`, `push-risk-image.ps1`, then `$PROJECT = oc project -q` and `oc rollout restart deploy/risk-assessment-service`. Same tag does not re-pull by itself. |
+| ImagePullBackOff on Risk | `git pull`, `push-risk-image.ps1`, then `$PROJECT = oc project -q` and `oc rollout restart deploy/risk-assessment-service`. Same tag does not re-pull by itself. If Events say **layer does not match config's DiffID**, the first Python push double-gzipped the image — `git pull` then re-push; `oc set image` will not fix it. |
+| `Missing statement body in do loop` / parse errors in `push-to-openshift.ps1` | Old helper. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-risk-image.ps1`. |
 | `docker push` **403** / `denied` | Do **not** `docker login`. Re-run `tools\push-risk-image.ps1` with `$env:MD287_REGISTRY` set. Success is `Pushed ... (python)` or `(docker)`. |
 | Python `HTTP Error 400: Authentication information is not given` | Old pusher. `cd $env:USERPROFILE\MD287`; `git pull`; re-run `tools\push-risk-image.ps1`. `oc whoami` must be `studentNN`. |
 | HTML **Application is not available** on the Risk Route | Pods are not Ready yet (usually because the image push has not succeeded). Fix the push, then wait for Ready. |

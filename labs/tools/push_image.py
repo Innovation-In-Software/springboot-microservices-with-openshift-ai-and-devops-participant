@@ -30,7 +30,7 @@ from types import SimpleNamespace
 from typing import Optional
 
 SSL = ssl._create_unverified_context()
-UA = "md287-push-image/1.2"
+UA = "md287-push-image/1.3"
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -63,6 +63,26 @@ def gzip_file(src: Path, dest: Path) -> None:
                 if not chunk:
                     break
                 gz.write(chunk)
+
+
+def is_gzip(path: Path) -> bool:
+    with path.open("rb") as handle:
+        return handle.read(2) == b"\x1f\x8b"
+
+
+def compressed_layer_blob(raw: Path) -> Path:
+    """Return a gzip layer blob without double-compressing.
+
+    Docker Desktop (containerd image store) often writes docker-save layers
+    that are already gzip. Re-compressing them makes CRI-O fail with:
+    layer does not match config's DiffID.
+    """
+    if is_gzip(raw):
+        print("  layer already gzip (not re-compressing)")
+        return raw
+    dest = raw.with_name(raw.name + ".gz")
+    gzip_file(raw, dest)
+    return dest
 
 
 def parse_www_authenticate(header: str) -> dict:
@@ -419,14 +439,13 @@ def push_saved_image(archive: Path, registry: Registry, repo: str, reference: st
     layers = []
     for layer_rel in item["Layers"]:
         raw = work / layer_rel
-        gz_path = raw.with_suffix(raw.suffix + ".gz")
-        gzip_file(raw, gz_path)
-        digest = sha256_file(gz_path)
-        registry.upload_blob(repo, digest, gz_path)
+        blob = compressed_layer_blob(raw)
+        digest = sha256_file(blob)
+        registry.upload_blob(repo, digest, blob)
         layers.append(
             {
                 "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
-                "size": gz_path.stat().st_size,
+                "size": blob.stat().st_size,
                 "digest": "sha256:" + digest,
             }
         )
